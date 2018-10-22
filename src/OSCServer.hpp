@@ -21,7 +21,9 @@ private:
 	void run(int port);
 	void handleOSCBuffer(char *buffer, int len);
 	void (* callback)(const char *path, const float value)  = NULL;
+#if _WIN32
 	SOCKET s;
+#endif
 };
 
 #endif // PORTS_OCSSERVER_HPP

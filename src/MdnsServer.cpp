@@ -219,19 +219,20 @@ void MdnsServer::run(int port) {
 	running=true;
 	printf("Ports: starting mDNS server\n");
 	fflush(stdout);
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
 	char instanceName[200];
 	char* hostname;
-	
-#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
 	hostname = getenv("COMPUTERNAME");
 	if (hostname != 0) {
 		sprintf(instanceName, "vcvrack-%s", hostname);
 	} else {
 		sprintf(instanceName, "vcvrack-nohostname");	
-	}
+	}	
 	//printf("Hostname: %s", temp);
 	//fflush(stdout);
-#else
+#elif __APPLE__
+	char instanceName[200];
+	char* hostname;
 	hostname = new char[512];
 	if (gethostname(hostname, 512) == 0) { // success = 0, failure = -1
 		const char delimiters[] = ".";
@@ -241,9 +242,6 @@ void MdnsServer::run(int port) {
 	} else {
 		sprintf(instanceName, "vcvrack-nohostname");	
 	}
-	#endif
-
-#if __APPLE__
 	DNSServiceRef serviceRef;
 	DNSServiceErrorType error = DNSServiceRegister(
 		&serviceRef,
@@ -265,12 +263,10 @@ void MdnsServer::run(int port) {
 	}else if (error == kDNSServiceErr_BadParam) {
 		printf("ERROR :		kDNSServiceErr_BadParam\n");
 	}
-	//fprintf(stderr, "DNSServiceRegister returned %d\n", error);
-#elif _WIN32
+#elif defined(WIN32) || defined(_WIN32) || defined(_WIN64)
 	//Windows
 #else
 	//Linux
-	
 	/*//int main(AVAHI_GCC_UNUSED int argc, AVAHI_GCC_UNUSED char*argv[]) {
 	AvahiClient *client = NULL;
 	int error;
