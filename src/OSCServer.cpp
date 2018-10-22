@@ -23,6 +23,9 @@ OSCServer::~OSCServer() {
 void OSCServer::stop() { 
 	if (shouldRun){
 		shouldRun = false;
+#if _WIN32
+		closesocket(s);
+#endif
 		printf("Ports: stop Osc Server (shouldRun = false)\n");
 		fflush(stdout);
 	}
@@ -91,24 +94,23 @@ void OSCServer::run(int port) {
 		return;
 	}
 	running = true;
-	shouldRun=true;
+	shouldRun = true;
 	printf("Ports: starting OSC server\n");
 	fflush(stdout);
 
 	char buffer[2048];
 	struct sockaddr_in server;
+	struct sockaddr sa;
 	server.sin_family = AF_INET;
 	server.sin_port = htons(port);
 	server.sin_addr.s_addr = INADDR_ANY;
 	int len;
 #if _WIN32
 	int sa_len;
-	SOCKET s;
 	WSADATA wsa;
 	sa_len = sizeof(sa);
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
 		printf("Ports: Failed. Error Code : %d", WSAGetLastError());
-		//exit(EXIT_FAILURE);
 		return;
 	}
 	// Create a socket
@@ -125,10 +127,9 @@ void OSCServer::run(int port) {
 		// try to receive some data, this is a blocking call
 		if ((len = recvfrom(s, buffer, 2048, 0, (struct sockaddr *)&sa, &sa_len)) == SOCKET_ERROR) {
 			printf("Ports: recvfrom() failed with error code : %d", WSAGetLastError());
-			// exit(EXIT_FAILURE);
-			//TODO: implement a quit function to allow this thread to terminate !
+		} else {
+			handleOSCBuffer(buffer, len);
 		}
-		handleOSCBuffer(buffer, len);
 	}
 	closesocket(s);
 	WSACleanup();
@@ -148,7 +149,6 @@ void OSCServer::run(int port) {
 		FD_ZERO(&readSet);
 		FD_SET(fd, &readSet);
 		if (select(fd + 1, &readSet, NULL, NULL, &timeout) > 0) {
-			struct sockaddr sa; // can be safely cast to sockaddr_in
 			socklen_t sa_len = sizeof(struct sockaddr_in);
 			len = 0;
 			while ((len = (int)recvfrom(fd, buffer, sizeof(buffer), 0, &sa, &sa_len)) > 0) {

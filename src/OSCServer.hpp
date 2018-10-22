@@ -3,6 +3,11 @@
 
 #include <thread>
 
+#if _WIN32
+#include <winsock2.h>
+#else // Linux / MacOS
+#endif
+
 
 class OSCServer {
 public:
@@ -19,7 +24,7 @@ private:
 	void run(int port);
 	void handleOSCBuffer(char *buffer, int len);
 	void (* callback)(const char *path, const float value)  = NULL;
-	
+	SOCKET s;
 };
 
 #endif // PORTS_OCSSERVER_HPP

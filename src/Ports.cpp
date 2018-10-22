@@ -354,8 +354,12 @@ void Ports::removeInstance(Ports* instance) {
 			mdnsServer->stop();
 		}
 		if (oscServer != NULL && mdnsServer != NULL) {
-			while (oscServer->running || mdnsServer->running){
-				usleep(1000 * 50); //wait for threads to complete
+			int i = 0;
+			int wait = 50;
+			while ((oscServer->running || mdnsServer->running) && i * wait < 2000){
+				//wait for threads to complete but not longer than 2secs.
+				usleep(1000 * wait);
+				i++;
 			}
 			// add 100ms just in case.
 			usleep(1000 * 100);
