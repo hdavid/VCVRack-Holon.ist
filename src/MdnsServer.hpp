@@ -2,8 +2,6 @@
 #define PORTS_MDNSSERVER_HPP
 
 #include <thread>
-
-
 #if __APPLE__
 #import <dns_sd.h>
 #elif _WIN32

@@ -2,12 +2,9 @@
 #define PORTS_OCSSERVER_HPP
 
 #include <thread>
-
 #if _WIN32
 #include <winsock2.h>
-#else // Linux / MacOS
 #endif
-
 
 class OSCServer {
 public:

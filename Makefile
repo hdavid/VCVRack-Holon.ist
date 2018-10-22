@@ -1,5 +1,5 @@
 RACK_DIR ?= ../..
-SLUG = HolonicSystems-Holonist
+SLUG = HolonicSystems-Free
 VERSION = 0.6.0
 
 FLAGS +=

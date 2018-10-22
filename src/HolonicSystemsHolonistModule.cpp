@@ -1,4 +1,4 @@
-#include "HolonicSystems.hpp"
+#include "HolonicSystems-Free.hpp"
 #include "Ports.hpp"
 
 struct HolonicSystemsHolonistModule : Module {
@@ -72,14 +72,14 @@ struct HolonicSystemsHolonistModule : Module {
 
 
 HolonicSystemsHolonistModule::HolonicSystemsHolonistModule() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
-	printf("HolonicSystemsHolonistModule()\n");
+	//printf("HolonicSystemsHolonistModule()\n");
 	onReset();
  	ports.start();
 }
 
 
 HolonicSystemsHolonistModule::~HolonicSystemsHolonistModule() {
-	printf("~HolonicSystemsHolonistModule()\n");
+	//printf("~HolonicSystemsHolonistModule()\n");
 	ports.stop();
 }
 
@@ -134,7 +134,6 @@ struct HolonicSystemsHolonistWidget : ModuleWidget {
 	HolonicSystemsHolonistWidget(HolonicSystemsHolonistModule *module) : ModuleWidget(module) {
 		setPanel(SVG::load(assetPlugin(plugin, "res/HolonicSystems-Holonist.svg")));
 		
-		//screws
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));

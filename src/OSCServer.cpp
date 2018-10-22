@@ -1,7 +1,6 @@
 #include "OSCServer.hpp"
 
 #include "tinyosc.h"
-
 #if _WIN32
 #include <winsock2.h>
 #else // Linux / MacOS
@@ -46,13 +45,13 @@ void OSCServer::handleOSCBuffer(char *buffer, int len) {
 				switch (osc.format[i]) {
 				case 'f':
 					value = tosc_getNextFloat(&osc);
-					break; // printf(" %g", tosc_getNextFloat(osc)); break;
+					break;
 				case 'd':
 					value = tosc_getNextDouble(&osc);
-					break; // printf(" %g", tosc_getNextDouble(osc)); break;
+					break;
 				case 'i':
 					value = tosc_getNextInt32(&osc);
-					break; // printf(" %d", tosc_getNextInt32(osc)); break;
+					break;
 				default:
 					printf(" Unknown format: '%c'", osc.format[i]);
 					break;
@@ -65,19 +64,19 @@ void OSCServer::handleOSCBuffer(char *buffer, int len) {
 	} else {
 		tosc_message osc;
 		tosc_parseMessage(&osc, buffer, len);
-		char *path = tosc_getAddress(&osc); // the OSC address string, e.g. "/button1"
+		char *path = tosc_getAddress(&osc); 
 		float value = 0;
 		for (int i = 0; osc.format[i] != '\0'; i++) {
 			switch (osc.format[i]) {
 			case 'f':
 				value = tosc_getNextFloat(&osc);
-				break; // printf(" %g", tosc_getNextFloat(osc)); break;
+				break;
 			case 'd':
 				value = tosc_getNextDouble(&osc);
-				break; // printf(" %g", tosc_getNextDouble(osc)); break;
+				break;
 			case 'i':
 				value = tosc_getNextInt32(&osc);
-				break; // printf(" %d", tosc_getNextInt32(osc)); break;
+				break;
 			default:
 				printf(" Unknown format: '%c'", osc.format[i]);
 				break;
@@ -97,7 +96,6 @@ void OSCServer::run(int port) {
 	shouldRun = true;
 	printf("Ports: starting OSC server\n");
 	fflush(stdout);
-
 	char buffer[2048];
 	struct sockaddr_in server;
 	struct sockaddr sa;
@@ -120,11 +118,11 @@ void OSCServer::run(int port) {
 	// Bind
 	if (bind(s, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR) {
 		printf("Ports: Bind failed with error code : %d", WSAGetLastError());
-		return;//exit(EXIT_FAILURE);
+		return;
 	}
 	while (shouldRun) {
 		memset(buffer, '\0', 2048);
-		// try to receive some data, this is a blocking call
+		// try to receive some data, this is a blocking call, but we interupt it using closesocket(s);
 		if ((len = recvfrom(s, buffer, 2048, 0, (struct sockaddr *)&sa, &sa_len)) == SOCKET_ERROR) {
 			printf("Ports: recvfrom() failed with error code : %d", WSAGetLastError());
 		} else {

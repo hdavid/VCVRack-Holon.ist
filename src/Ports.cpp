@@ -1,15 +1,13 @@
 #include "Ports.hpp"
 
-// Ports
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-
 #include <unistd.h>
-
 #if _WIN32
 //define usleep for windows
 #include <windows.h>
+
 void usleep(int waitTime) {
     __int64 time1 = 0, time2 = 0, freq = 0;
     QueryPerformanceCounter((LARGE_INTEGER *) &time1);
@@ -260,15 +258,13 @@ int Ports::parseOutputMode(const char *str, int offset) {
 		return PORTS_OUTPUT_MODE_SYNCTRIG;
 	} else if (strncmp(str + offset, "flipflop", 8) == 0) {
 		return PORTS_OUTPUT_MODE_FLIPFLOP;
-	} else if (strncmp(str + offset, "cvuni", 5) == 0 ||
-						 strncmp(str + offset, "cv", 2) == 0) {
+	} else if (strncmp(str + offset, "cvuni", 5) == 0 || strncmp(str + offset, "cv", 2) == 0) {
 		return PORTS_OUTPUT_MODE_CVUNI;
 	} else if (strncmp(str + offset, "cvbi", 4) == 0) {
 		return PORTS_OUTPUT_MODE_CVBI;
 	} else if (strncmp(str + offset, "sh", 2) == 0) {
 		return PORTS_OUTPUT_MODE_RANDOM_SH;
-	} else if (strncmp(str + offset, "lfosine", 7) == 0 ||
-						 strncmp(str + offset, "lfo", 3) == 0) {
+	} else if (strncmp(str + offset, "lfosine", 7) == 0 || strncmp(str + offset, "lfo", 3) == 0) {
 		return PORTS_OUTPUT_MODE_LFO_SINE;
 	} else if (strncmp(str + offset, "lfosaw", 6) == 0) {
 		return PORTS_OUTPUT_MODE_LFO_SAW;
@@ -314,7 +310,6 @@ void Ports::addInstance(Ports* instance) {
 		}
 	}
 	if (count==0){
-		//printf("Ports: creating servers\n");
 		if (oscServer == NULL){
 			oscServer = new OSCServer(9000);
 			oscServer->setCallback(Ports::oscMessageCallback);
@@ -322,8 +317,6 @@ void Ports::addInstance(Ports* instance) {
 		if (mdnsServer == NULL){
 			mdnsServer = new MdnsServer(9000);
 		}
-	} else {
-		//printf("Ports: NOT starting servers\n");
 	}
 	for (int i = 0; i < PORTS_MAX_INSTANCE_COUNT; i++) {
 		if (instances[i] == NULL) {
