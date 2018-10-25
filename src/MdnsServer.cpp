@@ -14,7 +14,7 @@ MdnsServer::~MdnsServer() {
 void MdnsServer::stop() {
 	if (running) {
 		shouldRun = false;
-		printf("Ports: stop mDNS Server (shouldRun = false)\n");
+		//printf("Ports: stop mDNS Server (shouldRun = false)\n");
 		fflush(stdout);
 	}
 }
@@ -60,7 +60,7 @@ void registerCallBack(
 #pragma unused(flags)
 #pragma unused(context)
 	if (errorCode != kDNSServiceErr_NoError) {
-		fprintf(stderr, "mDNSRegisterCallBack returned %d\n", errorCode);
+		//fprintf(stderr, "mDNSRegisterCallBack returned %d\n", errorCode);
 	} else {
 		//printf("%-15s %s.%s%s\n", "REGISTER", name, type, domain);
 	}
@@ -217,7 +217,7 @@ void MdnsServer::run(int port) {
 	}
 	shouldRun=true;
 	running=true;
-	printf("Ports: starting mDNS server\n");
+	//printf("Ports: starting mDNS server\n");
 	fflush(stdout);
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
 	char instanceName[200];
@@ -261,7 +261,7 @@ void MdnsServer::run(int port) {
 		handleEvents(serviceRef);
 		DNSServiceRefDeallocate(serviceRef);
 	}else if (error == kDNSServiceErr_BadParam) {
-		printf("ERROR :		kDNSServiceErr_BadParam\n");
+		//printf("ERROR :		kDNSServiceErr_BadParam\n");
 	}
 #elif defined(WIN32) || defined(_WIN32) || defined(_WIN64)
 	//Windows
@@ -306,7 +306,7 @@ fail:
 	*/
 #endif
 	running = false;
-	printf("Ports: mDNS server terminated\n");
+	//printf("Ports: mDNS server terminated\n");
 	fflush(stdout);
 }
 

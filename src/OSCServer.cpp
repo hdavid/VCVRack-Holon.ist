@@ -25,7 +25,7 @@ void OSCServer::stop() {
 #if _WIN32
 		closesocket(s);
 #endif
-		printf("Ports: stop Osc Server (shouldRun = false)\n");
+		//printf("Ports: stop Osc Server (shouldRun = false)\n");
 		fflush(stdout);
 	}
 }
@@ -53,7 +53,7 @@ void OSCServer::handleOSCBuffer(char *buffer, int len) {
 					value = tosc_getNextInt32(&osc);
 					break;
 				default:
-					printf(" Unknown format: '%c'", osc.format[i]);
+					//printf(" Unknown format: '%c'", osc.format[i]);
 					break;
 				}
 			}
@@ -78,7 +78,7 @@ void OSCServer::handleOSCBuffer(char *buffer, int len) {
 				value = tosc_getNextInt32(&osc);
 				break;
 			default:
-				printf(" Unknown format: '%c'", osc.format[i]);
+				//printf(" Unknown format: '%c'", osc.format[i]);
 				break;
 			}
 		}
@@ -94,7 +94,7 @@ void OSCServer::run(int port) {
 	}
 	running = true;
 	shouldRun = true;
-	printf("Ports: starting OSC server\n");
+	//printf("Ports: starting OSC server\n");
 	fflush(stdout);
 	char buffer[2048];
 	struct sockaddr_in server;
@@ -108,23 +108,23 @@ void OSCServer::run(int port) {
 	WSADATA wsa;
 	sa_len = sizeof(sa);
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
-		printf("Ports: Failed. Error Code : %d", WSAGetLastError());
+		//printf("Ports: Failed. Error Code : %d", WSAGetLastError());
 		return;
 	}
 	// Create a socket
 	if ((s = socket(AF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET) {
-		printf("Ports: Could not create socket : %d", WSAGetLastError());
+		//printf("Ports: Could not create socket : %d", WSAGetLastError());
 	}
 	// Bind
 	if (bind(s, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR) {
-		printf("Ports: Bind failed with error code : %d", WSAGetLastError());
+		//printf("Ports: Bind failed with error code : %d", WSAGetLastError());
 		return;
 	}
 	while (shouldRun) {
 		memset(buffer, '\0', 2048);
 		// try to receive some data, this is a blocking call, but we interupt it using closesocket(s);
 		if ((len = recvfrom(s, buffer, 2048, 0, (struct sockaddr *)&sa, &sa_len)) == SOCKET_ERROR) {
-			printf("Ports: recvfrom() failed with error code : %d", WSAGetLastError());
+			//printf("Ports: recvfrom() failed with error code : %d", WSAGetLastError());
 		} else {
 			handleOSCBuffer(buffer, len);
 		}
@@ -137,7 +137,7 @@ void OSCServer::run(int port) {
 	fcntl(fd, F_SETFL, O_NONBLOCK); // set the socket to non-blocking
 	int error = bind(fd, (struct sockaddr *)&server, sizeof(struct sockaddr_in));
 	if (error!=0) {
-		printf("Ports: FAILED to bind OSC port 9000 : %d\n", error);
+		//printf("Ports: FAILED to bind OSC port 9000 : %d\n", error);
 		return;
 	}
 	struct timeval timeout = {0, 50*1000}; // select times out after 50ms, to allow for other threads to complete happily
@@ -158,6 +158,6 @@ void OSCServer::run(int port) {
 	close(fd);
 #endif
 	running = false;
-	printf("Ports: terminate OSC Server\n");
+	//printf("Ports: terminate OSC Server\n");
 	fflush(stdout);
 }

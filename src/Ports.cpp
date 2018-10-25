@@ -44,14 +44,14 @@ Ports::~Ports() {
 void Ports::start() {
 	if (!shouldRun){
 		shouldRun = true;
-		printf("Ports::start()\n");
+		//printf("Ports::start()\n");
 		addInstance(this);
 	}
 }
 
 void Ports::stop() {
 	if (shouldRun){
-		printf("Ports::stop()\n");
+		//printf("Ports::stop()\n");
 		shouldRun = false;
 		removeInstance(this);
 	}
@@ -361,7 +361,7 @@ void Ports::removeInstance(Ports* instance) {
 			delete oscServer;
 			oscServer = NULL;
 		} else {
-			printf("Ports: dont delete oscServer. already done !!\n");
+			//printf("Ports: dont delete oscServer. already done !!\n");
 			fflush(stdout);
 		}
 		if (mdnsServer != NULL){
