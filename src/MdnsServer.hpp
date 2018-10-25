@@ -11,7 +11,7 @@
 #include <config.h>
 #endif
 // From https://www.avahi.org/doxygen/html/client-publish-service_8c-example.html
-#include <time.h>
+/*#include <time.h>
 #include <stdio.h>
 #include <assert.h>
 #include <avahi-client/client.h>
@@ -20,7 +20,7 @@
 #include <avahi-common/simple-watch.h>
 #include <avahi-common/malloc.h>
 #include <avahi-common/error.h>
-#include <avahi-common/timeval.h>
+#include <avahi-common/timeval.h>*/
 #endif
 
 
