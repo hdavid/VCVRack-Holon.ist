@@ -22,11 +22,11 @@ OSCServer::~OSCServer() {
 void OSCServer::stop() { 
 	if (shouldRun){
 		shouldRun = false;
-#if _WIN32
+#ifdef ARCH_WIN
 		closesocket(s);
 #endif
 		//printf("Ports: stop Osc Server (shouldRun = false)\n");
-		fflush(stdout);
+		//fflush(stdout);
 	}
 }
 
@@ -103,7 +103,7 @@ void OSCServer::run(int port) {
 	server.sin_port = htons(port);
 	server.sin_addr.s_addr = INADDR_ANY;
 	int len;
-#if _WIN32
+#ifdef ARCH_WIN
 	int sa_len;
 	WSADATA wsa;
 	sa_len = sizeof(sa);

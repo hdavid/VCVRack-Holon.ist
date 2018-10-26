@@ -2,7 +2,7 @@
 #define PORTS_OCSSERVER_HPP
 
 #include <thread>
-#if _WIN32
+#ifdef ARCH_WIN
 #include <winsock2.h>
 #endif
 
@@ -21,7 +21,7 @@ private:
 	void run(int port);
 	void handleOSCBuffer(char *buffer, int len);
 	void (* callback)(const char *path, const float value)  = NULL;
-#if _WIN32
+#ifdef ARCH_WIN
 	SOCKET s;
 #endif
 };

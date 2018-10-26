@@ -20,7 +20,7 @@
 #include <stdio.h>
 
  
-#if _WIN32
+#ifdef ARCH_WIN
 #include "byteorder.h"
 #define tosc_strncpy(_dst, _src, _len) strncpy_s(_dst, _len, _src, _TRUNCATE)
 #else // Linux / MacOS

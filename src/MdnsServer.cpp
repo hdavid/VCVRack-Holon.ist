@@ -20,7 +20,7 @@ void MdnsServer::stop() {
 }
 
 
-#if __APPLE__
+#ifdef ARCH_MAC
 void MdnsServer::handleEvents(DNSServiceRef serviceRef) {
 	int dns_sd_fd = DNSServiceRefSockFD(serviceRef);
 	int nfds = dns_sd_fd + 1;
@@ -219,7 +219,7 @@ void MdnsServer::run(int port) {
 	running=true;
 	//printf("Ports: starting mDNS server\n");
 	fflush(stdout);
-#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+#ifdef ARCH_WIN
 	char instanceName[200];
 	char* hostname;
 	hostname = getenv("COMPUTERNAME");
@@ -227,10 +227,9 @@ void MdnsServer::run(int port) {
 		sprintf(instanceName, "vcvrack-%s", hostname);
 	} else {
 		sprintf(instanceName, "vcvrack-nohostname");	
-	}	
-	//printf("Hostname: %s", temp);
-	//fflush(stdout);
-#elif __APPLE__
+	}
+#endif
+#ifdef ARCH_MAC
 	char instanceName[200];
 	char* hostname;
 	hostname = new char[512];
@@ -263,9 +262,11 @@ void MdnsServer::run(int port) {
 	}else if (error == kDNSServiceErr_BadParam) {
 		//printf("ERROR :		kDNSServiceErr_BadParam\n");
 	}
-#elif defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+#endif
+#ifdef ARCH_WIN
 	//Windows
-#else
+#endif
+#ifdef ARCH_LIN
 	//Linux
 	/*//int main(AVAHI_GCC_UNUSED int argc, AVAHI_GCC_UNUSED char*argv[]) {
 	AvahiClient *client = NULL;

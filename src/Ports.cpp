@@ -4,7 +4,7 @@
 #include <string.h>
 #include <math.h>
 #include <unistd.h>
-#if _WIN32
+#ifdef ARCH_WIN
 //define usleep for windows
 #include <windows.h>
 

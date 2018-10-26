@@ -6,7 +6,8 @@ FLAGS +=
 CFLAGS += 
 CXXFLAGS +=
 
-ifeq ($(OS),Windows_NT)
+include $(RACK_DIR)/arch.mk
+ifdef ARCH_WIN
 LDFLAGS += -lwsock32
 else
 LDFLAGS +=

@@ -2,11 +2,13 @@
 #define PORTS_MDNSSERVER_HPP
 
 #include <thread>
-#if __APPLE__
+#ifdef ARCH_MAC
 #import <dns_sd.h>
-#elif _WIN32
+#endif
+#ifdef ARCH_WIN
 //#include whatever.h
-#else // Linux
+#endif
+#ifdef ARCH_LIN
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -34,11 +36,13 @@ private:
 	volatile bool shouldRun = false;
 	std::thread* thread;
 	void run(int port);
-#if __APPLE__
+#ifdef ARCH_MAC
 	void handleEvents(DNSServiceRef serviceRef);
-#elif _WIN32
+#endif
+#ifdef ARCH_WIN
 	//win32stuff
-#else 
+#endif
+#ifdef ARCH_LIN 
 	//linux
 	/*AvahiEntryGroup *group = NULL;
 	AvahiSimplePoll *simple_poll = NULL;
