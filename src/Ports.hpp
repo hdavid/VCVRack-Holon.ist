@@ -2,8 +2,8 @@
 #define PORTS_HPP
 
 #include <stdlib.h>
-#include <sys/time.h>
-#include <semaphore.h> 
+#include <sys/time.h> 
+#include <mutex>
 #include <thread>
 
 #include "OSCServer.hpp"
@@ -91,7 +91,7 @@ private:
 	static void removeInstance(Ports* instance);
 	static int instanceCount();
 	static Ports* instances[PORTS_MAX_INSTANCE_COUNT];
-	static sem_t mutex;
+	static std::mutex mutex;
 	static MdnsServer* mdnsServer;
 	static OSCServer* oscServer;
 

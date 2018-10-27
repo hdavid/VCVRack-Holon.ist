@@ -19,7 +19,7 @@ void usleep(int waitTime) {
 #endif
 
 //initialise Ports static variables
-sem_t Ports::mutex;
+std::mutex Ports::mutex;
 MdnsServer* Ports::mdnsServer = NULL;
 OSCServer* Ports::oscServer = NULL;
 Ports* Ports::instances[] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}; 
@@ -44,14 +44,12 @@ Ports::~Ports() {
 void Ports::start() {
 	if (!shouldRun){
 		shouldRun = true;
-		//printf("Ports::start()\n");
 		addInstance(this);
 	}
 }
 
 void Ports::stop() {
 	if (shouldRun){
-		//printf("Ports::stop()\n");
 		shouldRun = false;
 		removeInstance(this);
 	}
@@ -280,29 +278,29 @@ int Ports::parseOutputMode(const char *str, int offset) {
 
 
 void Ports::oscMessageCallback(const char *path, const float value){
-	sem_wait(&mutex); 
+	mutex.lock();
 	for (int i = 0; i < PORTS_MAX_INSTANCE_COUNT; i++) {
 		if (instances[i] != NULL) {
 			instances[i]->oscMessage(path, value);
 		}
 	}
-	sem_post(&mutex);
+	mutex.unlock();
 }
 
 int Ports::instanceCount() {
 	int count = 0;
-	sem_wait(&mutex); 
+	mutex.lock();
 	for (int i = 0; i < PORTS_MAX_INSTANCE_COUNT; i++) {
 		if (instances[i] != NULL) {
 			count++;
 		}
 	}
-	sem_post(&mutex); 
+	mutex.lock();
 	return count;
 }
 
 void Ports::addInstance(Ports* instance) {
-	sem_wait(&mutex);
+	mutex.lock();
 	int count = 0;
 	for (int i = 0; i < PORTS_MAX_INSTANCE_COUNT; i++) {
 		if (instances[i] != NULL) {
@@ -324,11 +322,11 @@ void Ports::addInstance(Ports* instance) {
 			break;
 		}
 	}
-	sem_post(&mutex);
+	mutex.unlock();
 }
 
 void Ports::removeInstance(Ports* instance) {
-	sem_wait(&mutex); 
+	mutex.lock();
 	int count = 0;
 	for (int i = 0; i < PORTS_MAX_INSTANCE_COUNT; i++) {
 		if (instances[i] == instance) {
@@ -360,14 +358,11 @@ void Ports::removeInstance(Ports* instance) {
 		if (oscServer != NULL){
 			delete oscServer;
 			oscServer = NULL;
-		} else {
-			//printf("Ports: dont delete oscServer. already done !!\n");
-			fflush(stdout);
 		}
 		if (mdnsServer != NULL){
 			delete mdnsServer;
 			mdnsServer = NULL;
 		}
 	}
-	sem_post(&mutex); 
+	mutex.unlock();
 }
