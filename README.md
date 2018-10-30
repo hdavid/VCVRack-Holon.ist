@@ -12,12 +12,21 @@ Holon.ist Receiver VCV Rack Module integrates with Holon.ist iOS app and outputs
 - Last version of Holon.ist is installed on your iPhone or iPad : http://holonic.systems
 - Last version of VCV rack installed : https://vcvrack.com/
 - Install Holon.ist Receiver plugin from VCV Rack plugin manager and : https://vcvrack.com/plugins.html
+- follow the instruction below how to get Holon.ist and the receiver to talk to each other.
 
 ## OSC Communication
-- If VCV Rack and Holon.ist Receiver are running MacOS, Holon.ist will automatically detect VCV Rack !
-- On Windows and Linux (for now) you will have have get your ip (https://www.digitalcitizen.life/find-ip-address-windows ), and manually setup an OSC destination in Holon.ist. Holon.ist Receiver listens on port 9000
+mDNS/bonjour is used for autodiscovery.
+
+- On MacOS  Holon.ist will automatically detect VCV Rack if holon.ist receiver plugin is loaded !
+- On Windows you need to install Bonjour SDK from apple and make sure the Bonjour Service is running. Then run the script `scripts\Holon.ist receiver bonjour.bat`. This will publish Holon.ist Receiver on the network and allow autodiscovery.
+- On Linux you need to Avahi client running (usually it is the case). Then run the script `scripts\Holon.ist_receiver_avahi.sh`. This will publish Holon.ist Receiver on the network and allow autodiscovery
+
+tips
+
 - Make sure firewall like little snitch or other are not blocking communication. For instance, on MasOS, with Little Snitch firewall, incoming communication must be specifically enabled for Rack.
-- Make sure to check Holon.ist manual http://holon.ist/manual/
+- Be sure to Check Holon.ist manual http://holon.ist/manual/
+- if you cannot get Autodiscovery to work for some reason, you can create manually an OSC output in Holon.ist and input your computer IP. and port 90000
+
 
 ## Receiving Bank
 The Receiving bank knob selects on which bank the module is receiving signals from Holon.ist. This allows to use more than one instance of the module in your patch, allowing for up to 64 channels of cv control in total!
