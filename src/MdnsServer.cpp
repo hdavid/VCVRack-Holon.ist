@@ -2,6 +2,11 @@
 #include <string.h>
 #include <stddef.h>
 #include <errno.h>
+#ifdef ARCH_WIN
+#include <winsock2.h>
+#else // Linux / MacOS
+#include <arpa/inet.h>
+#endif
 
 MdnsServer::MdnsServer(int port) {
 	thread = new std::thread(&MdnsServer::run, this, port);
@@ -65,8 +70,9 @@ void registerCallBack(
 		//printf("%-15s %s.%s%s\n", "REGISTER", name, type, domain);
 	}
 }
-#elif _WIN32
-//win32stuff
+#endif
+#ifdef ARCH_WIN
+//Windows
 
 
 #else

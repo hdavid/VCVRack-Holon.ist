@@ -1,7 +1,7 @@
 #include "OSCServer.hpp"
 
 #include "tinyosc.h"
-#if _WIN32
+#ifdef ARCH_WIN
 #include <winsock2.h>
 #else // Linux / MacOS
 #include <arpa/inet.h>
