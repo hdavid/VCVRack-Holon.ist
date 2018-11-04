@@ -5,5 +5,5 @@ using namespace rack;
 extern Plugin *plugin;
 
 extern Model *modelHolonicSystemsHolonist;
-extern Model *modelHolonicSystemsHawaiianKnife;
+extern Model *modelHolonicSystemsSwissCheeseKnife;
 
