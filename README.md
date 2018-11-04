@@ -64,7 +64,7 @@ inverts input signal
 ### Sample and Hold
 Classic Trigger and Hold
 ### VCA
-VCA with response shape from linear to exponatial
+VCA with response shape from linear to exponential
 
 ### Low Pass Filter
 Simple low pass filter
