@@ -59,12 +59,16 @@ Make sure to scale values properly in the scaling section in Holon.ist
 SwissCheeseKnife is a Quad utility module with a twist.
 
 ### Inverter
-inverts input signal
+Inverts input signal.
+
+### Attenuator 
+Attenuator with range [0, 1] ratios.
 
 ### Sample and Hold
-Classic Trigger and Hold
+Classic Trigger and Hold.
+
 ### VCA
-VCA with response shape from linear to exponential
+VCA with response shape from linear to exponential.
 
 ### Low Pass Filter
 Simple low pass filter
