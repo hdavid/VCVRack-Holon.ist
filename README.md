@@ -2,6 +2,8 @@
 
 ## Holon.ist Receiver for VCV Rack
 
+![SwissCheeseKnife](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/hawaii/screencaps/Holon.ist-Receiver.png)
+
 Holon.ist from http://holonic.systems can communicate with various virtual and physical studio gear using MIDI and OSC protocols.
 
 Holon.ist Receiver VCV Rack Module integrates with Holon.ist iOS app and outputs CV control signals in VCV Rack world.
@@ -51,6 +53,8 @@ Make sure to scale values properly in the scaling section in Holon.ist
 
 
 ## SwissCheeseKnife
+
+![SwissCheeseKnife](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/hawaii/screencaps/SwissCheeseKnife.png)
 
 SwissCheeseKnife is a Quad utility module with a twist.
 
