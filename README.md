@@ -77,3 +77,7 @@ While in AC mode, any DC offset is removed.
 
 ### Offset
 Offset signal
+
+### Mixer
+Last on the signal path, but not least. SwissCheeseKnife can also mix 4 signals as its outputs are normaled.
+
