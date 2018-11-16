@@ -166,7 +166,6 @@ void Ports::oscMessage(const char *path, float v) {
 			if (channelModes[channel] != mode) {
 				channelModes[channel] = mode;
 				force = true;
-				printf("setting channel %d to mode %d\n", channel, mode);
 			}
 			bool isBipolar = channelIsBipolar(channel);
 			if (channelIsLfo(channel)) {
