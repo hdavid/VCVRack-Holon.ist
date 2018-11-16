@@ -21,6 +21,7 @@ struct HolonicSystemsHolonistModule : Module {
 		ALPHA_7,
 		ALPHA_8,
 		BANK_PARAM,
+		ONE_TEN_VOLT_OSC_PARAM_1,
 		NUM_PARAMS
 	};
 
@@ -101,7 +102,7 @@ void HolonicSystemsHolonistModule::step() {
 		ports.computeChannel(i, deltaTime);
 		
 		//attenuverter
-		float in = params[ATT_1 + i].value * ports.channelValues[i];
+		float in = params[ATT_1 + i].value * ports.channelValues[i] * ((ports.channelModes[i]==4 || ports.channelModes[i]==5) && params[ONE_TEN_VOLT_OSC_PARAM_1].value > 0 ? 10 : 1);
 		
 		//filter
 		float alpha = params[ALPHA_1+i].value;
@@ -149,6 +150,8 @@ struct HolonicSystemsHolonistWidget : ModuleWidget {
 			addParam(ParamWidget::create<RoundSmallBlackKnob>(			Vec(10+30*1.5	, 70 + i * 36), module, HolonicSystemsHolonistModule::ALPHA_1 + i, 1.0, 0.0, 0.8));
 			addOutput(Port::create<PJ301MPort>(							Vec(10+30*2.5	, 70 + i * 36), Port::OUTPUT, module, HolonicSystemsHolonistModule::OUTPUT_1 + i));
 		}
+		
+		addParam(ParamWidget::create<CKSS>(Vec(47, 353), module, HolonicSystemsHolonistModule::ONE_TEN_VOLT_OSC_PARAM_1, 0, 1.0, 1.0));
 	}
 };
 
