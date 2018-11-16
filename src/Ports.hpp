@@ -14,10 +14,11 @@
 #define PORTS_OSC_PORT 9000
 
 #define PORTS_TRIGGER_CYCLES 2000 /// PORTS_TIMER_PERIOD
-#define PORTS_TRIGGER_LEVEL 0.5
+
 #define PORTS_OUTPUT_LEVEL_ZERO 0
 #define PORTS_OUTPUT_LEVEL_MAX 10
 #define PORTS_OUTPUT_LEVEL_MIN -10
+#define PORTS_TRIGGER_LEVEL PORTS_OUTPUT_LEVEL_MAX / 2
 #define PORTS_LFO_FREQUENCY_MIN 0
 #define PORTS_LFO_FREQUENCY_MAX 1000
 #define BIPOLAR_POWER true
@@ -61,10 +62,11 @@ public:
 	static void oscMessageCallback(const char *path, const float value);
 	double channelValues[PORTS_NUM_CHANNELS];
 	bool channelUpdated[PORTS_NUM_CHANNELS];
+	int channelModes[PORTS_NUM_CHANNELS];
 private:
 	int currentBank = 0;
 	int numBanks = PORTS_NUM_CHANNELS / 8;
-	int channelModes[PORTS_NUM_CHANNELS];
+	
 	int channelTrigCycles[PORTS_NUM_CHANNELS];
 	bool channelSyncTriggerRequested[PORTS_NUM_CHANNELS];
 	double channelLFOPhases[PORTS_NUM_CHANNELS];

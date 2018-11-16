@@ -80,10 +80,9 @@ void Ports::computeChannel(int channel, float deltaTime) {
 
 		// check if mode is LFO kind
 	} else if (channelIsLfo(channel)) {
-
 		if (channelLFOFrequencies[channel] > 0) { // ignore zero frequency
 			// compute phase increment
-			double lfoPeriod = (1000000.0 / channelLFOFrequencies[channel]);
+			double lfoPeriod = (1.0 / channelLFOFrequencies[channel]);
 			channelLFOPhases[channel] += deltaTime / lfoPeriod;
 			// lfo-19 just warped. clock fram !
 			if (channelLFOPhases[channel] > 1) {
@@ -95,7 +94,7 @@ void Ports::computeChannel(int channel, float deltaTime) {
 		}
 		// range and offset
 		float lfo_offset = BIPOLAR_POWER ? 0.0 : PORTS_OUTPUT_LEVEL_MAX / 2; // bipolar values are [-1 1], unipolar [0, 1]
-		float lfo_range = BIPOLAR_POWER ? PORTS_OUTPUT_LEVEL_MAX : PORTS_OUTPUT_LEVEL_MAX / 2; // bipolar values are [-1 1], unipolar [0, 1]
+		float lfo_range = BIPOLAR_POWER ? PORTS_OUTPUT_LEVEL_MAX / 2 : PORTS_OUTPUT_LEVEL_MAX / 2; // bipolar values are [-0.5 0.5], unipolar [0, 1]
 
 		double phase = channelLFOPhases[channel];
 		switch (channelModes[channel]) {
@@ -167,6 +166,7 @@ void Ports::oscMessage(const char *path, float v) {
 			if (channelModes[channel] != mode) {
 				channelModes[channel] = mode;
 				force = true;
+				printf("setting channel %d to mode %d\n", channel, mode);
 			}
 			bool isBipolar = channelIsBipolar(channel);
 			if (channelIsLfo(channel)) {
@@ -184,7 +184,7 @@ void Ports::oscMessage(const char *path, float v) {
 				if (value > PORTS_OUTPUT_LEVEL_MAX) {
 					value = PORTS_OUTPUT_LEVEL_MAX;
 				}
-				if (channelIsBipolar(channel)) {
+				if (isBipolar) {
 					if (value <= PORTS_OUTPUT_LEVEL_MIN) {
 						value = PORTS_OUTPUT_LEVEL_MIN;
 					}
@@ -216,8 +216,8 @@ bool Ports::channelIsLfo(int channel) {
 }
 
 bool Ports::channelIsBipolar(int channel) {
-	int modee = channelModes[channel];
-	return BIPOLAR_POWER && (!(modee < 50 || (modee >= 100 && modee < 150)));
+	int mode = channelModes[channel];
+	return BIPOLAR_POWER && ((mode >= 50 && mode < 100) || mode == 150);
 }
 
 void Ports::setChannelMode(int channel, bool mode, bool bipolar, bool force) {}
@@ -256,14 +256,12 @@ int Ports::parseOutputMode(const char *str, int offset) {
 		return PORTS_OUTPUT_MODE_SYNCTRIG;
 	} else if (strncmp(str + offset, "flipflop", 8) == 0) {
 		return PORTS_OUTPUT_MODE_FLIPFLOP;
-	} else if (strncmp(str + offset, "cvuni", 5) == 0 || strncmp(str + offset, "cv", 2) == 0) {
-		return PORTS_OUTPUT_MODE_CVUNI;
 	} else if (strncmp(str + offset, "cvbi", 4) == 0) {
 		return PORTS_OUTPUT_MODE_CVBI;
+	} else if (strncmp(str + offset, "cvuni", 5) == 0 || strncmp(str + offset, "cv", 2) == 0) {
+		return PORTS_OUTPUT_MODE_CVUNI;
 	} else if (strncmp(str + offset, "sh", 2) == 0) {
 		return PORTS_OUTPUT_MODE_RANDOM_SH;
-	} else if (strncmp(str + offset, "lfosine", 7) == 0 || strncmp(str + offset, "lfo", 3) == 0) {
-		return PORTS_OUTPUT_MODE_LFO_SINE;
 	} else if (strncmp(str + offset, "lfosaw", 6) == 0) {
 		return PORTS_OUTPUT_MODE_LFO_SAW;
 	} else if (strncmp(str + offset, "lforamp", 7) == 0) {
@@ -272,6 +270,8 @@ int Ports::parseOutputMode(const char *str, int offset) {
 		return PORTS_OUTPUT_MODE_LFO_TRI;
 	} else if (strncmp(str + offset, "lfosquare", 9) == 0) {
 		return PORTS_OUTPUT_MODE_LFO_SQUARE;
+	} else if (strncmp(str + offset, "lfosine", 7) == 0 || strncmp(str + offset, "lfo", 3) == 0) {
+		return PORTS_OUTPUT_MODE_LFO_SINE;
 	}
 	return -1;
 }
