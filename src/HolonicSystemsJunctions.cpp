@@ -71,16 +71,17 @@ struct HolonicSystemsJunctionsWidget : ModuleWidget {
 		//addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		//channels
 		for (int i=0; i<2; i++) {	
-			//IN A
-			addInput(Port::create<PJ301MPort>(Vec(10,60 + i*150), Port::INPUT, module, HolonicSystemsJunctionsModule::INPUT_1_A+i));
-			addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(37, 60+8 + i*150), module, HolonicSystemsJunctionsModule::LED_1_A+i));
-			//IN B
-			addInput(Port::create<PJ301MPort>(Vec(10, 90 + i*150), Port::INPUT, module, HolonicSystemsJunctionsModule::INPUT_1_B+i));
-			addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(37, 90 +8 + i*150), module, HolonicSystemsJunctionsModule::LED_1_B+i));
 
 			//CV
-			addInput(Port::create<PJ301MPort>(Vec(10,125 + i*150), Port::INPUT, module, HolonicSystemsJunctionsModule::INPUT_1_CV+i));
-			
+			addInput(Port::create<PJ301MPort>(Vec(10,60 + i*150), Port::INPUT, module, HolonicSystemsJunctionsModule::INPUT_1_CV+i));
+
+			//IN A
+			addInput(Port::create<PJ301MPort>(Vec(10,95 + i*150), Port::INPUT, module, HolonicSystemsJunctionsModule::INPUT_1_A+i));
+			addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(37, 95+8 + i*150), module, HolonicSystemsJunctionsModule::LED_1_A+i));
+			//IN B
+			addInput(Port::create<PJ301MPort>(Vec(10,125 + i*150), Port::INPUT, module, HolonicSystemsJunctionsModule::INPUT_1_B+i));
+			addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(37, 125+8 + i*150), module, HolonicSystemsJunctionsModule::LED_1_B+i));
+
 			//Out
 			addOutput(Port::create<PJ301MPort>(Vec(10,160 + i*150), Port::OUTPUT, module, HolonicSystemsJunctionsModule::OUTPUT_1+i));
 		}
