@@ -7,6 +7,7 @@
 #ifdef ARCH_WIN
 //define usleep for windows
 #include <windows.h>
+#include <string>
 
 void usleep(int waitTime) {
     __int64 time1 = 0, time2 = 0, freq = 0;
@@ -118,7 +119,60 @@ void Ports::computeChannel(int channel, float deltaTime) {
 	}
 }
 
-void Ports::oscMessage(const char *path, float v) {
+void Ports::oscMessage(const char *path, const char* v) {
+	int offset = 0;
+	if (strncmp(path, "/a/", 3) == 0 || strncmp(path, "/b/", 3) == 0 ||
+			strncmp(path, "/c/", 3) == 0 || strncmp(path, "/d/", 3) == 0 ||
+			strncmp(path, "/e/", 3) == 0 || strncmp(path, "/f/", 3) == 0 ||
+			strncmp(path, "/g/", 3) == 0 || strncmp(path, "/h/", 3) == 0) {
+
+		int bank = 0;
+
+		if (strncmp(path, "/a/", 3) == 0) {
+			bank = 0;
+		} else if (strncmp(path, "/b/", 3) == 0) {
+			bank = 1;
+		} else if (strncmp(path, "/c/", 3) == 0) {
+			bank = 2;
+		} else if (strncmp(path, "/d/", 3) == 0) {
+			bank = 3;
+		} else if (strncmp(path, "/e/", 3) == 0) {
+			bank = 4;
+		} else if (strncmp(path, "/f/", 3) == 0) {
+			bank = 5;
+		} else if (strncmp(path, "/g/", 3) == 0) {
+			bank = 6;
+		} else if (strncmp(path, "/h/", 3) == 0) {
+			bank = 7;
+		}
+	
+		if (bank + 1 > currentBank + numBanks) {
+			return;
+		}
+		if (bank != currentBank) {
+			return;
+		}
+
+		offset += 3;
+		int channel = parseInt(path, offset);
+		offset += channel < 10 ? 2 : channel < 100 ? 3 : 4;
+		channel -= 1;
+		
+		if (channel >= 0 && channel <= PORTS_NUM_CHANNELS) {
+			if (strncmp(path+offset, "input", 4) == 0) {
+				//printf("%s :  %s\n", path, v);
+				inputs[channel] = std::string(v);
+			} else if (strncmp(path+offset, "name", 4) == 0) {
+				//printf("%s :  %s\n", path, v);
+				names[channel] = std::string(v);
+			}else{
+				//printf("XXX: %s :  %s\n", path+offset, v);
+			}
+		
+		}
+	}
+}
+void Ports::oscMessage(const char *path, const float v) {
 	float value = v;
 	int offset = 0;
 	if (strncmp(path, "/a/", 3) == 0 || strncmp(path, "/b/", 3) == 0 ||
@@ -206,7 +260,15 @@ void Ports::oscMessage(const char *path, float v) {
 	}
 }
 
-void Ports::setBank(int bank) { currentBank = bank; }
+void Ports::setBank(int bank) {
+	if (bank != currentBank){
+		currentBank = bank;
+		for (int i=0;i<PORTS_NUM_CHANNELS;i++){
+			names[i] = std::string();
+			inputs[i] = std::string();
+		}
+ 	}
+}
 
 bool Ports::channelIsInput(int channel) { return channelModes[channel] >= 100; }
 
@@ -286,6 +348,16 @@ void Ports::oscMessageCallback(const char *path, const float value){
 	mutex.unlock();
 }
 
+void Ports::oscMessageStringCallback(const char *path, const char* value){
+	mutex.lock();
+	for (int i = 0; i < PORTS_MAX_INSTANCE_COUNT; i++) {
+		if (instances[i] != NULL) {
+			instances[i]->oscMessage(path, value);
+		}
+	}
+	mutex.unlock();
+}
+
 int Ports::instanceCount() {
 	int count = 0;
 	mutex.lock();
@@ -310,6 +382,7 @@ void Ports::addInstance(Ports* instance) {
 		if (oscServer == NULL){
 			oscServer = new OSCServer(9000);
 			oscServer->setCallback(Ports::oscMessageCallback);
+			oscServer->setStringCallback(Ports::oscMessageStringCallback);
 		}
 		if (mdnsServer == NULL){
 			mdnsServer = new MdnsServer(9000);
@@ -339,6 +412,7 @@ void Ports::removeInstance(Ports* instance) {
 		if (oscServer != NULL){
 			oscServer->stop();
 			oscServer->setCallback(NULL);
+			oscServer->setStringCallback(NULL);
 		}
 		if (mdnsServer != NULL){
 			mdnsServer->stop();

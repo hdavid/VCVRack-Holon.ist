@@ -4,12 +4,11 @@
 #include <time.h>
 #include <stdlib.h>
 
-
-
 struct HolonicSystemsGapsModule : Module {
 
 	enum ParamIds {
 		MODE_PARAM,
+		TRIG_MODE_PARAM,
 		NUM_PARAMS
 	};
 
@@ -66,7 +65,7 @@ struct HolonicSystemsGapsModule : Module {
 								{2,4,8,16, 32,64,128,256},
 								
 								{2,3,4,5, 6,7,8,9}, // random
-								{0,1,2,3, 4,5,6,7} // seq
+								{1,2,3, 4,5,6,7,8} // seq
 							};
 };
 
@@ -84,52 +83,83 @@ void HolonicSystemsGapsModule::step() {
 	
 	bool clock = clockTrigger.process(inputs[INPUT_CLOCK].value);
 	bool reset = resetTrigger.process(inputs[INPUT_RESET].value);
-	
-	if (reset) {
-		counter = 0;
-	}
-	
+	bool trigMode = params[TRIG_MODE_PARAM].value > 0;
 	float deltaTime = engineGetSampleTime();
 	
-	if (clock) {
-		
-		for (int i=0;i<8;i++){
+	if (reset) {
+		this->counter = 0;
+	}
+	
+	for (int i=0;i<8;i++){
+		bool on = false;
+		if (clock) {
 			if ((int)params[MODE_PARAM].value <= 4){
-				if (0 == counter % divisions[(int)params[MODE_PARAM].value][i]){
+				on =  0 == counter % divisions[(int)params[MODE_PARAM].value][i];
+			} else if ((int)params[MODE_PARAM].value == 5){
+				on =  (0 == counter % 2) && (rand() < RAND_MAX / divisions[(int)params[MODE_PARAM].value][i]);
+			} else if ((int)params[MODE_PARAM].value == 6){
+				on = (0 == (counter + 8 - i) % 8);
+			}
+			if (trigMode){
+				if(on){
 					pulses[i].trigger(1e-3);
 				}
 				outputs[OUTPUT_1+i].value = pulses[i].process(deltaTime) ? 10.0 : 0.0;
-				//outputs[OUTPUT_1+i].value = (0 == counter % divisions[(int)params[MODE_PARAM].value][i]) ? 10.0 : 0.0;
-				
-			} else if ((int)params[MODE_PARAM].value == 5){
-				if (0 == counter % 2){
-					int r = rand();  
-					outputs[OUTPUT_1+i].value = (r < RAND_MAX / divisions[(int)params[MODE_PARAM].value][i]) ? 10.0 : 0.0;
-				} else {
-					outputs[OUTPUT_1+i].value = 0;
-				}
-				
-			} else if ((int)params[MODE_PARAM].value == 6){
-				outputs[OUTPUT_1+i].value = (0 == (counter + 8 - i) % 8) ? 10.0 : 0.0;
-				
+				lights[LED_1+i].setBrightnessSmooth(outputs[OUTPUT_1+i].value);
+			} else {
+				outputs[OUTPUT_1+i].value = on ? 10 : 0;
+				lights[LED_1+i].setBrightness(outputs[OUTPUT_1+i].value);
+				int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
+				f = f+1;
 			}
-			lights[LED_1+i].setBrightness(outputs[OUTPUT_1+i].value);
-		}
-		counter++;
-	} else {
-		for (int i=0;i<8;i++){
-			if ((int)params[MODE_PARAM].value <= 4){
+			
+		} else {
+			if (trigMode) {
 				outputs[OUTPUT_1+i].value = pulses[i].process(deltaTime) ? 10.0 : 0.0;
+				lights[LED_1+i].setBrightnessSmooth(outputs[OUTPUT_1+i].value);
+			} else {
+				int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
+				f = f+1;
 			}
 		}
+		
+	}
+	
+	if (clock){
+		this->counter++;
 	}
 }
+
+struct HolonicGapsLabel : Widget {
+	std::string text = "xx";
+	int fontSize;
+	int index;
+	HolonicSystemsGapsModule *module = nullptr;
+	char str[10];
+
+	
+	HolonicGapsLabel(int _fontSize,HolonicSystemsGapsModule *_module, int _index) {
+		fontSize = _fontSize;
+		box.size.y = BND_WIDGET_HEIGHT;
+		module = _module;
+		index = _index;
+	}
+
+	void draw(NVGcontext *vg) override {
+		nvgFillColor(vg, nvgRGB(0, 0, 0));
+		nvgFontSize(vg, fontSize);\
+		sprintf(str, "%d", module->divisions[(int)module->params[HolonicSystemsGapsModule::MODE_PARAM].value][index]);
+		nvgText(vg, box.pos.x, box.pos.y, str, NULL);
+		
+	}
+};
+
 
 
 struct HolonicSystemsGapsWidget : ModuleWidget {
 
 	HolonicSystemsGapsWidget(HolonicSystemsGapsModule *module) : ModuleWidget(module) {
-		setPanel(SVG::load(assetPlugin(plugin, "res/HolonicSystems-Gaps.svg")));
+		setPanel(SVG::load(assetPlugin(plugin,"res/HolonicSystems-Gaps.svg")));
 		
 		//screws
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
@@ -141,17 +171,38 @@ struct HolonicSystemsGapsWidget : ModuleWidget {
 		addInput(Port::create<PJ301MPort>(Vec(5, 50), Port::INPUT, module, HolonicSystemsGapsModule::INPUT_CLOCK));
 		addInput(Port::create<PJ301MPort>(Vec(30, 50), Port::INPUT, module, HolonicSystemsGapsModule::INPUT_RESET));
 		
-		addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(18, 90), module, HolonicSystemsGapsModule::MODE_PARAM, 0, 6, 0));
+		addParam(ParamWidget::create<CKSS>(Vec(47, 353), module, HolonicSystemsGapsModule::TRIG_MODE_PARAM, 0, 1.0, 0.0));
 		
+		HolonicSystemsKnob *modeKnob = dynamic_cast<HolonicSystemsKnob*>(ParamWidget::create<HolonicSystemsKnob>(Vec(10, 90), module, HolonicSystemsGapsModule::MODE_PARAM, 0.0, 6, 0));
+		HolonicSystemsLabel* const modeLabel = new HolonicSystemsLabel;
+		modeLabel->box.pos = Vec(17, 54);
+		modeLabel->text = "mode";
+		modeLabel->fontSize=10;
+		modeKnob->names.push_back(std::string("int"));
+		modeKnob->names.push_back(std::string("even"));
+		modeKnob->names.push_back(std::string("odd"));
+		modeKnob->names.push_back(std::string("prime"));
+		modeKnob->names.push_back(std::string("binary"));
+		modeKnob->names.push_back(std::string("rand"));
+		modeKnob->names.push_back(std::string("seq"));
+		modeKnob->connectLabel(modeLabel);
+		addChild(modeLabel);
+		addParam(modeKnob);
 		
+
 		for (int i=0;i<8;i++){
 			addOutput(Port::create<PJ301MPort>(Vec(10,120 + 30*i), Port::OUTPUT, module, HolonicSystemsGapsModule::OUTPUT_1+i));
 			addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(40,120 + 8+ 30*i), module, HolonicSystemsGapsModule::LED_1+i));
+			HolonicGapsLabel* const modeLabel = new HolonicGapsLabel(12,module,i);
+			modeLabel->box.pos = Vec(40/2,(120 + 8+ 30*i)/2-2);
+			addChild(modeLabel);
 		}
 		
 	}
 
 };
+
+
 
 
 Model *modelHolonicSystemsGaps = 

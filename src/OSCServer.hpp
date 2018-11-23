@@ -14,6 +14,9 @@ public:
 	void setCallback(void (* cb)(const char *path, const float value)){
 		callback = cb;
 	}
+	void setStringCallback(void (* cb)(const char *path, const char* value)){
+		stringCallback = cb;
+	}
 	volatile bool running = false;
 private:
 	std::thread* thread;
@@ -21,6 +24,7 @@ private:
 	void run(int port);
 	void handleOSCBuffer(char *buffer, int len);
 	void (* callback)(const char *path, const float value)  = NULL;
+	void (* stringCallback)(const char *path, const char* value)  = NULL;
 #ifdef ARCH_WIN
 	SOCKET s;
 #endif

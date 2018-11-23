@@ -1,14 +1,21 @@
 #include "HolonicSystems-Free.hpp"
 #include "dsp/digital.hpp"
-#include <vector>
+
+
 
 struct HolonicSystemsPastModule : Module {
 
 	enum ParamIds {
+		PARAM_RECORD_1,
+		PARAM_RECORD_2,
+		PARAM_OVERDUB_1,
+		PARAM_OVERDUB_2,
+		PARAM_CLEAR_1,
+		PARAM_CLEAR_2,
 		PARAM_LENGTH_1,
 		PARAM_LENGTH_2,
-		PARAM_LENGTH_3,
-		PARAM_LENGTH_4,
+		PARAM_SHIFT_1,
+		PARAM_SHIFT_2,
 		NUM_PARAMS
 	};
 
@@ -17,32 +24,32 @@ struct HolonicSystemsPastModule : Module {
 		INPUT_RESET,
 		INPUT_RECORD_1,
 		INPUT_RECORD_2,
-		INPUT_RECORD_3,
-		INPUT_RECORD_4,
+		INPUT_OVERDUB_1,
+		INPUT_OVERDUB_2,
+		INPUT_CLEAR_1,
+		INPUT_CLEAR_2,
+		INPUT_SHIFT_1,
+		INPUT_SHIFT_2,
+		INPUT_LENGTH_1,
+		INPUT_LENGTH_2,
 		INPUT_CV_1,
 		INPUT_CV_2,
-		INPUT_CV_3,
-		INPUT_CV_4,
 		INPUT_GATE_1,
 		INPUT_GATE_2,
-		INPUT_GATE_3,
-		INPUT_GATE_4,
 		NUM_INPUTS
 	};
 
 	enum OutputIds {
 		OUTPUT_CV_1,
 		OUTPUT_CV_2,
-		OUTPUT_CV_3,
-		OUTPUT_CV_4,
 		OUTPUT_GATE_1,
 		OUTPUT_GATE_2,
-		OUTPUT_GATE_3,
-		OUTPUT_GATE_4,
 		NUM_OUTPUTS
 	};
 	
 	enum LightIds {
+		LIGHT_RECORDING_1,
+		LIGHT_RECORDING_2,
 		NUM_LIGHTS
 	};	
 	
@@ -50,16 +57,12 @@ struct HolonicSystemsPastModule : Module {
 	~HolonicSystemsPastModule();
 	
 	void onReset() override {
-		printf("HolonicSystemsPastModule::onReset\n");
-		for (int i=0; i<4; i++) {
+		for (int i=0; i<2; i++) {
 			counters[i] = 0;
-			recordings[i] = false;
 			for (int j=0;j<64;j++){
-				cvs[i][j] =0;
-				gates[i][j]=0;
+				cvs[i][j] = 0;
+				gates[i][j]= 0;
 			}
-			//cvs[i].resize(0);
-			//gates[i].resize(0);
 		}
 	}
 	
@@ -67,10 +70,17 @@ struct HolonicSystemsPastModule : Module {
 	
 	SchmittTrigger clockTrigger;
 	SchmittTrigger resetTrigger;
-	int counters[4] = {0,0,0,0};
-	bool recordings[4] = {false,false,false,false};
-	std::vector<float> cvs[4] = {std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64)};
-	std::vector<float> gates[4]= {std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64)};  
+	
+	
+	long counters[2] = {0,0};
+	int recordingSteps[2] = {-1,-1};
+	SchmittTrigger recordTrigger[2];
+	SchmittTrigger overdubTrigger[2];
+	SchmittTrigger clearTrigger[2];
+	std::vector<float> cvs[2] = {std::vector<float>(64),std::vector<float>(64)};
+	std::vector<float> gates[2]= {std::vector<float>(64),std::vector<float>(64)};  
+	
+	
 	 
 };
 
@@ -85,67 +95,71 @@ HolonicSystemsPastModule::~HolonicSystemsPastModule() {
 
 
 void HolonicSystemsPastModule::step() {
-		
+	
 	bool clock = clockTrigger.process(inputs[INPUT_CLOCK].value);
 	bool reset = resetTrigger.process(inputs[INPUT_RESET].value);
 	
-	for (int i = 0; i<4;i++){
+	for (int i = 0; i<2;i++){
+		
+		//triggers must process at each step
+		bool rec = recordTrigger[i].process(inputs[INPUT_RECORD_1+i].value) || params[PARAM_RECORD_1+i].value>0;
+		bool overdub = overdubTrigger[i].process(inputs[INPUT_OVERDUB_1+i].value) || params[PARAM_OVERDUB_1+i].value>0;
+		bool clear = clearTrigger[i].process(inputs[INPUT_CLEAR_1+i].value) || params[PARAM_CLEAR_1+i].value>0;
+		
+		//clear at any time, not on clock
+		if (clear){
+			for (int step=0; step<32; step++){
+				cvs[i][step] = 0.0f;
+				gates[i][step] = 0.0f;
+			}
+		}
 		
 		if (reset){
 			counters[i] = 0;
 		}
 		
+		//recording
+		bool recording = overdub;
+		if (recordingSteps[i]==-1 && rec) {
+			//trigger new full length recording only if not already recording
+			recordingSteps[i]=0;
+			recording = true;
+		}
 		
 		if (clock) {
 			
-			counters[i] = counters[i] % (int)params[PARAM_LENGTH_1+i].value;
+			int length = clamp( ((int)inputs[INPUT_LENGTH_1+i].value) + ((int)params[PARAM_LENGTH_1+i].value), 1.0, 32.0);
+			int shift = ((int)inputs[INPUT_SHIFT_1+i].value) + ((int)params[PARAM_SHIFT_1+i].value);
 			
-			bool r = inputs[INPUT_RECORD_1+i].value > 1;
+			//warp count
+			counters[i] = (counters[i]) % length;
+			int step = (counters[i]+shift) % 32;//TODO: wrap within loop or within all 32 steps ?
 			
-			// begin recording
-			//if (!recordings[i] && r) {
-				recordings[i] = true;
-				//cvs[i].resize(0);
-				//gates[i].resize(0);
-				//counters[i] = 0;
-			//}
-			
-			//stop recording
-			// if (!r && recordings[i]){
-// 				if (counters[i]%(int)params[PARAM_LENGTH_1+i].value == 0) {
-// 					recordings[i] = false;
-// 					counters[i] = 0;
-// 				}
-// 			}
-
 			//recording
-			//if (recordings[i]) {
-			//	cvs[i].push_back(inputs[INPUT_CV_1+i].value);
-			//	gates[i].push_back(inputs[INPUT_GATE_1+i].value);
-			//}
-			if (r){
-				cvs[i][counters[i]]=(inputs[INPUT_CV_1+i].value);
-				gates[i][counters[i]]=(inputs[INPUT_GATE_1+i].value);
+			if (recordingSteps[i]!= -1){
+				recordingSteps[i]++;
+				if (recordingSteps[i]<=length){
+					recording = true;
+				} else {
+					//recording ended
+					recordingSteps[i] = -1;
+				}
 			}
 			
-			if (recordings[i]){
- 				if (counters[i]%(int)params[PARAM_LENGTH_1+i].value == 0) {
- 					recordings[i] = false;
- 					counters[i] = 0;
- 				}
- 			}
-	
+			lights[LIGHT_RECORDING_1+i].setBrightness(recording?10:0);
+			
+			//recording
+			if (recording){
+				cvs[i][step]=inputs[INPUT_CV_1+i].value;
+				gates[i][step]=inputs[INPUT_GATE_1+i].value;
+			}
+			
 			//output
-			//if (cvs[i].size()>0){
-				outputs[OUTPUT_CV_1+i].value = cvs[i].at(counters[i]);
-				outputs[OUTPUT_GATE_1+i].value = gates[i].at(counters[i]);
-			//}
+			outputs[OUTPUT_CV_1+i].value = cvs[i][step];
+			outputs[OUTPUT_GATE_1+i].value = gates[i][step];
 			
 			//step
 			counters[i]++;
-			//if (!recordings[i] && counters[i] >= cvs[i].size()){
-			//	counters[i] = 0;
-			//}
 		}
 	}
 }
@@ -163,19 +177,127 @@ struct HolonicSystemsPastWidget : ModuleWidget {
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
  
 		//IN
-		addInput(Port::create<PJ301MPort>(Vec(10, 50), Port::INPUT, module, HolonicSystemsPastModule::INPUT_CLOCK));
-		addInput(Port::create<PJ301MPort>(Vec(40, 50), Port::INPUT, module, HolonicSystemsPastModule::INPUT_RESET));
+		addInput(Port::create<PJ301MPort>(Vec(10, 20), Port::INPUT, module, HolonicSystemsPastModule::INPUT_CLOCK));
+		addInput(Port::create<PJ301MPort>(Vec(90, 20), Port::INPUT, module, HolonicSystemsPastModule::INPUT_RESET));
 		
-		for (int i=0;i<4;i++){
+		for (int i=0;i<2;i++){
+			
+			int rowHeight= 155;
+			int vSpace=38;
+			int base=65;
+		
+			addParam(ParamWidget::create<TL1105>(Vec(10+vSpace*0+5, base+0 + i*rowHeight), module, HolonicSystemsPastModule::PARAM_RECORD_1+i, 0, 1, 0));
+			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*0, base+20 + i*rowHeight), Port::INPUT, module, HolonicSystemsPastModule::INPUT_RECORD_1+i));
+			
+			addParam(ParamWidget::create<TL1105>(Vec(10+vSpace*1+5, base+0 + i*rowHeight), module, HolonicSystemsPastModule::PARAM_OVERDUB_1+i, 0, 1, 0));
+			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*1, base+20 + i*rowHeight), Port::INPUT, module, HolonicSystemsPastModule::INPUT_OVERDUB_1+i));
+			
+			addParam(ParamWidget::create<TL1105>(Vec(10+vSpace*2+5, base+0 + i*rowHeight), module, HolonicSystemsPastModule::PARAM_CLEAR_1+i, 0, 1, 0));
+			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*2, base+20 + i*rowHeight), Port::INPUT, module, HolonicSystemsPastModule::INPUT_CLEAR_1+i));
+			
+			base += 50;
+			
 			//channel
-			addInput(Port::create<PJ301MPort>(Vec(10, 80 + i*70), Port::INPUT, module, HolonicSystemsPastModule::INPUT_CV_1+i));
-			addInput(Port::create<PJ301MPort>(Vec(10, 110 + i*70), Port::INPUT, module, HolonicSystemsPastModule::INPUT_GATE_1+i));
+			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*0, base + i*rowHeight), Port::INPUT, module, HolonicSystemsPastModule::INPUT_CV_1+i));
+			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*0, base+30 + i*rowHeight), Port::INPUT, module, HolonicSystemsPastModule::INPUT_GATE_1+i));
 			
-			addInput(Port::create<PJ301MPort>(Vec(50, 80 + i*70), Port::INPUT, module, HolonicSystemsPastModule::INPUT_RECORD_1+i));
-			addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(50, 110 + i*70), module, HolonicSystemsPastModule::PARAM_LENGTH_1+i, 1, 32, 16));
+			addOutput(Port::create<PJ301MPort>(Vec(10+vSpace*2, base + i*rowHeight), Port::OUTPUT, module, HolonicSystemsPastModule::OUTPUT_CV_1+i));
+			addOutput(Port::create<PJ301MPort>(Vec(10+vSpace*2, base+30 + i*rowHeight), Port::OUTPUT, module, HolonicSystemsPastModule::OUTPUT_GATE_1+i));
 			
-			addOutput(Port::create<PJ301MPort>(Vec(90, 80 + i*70), Port::OUTPUT, module, HolonicSystemsPastModule::OUTPUT_CV_1+i));
-			addOutput(Port::create<PJ301MPort>(Vec(90,110 + i*70), Port::OUTPUT, module, HolonicSystemsPastModule::OUTPUT_GATE_1));
+			addChild(ModuleLightWidget::create<LargeLight<RedLight>>(	Vec(10+vSpace*1+5, base+20 + i*rowHeight), module, HolonicSystemsPastModule::LIGHT_RECORDING_1+i));
+			
+			base += 60;
+			
+			//rack::RoundSmallBlackKnob* length = ParamWidget::create<RoundSmallBlackKnob>(Vec(10+vSpace*0-5, base + i*rowHeight), module, HolonicSystemsPastModule::PARAM_LENGTH_1+i, 1, 32, 16);
+			//length->snap=true;
+			//addParam(length);
+			HolonicSystemsKnob * lengthKnob = dynamic_cast<HolonicSystemsKnob*>(ParamWidget::create<HolonicSystemsKnob>(Vec(10+vSpace*0-5, base + i*rowHeight), module, HolonicSystemsPastModule::PARAM_LENGTH_1+i, 1, 31, 16));
+			HolonicSystemsLabel* const lengthLabel = new HolonicSystemsLabel;
+			lengthLabel->box.pos = Vec((10+vSpace*0-5)/2, (base + i*rowHeight)/2+17);
+			lengthKnob->names.push_back(std::string("length 0"));//this is needed, values start at 1...
+			lengthKnob->names.push_back(std::string("length 1"));
+			lengthKnob->names.push_back(std::string("length 2"));
+			lengthKnob->names.push_back(std::string("length 3"));
+			lengthKnob->names.push_back(std::string("length 4"));
+			lengthKnob->names.push_back(std::string("length 5"));
+			lengthKnob->names.push_back(std::string("length 6"));
+			lengthKnob->names.push_back(std::string("length 7"));
+			lengthKnob->names.push_back(std::string("length 8"));
+			lengthKnob->names.push_back(std::string("length 9"));
+			lengthKnob->names.push_back(std::string("length 10"));
+			lengthKnob->names.push_back(std::string("length 11"));
+			lengthKnob->names.push_back(std::string("length 12"));
+			lengthKnob->names.push_back(std::string("length 13"));
+			lengthKnob->names.push_back(std::string("length 14"));
+			lengthKnob->names.push_back(std::string("length 15"));
+			lengthKnob->names.push_back(std::string("length 16"));
+			lengthKnob->names.push_back(std::string("length 17"));
+			lengthKnob->names.push_back(std::string("length 18"));
+			lengthKnob->names.push_back(std::string("length 19"));
+			lengthKnob->names.push_back(std::string("length 20"));
+			lengthKnob->names.push_back(std::string("length 21"));
+			lengthKnob->names.push_back(std::string("length 22"));
+			lengthKnob->names.push_back(std::string("length 23"));
+			lengthKnob->names.push_back(std::string("length 24"));
+			lengthKnob->names.push_back(std::string("length 25"));
+			lengthKnob->names.push_back(std::string("length 26"));
+			lengthKnob->names.push_back(std::string("length 27"));
+			lengthKnob->names.push_back(std::string("length 28"));
+			lengthKnob->names.push_back(std::string("length 29"));
+			lengthKnob->names.push_back(std::string("length 30"));
+			lengthKnob->names.push_back(std::string("length 31"));
+			lengthKnob->names.push_back(std::string("length 32"));
+			lengthKnob->connectLabel(lengthLabel);
+			addChild(lengthLabel);
+			addParam(lengthKnob);
+			
+			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*0+23, base + i*rowHeight), Port::INPUT, module, HolonicSystemsPastModule::INPUT_LENGTH_1+i));
+			
+			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*2-23, base + i*rowHeight), Port::INPUT, module, HolonicSystemsPastModule::INPUT_SHIFT_1+i));		
+			//rack::RoundSmallBlackKnob* shift = ParamWidget::create<RoundSmallBlackKnob>(Vec(10+vSpace*2+5, base + i*rowHeight), module, HolonicSystemsPastModule::PARAM_SHIFT_1+i, 0, 31, 0);
+			//shift->snap=true;
+			//addParam(shift);
+			
+			HolonicSystemsKnob * shiftKnob = dynamic_cast<HolonicSystemsKnob*>(ParamWidget::create<HolonicSystemsKnob>(Vec(10+vSpace*2+5, base + i*rowHeight), module, HolonicSystemsPastModule::PARAM_SHIFT_1+i, 0.0, 31, 0));
+			HolonicSystemsLabel* const shiftLabel = new HolonicSystemsLabel;
+			shiftLabel->box.pos = Vec((10+vSpace*2+5)/2-10, (base + i*rowHeight)/2+17);
+			shiftKnob->names.push_back(std::string("shift 0"));
+			shiftKnob->names.push_back(std::string("shift 1"));
+			shiftKnob->names.push_back(std::string("shift 2"));
+			shiftKnob->names.push_back(std::string("shift 3"));
+			shiftKnob->names.push_back(std::string("shift 4"));
+			shiftKnob->names.push_back(std::string("shift 5"));
+			shiftKnob->names.push_back(std::string("shift 6"));
+			shiftKnob->names.push_back(std::string("shift 7"));
+			shiftKnob->names.push_back(std::string("shift 8"));
+			shiftKnob->names.push_back(std::string("shift 9"));
+			shiftKnob->names.push_back(std::string("shift 10"));
+			shiftKnob->names.push_back(std::string("shift 11"));
+			shiftKnob->names.push_back(std::string("shift 12"));
+			shiftKnob->names.push_back(std::string("shift 13"));
+			shiftKnob->names.push_back(std::string("shift 14"));
+			shiftKnob->names.push_back(std::string("shift 15"));
+			shiftKnob->names.push_back(std::string("shift 16"));
+			shiftKnob->names.push_back(std::string("shift 17"));
+			shiftKnob->names.push_back(std::string("shift 18"));
+			shiftKnob->names.push_back(std::string("shift 19"));
+			shiftKnob->names.push_back(std::string("shift 20"));
+			shiftKnob->names.push_back(std::string("shift 21"));
+			shiftKnob->names.push_back(std::string("shift 22"));
+			shiftKnob->names.push_back(std::string("shift 23"));
+			shiftKnob->names.push_back(std::string("shift 24"));
+			shiftKnob->names.push_back(std::string("shift 25"));
+			shiftKnob->names.push_back(std::string("shift 26"));
+			shiftKnob->names.push_back(std::string("shift 27"));
+			shiftKnob->names.push_back(std::string("shift 28"));
+			shiftKnob->names.push_back(std::string("shift 29"));
+			shiftKnob->names.push_back(std::string("shift 30"));
+			shiftKnob->names.push_back(std::string("shift 31"));
+			shiftKnob->connectLabel(shiftLabel);
+			addChild(shiftLabel);
+			addParam(shiftKnob);
+			
+
 		}
 	}
 

@@ -44,16 +44,27 @@ void OSCServer::handleOSCBuffer(char *buffer, int len) {
 			for (int i = 0; osc.format[i] != '\0'; i++) {
 				switch (osc.format[i]) {
 				case 'f':
-					value = tosc_getNextFloat(&osc);
+					if (callback!=NULL && shouldRun) {
+						callback(path, tosc_getNextFloat(&osc));
+					}
 					break;
 				case 'd':
-					value = tosc_getNextDouble(&osc);
+					if (callback!=NULL && shouldRun) {
+						callback(path, (float)tosc_getNextDouble(&osc));
+					}
 					break;
 				case 'i':
-					value = tosc_getNextInt32(&osc);
+					if (callback!=NULL && shouldRun) {
+						callback(path, tosc_getNextInt32(&osc));
+					}
+					break;
+				case 's':
+					if (stringCallback!=NULL && shouldRun) {
+						stringCallback(path, tosc_getNextString(&osc));
+					}
 					break;
 				default:
-					//printf(" Unknown format: '%c'", osc.format[i]);
+					printf(" Unknown format: '%c'", osc.format[i]);
 					break;
 				}
 			}
@@ -65,26 +76,34 @@ void OSCServer::handleOSCBuffer(char *buffer, int len) {
 		tosc_message osc;
 		tosc_parseMessage(&osc, buffer, len);
 		char *path = tosc_getAddress(&osc); 
-		float value = 0;
 		for (int i = 0; osc.format[i] != '\0'; i++) {
 			switch (osc.format[i]) {
 			case 'f':
-				value = tosc_getNextFloat(&osc);
+				if (callback!=NULL && shouldRun) {
+					callback(path, tosc_getNextFloat(&osc));
+				}
 				break;
 			case 'd':
-				value = tosc_getNextDouble(&osc);
+				if (callback!=NULL && shouldRun) {
+					callback(path, (float)tosc_getNextDouble(&osc));
+				}
 				break;
 			case 'i':
-				value = tosc_getNextInt32(&osc);
+				if (callback!=NULL && shouldRun) {
+					callback(path, tosc_getNextInt32(&osc));
+				}
+				break;
+			case 's':
+				if (stringCallback!=NULL && shouldRun) {
+					stringCallback(path, tosc_getNextString(&osc));
+				}
 				break;
 			default:
-				//printf(" Unknown format: '%c'", osc.format[i]);
+				printf(" Unknown format: '%c'", osc.format[i]);
 				break;
 			}
 		}
-		if (callback!=NULL && shouldRun) {
-			callback(path, value);
-		}
+		
 	}
 }
 

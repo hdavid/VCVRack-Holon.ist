@@ -5,6 +5,7 @@
 #include <sys/time.h> 
 #include <mutex>
 #include <thread>
+#include <string>
 
 #include "OSCServer.hpp"
 #include "MdnsServer.hpp"
@@ -59,10 +60,14 @@ public:
 	void computeChannel(int channel, float deltaTime);
 	void setBank(int bank);
 	void oscMessage(const char *path, const float value);
+	void oscMessage(const char *path, const char* value);
 	static void oscMessageCallback(const char *path, const float value);
+	static void oscMessageStringCallback(const char *path, const char* value);
 	double channelValues[PORTS_NUM_CHANNELS];
 	bool channelUpdated[PORTS_NUM_CHANNELS];
 	int channelModes[PORTS_NUM_CHANNELS];
+	std::string names[PORTS_NUM_CHANNELS];
+	std::string inputs[PORTS_NUM_CHANNELS];
 private:
 	int currentBank = 0;
 	int numBanks = PORTS_NUM_CHANNELS / 8;
@@ -72,6 +77,7 @@ private:
 	double channelLFOPhases[PORTS_NUM_CHANNELS];
 	double channelLFOFrequencies[PORTS_NUM_CHANNELS];
 	double channelLFOPWMs[PORTS_NUM_CHANNELS];
+	
 	bool clockFrame = false;
 	struct timeval lastTimer;
 	struct timeval lastReset;

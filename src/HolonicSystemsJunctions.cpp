@@ -52,10 +52,10 @@ HolonicSystemsJunctionsModule::~HolonicSystemsJunctionsModule() {
 
 void HolonicSystemsJunctionsModule::step() {
 	for (int i=0; i<2; i++){
-		bool a = inputs[INPUT_1_CV+i].value > 1;
+		bool a = inputs[INPUT_1_CV+i].value < 1;
 		outputs[OUTPUT_1+i].value = (a) ? inputs[INPUT_1_A+i].value : inputs[INPUT_1_B+i].value;
-		lights[LED_1_A+i].setBrightness(a ? 1 : 0);
-		lights[LED_1_B+i].setBrightness(a ? 0 : 1);
+		lights[LED_1_A+i].setBrightnessSmooth(a ? 1 : 0);
+		lights[LED_1_B+i].setBrightnessSmooth(a ? 0 : 1);
 	}
 }
 
@@ -64,11 +64,11 @@ struct HolonicSystemsJunctionsWidget : ModuleWidget {
 
 	HolonicSystemsJunctionsWidget(HolonicSystemsJunctionsModule *module) : ModuleWidget(module) {
 		setPanel(SVG::load(assetPlugin(plugin, "res/HolonicSystems-Junctions.svg")));
+		
 		//screws
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-		//addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-		//addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+		
 		//channels
 		for (int i=0; i<2; i++) {	
 
