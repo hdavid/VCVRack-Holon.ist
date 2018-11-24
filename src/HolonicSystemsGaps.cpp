@@ -51,8 +51,8 @@ struct HolonicSystemsGapsModule : Module {
 	}
 	
 	void step() override;
-	SchmittTrigger clockTrigger;
-	SchmittTrigger resetTrigger;
+	LooseSchmittTrigger clockTrigger;
+	LooseSchmittTrigger resetTrigger;
 	
 	 int counter = 0;
 	 std::vector<float> track;  
@@ -94,9 +94,13 @@ void HolonicSystemsGapsModule::step() {
 		bool on = false;
 		if (clock) {
 			if ((int)params[MODE_PARAM].value <= 4){
-				on =  0 == counter % divisions[(int)params[MODE_PARAM].value][i];
+				if (trigMode){
+					on =  0 == counter % divisions[(int)params[MODE_PARAM].value][i];
+				} else {
+					on =  divisions[(int)params[MODE_PARAM].value][i]/2 <= counter % divisions[(int)params[MODE_PARAM].value][i];		
+				}
 			} else if ((int)params[MODE_PARAM].value == 5){
-				on =  (0 == counter % 2) && (rand() < RAND_MAX / divisions[(int)params[MODE_PARAM].value][i]);
+				on =  /*(0 == counter % 2) &&*/ (rand() < RAND_MAX / divisions[(int)params[MODE_PARAM].value][i]);
 			} else if ((int)params[MODE_PARAM].value == 6){
 				on = (0 == (counter + 8 - i) % 8);
 			}
@@ -147,9 +151,33 @@ struct HolonicGapsLabel : Widget {
 
 	void draw(NVGcontext *vg) override {
 		nvgFillColor(vg, nvgRGB(0, 0, 0));
-		nvgFontSize(vg, fontSize);\
+		nvgFontSize(vg, fontSize);
 		sprintf(str, "%d", module->divisions[(int)module->params[HolonicSystemsGapsModule::MODE_PARAM].value][index]);
 		nvgText(vg, box.pos.x, box.pos.y, str, NULL);
+		
+	}
+};
+
+
+struct HolonicGapsTrigGateLabel : Widget {
+	int fontSize;
+	HolonicSystemsGapsModule *module = nullptr;
+
+	
+	HolonicGapsTrigGateLabel(int _fontSize,HolonicSystemsGapsModule *_module) {
+		fontSize = _fontSize;
+		box.size.y = BND_WIDGET_HEIGHT;
+		module = _module;
+	}
+
+	void draw(NVGcontext *vg) override {
+		nvgFillColor(vg, nvgRGB(0, 0, 0));
+		nvgFontSize(vg, fontSize);
+		if ( module->params[HolonicSystemsGapsModule::TRIG_MODE_PARAM].value==0){
+			nvgText(vg, box.pos.x, box.pos.y, "gate", NULL);
+		}else{
+			nvgText(vg, box.pos.x, box.pos.y, "trig", NULL);
+		}
 		
 	}
 };
@@ -163,15 +191,15 @@ struct HolonicSystemsGapsWidget : ModuleWidget {
 		
 		//screws
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-
 		//IN
-		addInput(Port::create<PJ301MPort>(Vec(5, 50), Port::INPUT, module, HolonicSystemsGapsModule::INPUT_CLOCK));
-		addInput(Port::create<PJ301MPort>(Vec(30, 50), Port::INPUT, module, HolonicSystemsGapsModule::INPUT_RESET));
+		addInput(Port::create<PJ301MPort>(Vec(5, 57), Port::INPUT, module, HolonicSystemsGapsModule::INPUT_CLOCK));
+		addInput(Port::create<PJ301MPort>(Vec(30, 57), Port::INPUT, module, HolonicSystemsGapsModule::INPUT_RESET));
 		
-		addParam(ParamWidget::create<CKSS>(Vec(47, 353), module, HolonicSystemsGapsModule::TRIG_MODE_PARAM, 0, 1.0, 0.0));
+		addParam(ParamWidget::create<CKSS>(Vec(43, 355), module, HolonicSystemsGapsModule::TRIG_MODE_PARAM, 0, 1.0, 0.0));
+		HolonicGapsTrigGateLabel* const trigGateLabel = new HolonicGapsTrigGateLabel(10, module);
+		trigGateLabel->box.pos = Vec(10, 355/2+5);
+		addChild(trigGateLabel);
 		
 		HolonicSystemsKnob *modeKnob = dynamic_cast<HolonicSystemsKnob*>(ParamWidget::create<HolonicSystemsKnob>(Vec(10, 90), module, HolonicSystemsGapsModule::MODE_PARAM, 0.0, 6, 0));
 		HolonicSystemsLabel* const modeLabel = new HolonicSystemsLabel;

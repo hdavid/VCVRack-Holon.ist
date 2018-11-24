@@ -74,9 +74,9 @@ struct HolonicSystemsPastModule : Module {
 	
 	long counters[2] = {0,0};
 	int recordingSteps[2] = {-1,-1};
-	SchmittTrigger recordTrigger[2];
-	SchmittTrigger overdubTrigger[2];
-	SchmittTrigger clearTrigger[2];
+	LooseSchmittTrigger recordTrigger[2];
+	LooseSchmittTrigger overdubTrigger[2];
+	LooseSchmittTrigger clearTrigger[2];
 	std::vector<float> cvs[2] = {std::vector<float>(64),std::vector<float>(64)};
 	std::vector<float> gates[2]= {std::vector<float>(64),std::vector<float>(64)};  
 	
@@ -103,7 +103,9 @@ void HolonicSystemsPastModule::step() {
 		
 		//triggers must process at each step
 		bool rec = recordTrigger[i].process(inputs[INPUT_RECORD_1+i].value) || params[PARAM_RECORD_1+i].value>0;
-		bool overdub = overdubTrigger[i].process(inputs[INPUT_OVERDUB_1+i].value) || params[PARAM_OVERDUB_1+i].value>0;
+		bool x = overdubTrigger[i].process(inputs[INPUT_OVERDUB_1+i].value);
+		x = x && rec;//silence warning
+		bool overdub =  overdubTrigger[i].isHigh() || params[PARAM_OVERDUB_1+i].value>0;
 		bool clear = clearTrigger[i].process(inputs[INPUT_CLEAR_1+i].value) || params[PARAM_CLEAR_1+i].value>0;
 		
 		//clear at any time, not on clock
@@ -213,7 +215,7 @@ struct HolonicSystemsPastWidget : ModuleWidget {
 			//addParam(length);
 			HolonicSystemsKnob * lengthKnob = dynamic_cast<HolonicSystemsKnob*>(ParamWidget::create<HolonicSystemsKnob>(Vec(10+vSpace*0-5, base + i*rowHeight), module, HolonicSystemsPastModule::PARAM_LENGTH_1+i, 1, 31, 16));
 			HolonicSystemsLabel* const lengthLabel = new HolonicSystemsLabel;
-			lengthLabel->box.pos = Vec((10+vSpace*0-5)/2, (base + i*rowHeight)/2+17);
+			lengthLabel->box.pos = Vec((10+vSpace*0-5)/2, (base + i*rowHeight)/2+18);
 			lengthKnob->names.push_back(std::string("length 0"));//this is needed, values start at 1...
 			lengthKnob->names.push_back(std::string("length 1"));
 			lengthKnob->names.push_back(std::string("length 2"));
@@ -260,7 +262,7 @@ struct HolonicSystemsPastWidget : ModuleWidget {
 			
 			HolonicSystemsKnob * shiftKnob = dynamic_cast<HolonicSystemsKnob*>(ParamWidget::create<HolonicSystemsKnob>(Vec(10+vSpace*2+5, base + i*rowHeight), module, HolonicSystemsPastModule::PARAM_SHIFT_1+i, 0.0, 31, 0));
 			HolonicSystemsLabel* const shiftLabel = new HolonicSystemsLabel;
-			shiftLabel->box.pos = Vec((10+vSpace*2+5)/2-10, (base + i*rowHeight)/2+17);
+			shiftLabel->box.pos = Vec((10+vSpace*2+5)/2-10, (base + i*rowHeight)/2+18);
 			shiftKnob->names.push_back(std::string("shift 0"));
 			shiftKnob->names.push_back(std::string("shift 1"));
 			shiftKnob->names.push_back(std::string("shift 2"));

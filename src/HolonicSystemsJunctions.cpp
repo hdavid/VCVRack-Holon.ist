@@ -29,7 +29,9 @@ struct HolonicSystemsJunctionsModule : Module {
 		LED_1_B,
 		LED_2_B,
 		NUM_LIGHTS
-	};	
+	};
+	
+	LooseSchmittTrigger triggers[2];
 	
 	HolonicSystemsJunctionsModule();
 	~HolonicSystemsJunctionsModule();
@@ -52,7 +54,9 @@ HolonicSystemsJunctionsModule::~HolonicSystemsJunctionsModule() {
 
 void HolonicSystemsJunctionsModule::step() {
 	for (int i=0; i<2; i++){
-		bool a = inputs[INPUT_1_CV+i].value < 1;
+		bool x = triggers[i].process(inputs[INPUT_1_CV+i].value);
+		bool a = !triggers[i].isHigh();
+		x = a && x;
 		outputs[OUTPUT_1+i].value = (a) ? inputs[INPUT_1_A+i].value : inputs[INPUT_1_B+i].value;
 		lights[LED_1_A+i].setBrightnessSmooth(a ? 1 : 0);
 		lights[LED_1_B+i].setBrightnessSmooth(a ? 0 : 1);
