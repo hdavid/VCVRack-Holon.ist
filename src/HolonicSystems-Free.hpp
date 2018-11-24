@@ -3,6 +3,51 @@
 
 using namespace rack;
 
+
+struct LooseSchmittTrigger  {
+// UNKNOWN is used to represent a stable state when the previous state is not yet set
+	enum State {
+		UNKNOWN,
+		LOW,
+		HIGH
+	};
+	State state = UNKNOWN;
+
+
+	bool process(float in) {
+		switch (state) {
+			case LOW:
+				if (in >= 1.f) {
+					state = HIGH;
+					return true;
+				}
+				break;
+			case HIGH:
+				if (in <= 0.5f) {
+					state = LOW;
+				}
+				break;
+			default:
+				if (in >= 1.f) {
+					state = HIGH;
+				}
+				else if (in <= 0.5f) {
+					state = LOW;
+				}
+				break;
+		}
+		return false;
+	}
+	
+	bool isHigh() {
+		return state == HIGH;
+	}
+	void reset() {
+		state = UNKNOWN;
+	}
+	
+};
+
 struct HolonicSystemsLabel : Widget {
 	std::string text = "xx";
 	int fontSize;
