@@ -1,9 +1,9 @@
 # Holonic Systems - VCV Rack Free Plugins
 
 ##### Table of Contents  
-- [Holon.ist Receiver for VCV Rack](##Holon.ist Receiver)
+- [Holon.ist Receiver for VCV Rack](##Holon.ist-Receiver)
 - [Past - Dual CV/Gate Recorder/looper](##Past)
-- [Swiss Cheese Knife - Quad Utility with a twist](##Swiss Cheese Knife)
+- [Swiss Cheese Knife - Quad Utility with a twist](##Swiss-Cheese-Knife)
 - [Gaps - Quad Utility with a twist](##Gaps)
 - [Junctions - dual switch](##Junctions)
 
