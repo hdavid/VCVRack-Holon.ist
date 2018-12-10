@@ -2,7 +2,7 @@
 
 ##### Table of Contents  
 - [Holon.ist Receiver for VCV Rack](#holonist-receiver)
-- [Past - Dual CV/Gate Recorder/looper](#past)
+- [Pantry - Dual CV/Gate Recorder/looper](#pantry)
 - [Swiss Cheese Knife - Quad Utility with a twist](#swiss-cheese-knife)
 - [Gaps - Quad Utility with a twist](#gaps)
 - [Junctions - dual switch](#junctions)
@@ -59,11 +59,11 @@ Holon.ist receivers clips signals to -10v, +10v.
   
 Make sure to scale values properly in the scaling section in Holon.ist
 
-## Past
+## Pantry
 
-![Past](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Past.png)
+![Pantry](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Pantry.png)
 
-Past is a Dual CV/Gate Recorder/Looper.
+Pantry is a Dual CV/Gate Recorder/Looper.
 
 Features :
 - Dual Channel 
