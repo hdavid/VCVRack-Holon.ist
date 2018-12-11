@@ -21,9 +21,9 @@ Holon.ist Receiver VCV Rack Module integrates with Holon.ist iOS app and outputs
 
 
 ### Installing
-- Last version of Holon.ist is installed on your iPhone or iPad : http://holonic.systems
-- Last version of VCV rack installed : https://vcvrack.com/
-- Install Holon.ist Receiver plugin from VCV Rack plugin manager and : https://vcvrack.com/plugins.html
+- Install last version of Holon.ist on your iPhone or iPad : http://holonic.systems
+- Install last version of VCV rack installed : https://vcvrack.com/
+- Install Holon.ist Receiver plugin from VCV Rack plugin manager and : https://vcvrack.com/plugins.html#holonic
 - follow the instruction below how to get Holon.ist and the receiver to talk to each other.
 
 ### OSC Communication
