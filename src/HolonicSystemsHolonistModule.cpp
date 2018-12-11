@@ -118,7 +118,7 @@ void HolonicSystemsHolonistModule::step() {
 		ports.computeChannel(i, deltaTime);
 		
 		//attenuverter
-		float in = params[ATT_1 + i].value * ports.channelValues[i] * ((ports.channelModes[i]==4 || ports.channelModes[i]==5) && params[ONE_TEN_VOLT_OSC_PARAM_1].value > 0 ? 10 : 1);
+		float in = params[ATT_1 + i].value * ports.channelValues[i] * ((ports.channelModes[i]==4 || ports.channelModes[i]==50) && params[ONE_TEN_VOLT_OSC_PARAM_1].value > 0 ? 10 : 1);
 		
 		//filter
 		float alpha = params[ALPHA_1+i].value;
