@@ -8,7 +8,7 @@ void init(Plugin *p) {
 	p->version = TOSTRING(VERSION);
 	p->addModel(modelHolonicSystemsHolonist);
 	p->addModel(modelHolonicSystemsSwissCheeseKnife);
-	p->addModel(modelHolonicSystemsPast);
+	p->addModel(modelHolonicSystemsPantry);
 	p->addModel(modelHolonicSystemsGaps);
 	p->addModel(modelHolonicSystemsJunctions);
 }

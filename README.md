@@ -1,8 +1,16 @@
 # Holonic Systems - VCV Rack Free Plugins
 
-## Holon.ist Receiver for VCV Rack
+##### Table of Contents  
+- [Holon.ist Receiver for VCV Rack](#holonist-receiver)
+- [Pantry - Dual CV/Gate Recorder/looper](#pantry)
+- [Swiss Cheese Knife - Quad Utility with a twist](#swiss-cheese-knife)
+- [Gaps - Quad Utility with a twist](#gaps)
+- [Junctions - dual switch](#junctions)
 
-![SwissCheeseKnife](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/hawaii/screencaps/Holon.ist-Receiver.png)
+
+## Holon.ist Receiver
+
+![Holon.ist Receiver](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Holon.ist-Receiver.png)
 
 Holon.ist from http://holonic.systems can communicate with various virtual and physical studio gear using MIDI and OSC protocols.
 
@@ -51,10 +59,24 @@ Holon.ist receivers clips signals to -10v, +10v.
   
 Make sure to scale values properly in the scaling section in Holon.ist
 
+## Pantry
 
-## SwissCheeseKnife
+![Pantry](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Pantry.png)
 
-![SwissCheeseKnife](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/hawaii/screencaps/SwissCheeseKnife.png)
+Pantry is a Dual CV/Gate Recorder/Looper.
+
+Features :
+- Dual Channel 
+- CV and Gate
+- Record: full loop length when CV rised or button is pressed
+- Overdub: record or record while CV/button is held
+- Length from 1 to 32 with CV
+- Shifting with CV control
+
+
+## Swiss Cheese Knife
+
+![SwissCheeseKnife](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/SwissCheeseKnife.png)
 
 SwissCheeseKnife is a Quad utility module with a twist.
 
@@ -85,3 +107,24 @@ Offset signal
 ### Mixer
 Last on the signal path, but not least. SwissCheeseKnife can also mix 4 signals as its outputs are normaled.
 
+
+## Gaps
+
+![Gaps](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Gaps.png)
+
+Gaps is a clock divider that supports multiple modes 
+
+- Integers: 2,3,4,5,6,7,8,9
+- Even : 2,4,6,8,10,12,14,16
+- Odd: 3,5,7,9,11,13,15,17
+- Prime: 2,3,5,7,11,13,17,19
+- Binary: 2,4,8,16,32,64,128,256
+- Random: random probabilities 1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9
+- 8 step clock Sequencer
+
+
+## Junctions
+
+![Junctions](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Junctions.png)
+
+A simple dual switch. Two inputs, one output.
