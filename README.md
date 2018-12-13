@@ -20,9 +20,9 @@ Holon.ist Receiver VCV Rack Module integrates with the Holon.ist iOS app and out
 - Multiple instances of the module can run at the same time. Each instance can be set to receive on its own bank, from A to H, allowing for a total of 64 channels of CV.
 
 ### Demos
-We have put together some demos that use the Receiver and some other of our plugins. of course they use the Holon.ist app too !
+We have put together some demos VCV patches that use the Holon.ist Receiver and some other of our plugins. Of course they use the Holon.ist app too!
 
-Our Demos are packaged in the plugin and are located there `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\demos`
+Our demos are packaged in the plugin and are located in `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\demos` on Windows and `/Users/<you>/Documents/Rack/plugins/HolonicSystems-Free/demos`
 
 Please make sure to check the installation steps below to avoid the common pitfalls like firewalls and the like and be sure autodetection will be working as it should.
 
