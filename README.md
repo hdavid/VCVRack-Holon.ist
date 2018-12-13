@@ -104,7 +104,7 @@ SwissCheeseKnife is a quad utility module with a twist.
 Inverts input signal.
 
 ### Attenuator 
-Attenuator with range [0, 1] ratios.
+Signal attenuator.
 
 ### Sample and Hold
 Classic Trigger and Hold.
