@@ -19,6 +19,13 @@ Holon.ist Receiver VCV Rack Module integrates with the Holon.ist iOS app and out
 - Per channel activity indicator, attenuverter and low pass filter.
 - Multiple instances of the module can run at the same time. Each instance can be set to receive on its own bank, from A to H, allowing for a total of 64 channels of CV.
 
+### Demos
+We have put together some demos that use the Receiver and some other of our plugins. of course they use the Holon.ist app too !
+
+Our Demos are packaged in the plugin and are located there `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\demos`
+
+Please make sure to check the installation steps below to avoid the common pitfalls like firewalls and the like and be sure autodetection will be working as it should.
+
 
 ### Installing
 - Install latest version of Holon.ist on your iPhone or iPad: http://holonic.systems or https://testflight.apple.com/join/mBx4PTxL
@@ -30,13 +37,14 @@ Holon.ist Receiver VCV Rack Module integrates with the Holon.ist iOS app and out
 mDNS/bonjour is used for autodiscovery.
 
 - On MacOS Holon.ist will automatically detect VCV Rack if Holon.ist receiver plugin is loaded!
-- On Windows you need to install Bonjour SDK from Apple and check that the Bonjour Service is running. Then run the script `scripts\Holon.ist receiver bonjour.bat`. This will publish Holon.ist Receiver on the network and allow autodiscovery from Holon.ist App.
+- On Windows you need to install Bonjour SDK from Apple: https://developer.apple.com/bonjour/ and check that the Bonjour Service is running. Then run the script `scripts\Holon.ist receiver bonjour.bat`. You will find this script in the plugin folder `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\` This will publish Holon.ist Receiver on the network and allow autodiscovery from Holon.ist App.
 - On Linux you need to have Avahi running (it is usually the case), then run the script. `scripts\Holon.ist_receiver_avahi.sh`. This will publish Holon.ist Receiver on the network and allow autodiscovery.
 
 Tips
 - Make sure firewall, such as little snitch or others, are not blocking communication. For instance, on MacOS, with Little Snitch firewall, incoming communication must be specifically enabled for Rack.
 - If you cannot get auto discovery to work for some reason, you can always manually create an OSC output in Holon.ist and input your computer IP and port 9000.
 - Please read the Holon.ist manual http://holon.ist/manual/
+
 
 ### Receiving Bank
 The Receiving bank pot selects from which bank the module receives signals from Holon.ist. This allows use of more than one instance of the module in the patch, providing up to 64 channels of voltage control in total!
