@@ -2,63 +2,65 @@
 
 ##### Table of Contents  
 - [Holon.ist Receiver for VCV Rack](#holonist-receiver)
-- [Pantry - Dual CV/Gate Recorder/looper](#pantry)
+- [Pantry - Dual CV/Gate Recorder/Looper](#pantry)
 - [Swiss Cheese Knife - Quad Utility with a twist](#swiss-cheese-knife)
-- [Gaps - Quad Utility with a twist](#gaps)
-- [Junctions - dual switch](#junctions)
+- [Gaps - Multimode Clock Divider](#gaps)
+- [Junctions - Dual Switch](#junctions)
 
 
 ## Holon.ist Receiver
 
 ![Holon.ist Receiver](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Holon.ist-Receiver.png)
 
-Holon.ist from http://holonic.systems can communicate with various virtual and physical studio gear using MIDI and OSC protocols.
+Holon.ist from http://holonic.systems can communicate with various virtual and physical studio gear using MIDI and OSC protocols. Download the latest beta version from: https://testflight.apple.com/join/mBx4PTxL
 
-Holon.ist Receiver VCV Rack Module integrates with the Holon.ist iOS app and outputs CV control signals to VCV Rack world.
-- 8 channels of CV control from Holon.ist to your VCV rack.
+Holon.ist Receiver VCV Rack Module integrates with the Holon.ist iOS app and outputs CV control signals to VCV Rack.
+- 8 channels of CV control from Holon.ist to VCV Rack.
 - Per channel activity indicator, attenuverter and low pass filter.
-- Multiple instances of the module can run at the same time. Each instance can be set to receive on its own bank, from A to H, allowing for a total of 64 channels of CV.
+- Multiple Holon.ist receiver modules can run at the same time. Each instance can be set to receive on its own bank, from A to H, allowing for a total of 64 channels of CV.
 
 ### Demos
-We have put together some demos VCV patches that use the Holon.ist Receiver and some other of our plugins. Of course they use the Holon.ist app too!
+We've put together some VCV demo patches that use the Holon.ist Receiver. They use the default mappings in the Holon.ist app.
 
-Our demos are packaged in the plugin and are located in `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\demos` on Windows and `/Users/<you>/Documents/Rack/plugins/HolonicSystems-Free/demos`
+Our demos are packaged with the plugins, they are located in: `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\demos` on Windows and `/Users/<you>/Documents/Rack/plugins/HolonicSystems-Free/demos` on MacOS. 
 
-Please make sure to check the installation steps below to avoid the common pitfalls like firewalls and the like and be sure autodetection will be working as it should.
+Please check the following installation steps below to avoid the common pitfalls, such as firewalls, and to ensure full functionality of the autodetection feature.
 
 
 ### Installing
-- Install latest version of Holon.ist on your iPhone or iPad: http://holonic.systems or https://testflight.apple.com/join/mBx4PTxL
-- Install latest version of VCV rack installed : https://vcvrack.com/
-- Install Holon.ist Receiver plugin from VCV Rack plugin manager and: https://vcvrack.com/plugins.html#holonic
-- follow the instruction below how to get Holon.ist and the receiver to talk to each other.
+- Install the latest version of Holon.ist on your iPhone or iPad from: http://holonic.systems or https://testflight.apple.com/join/mBx4PTxL
+- Install the latest version of VCV rack: https://vcvrack.com/
+- Install the Holon.ist Receiver plugin from the VCV Rack plugin manager: https://vcvrack.com/plugins.html#holonic
+- follow the instruction below  to establish communication between Holon.ist and Receiver.
 
 ### OSC Communication
 mDNS/bonjour is used for autodiscovery.
 
-- On MacOS Holon.ist will automatically detect VCV Rack if Holon.ist receiver plugin is loaded!
-- On Windows you need to install Bonjour SDK from Apple: https://developer.apple.com/bonjour/ and check that the Bonjour Service is running. Then run the script `scripts\Holon.ist receiver bonjour.bat`. You will find this script in the plugin folder `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\` This will publish Holon.ist Receiver on the network and allow autodiscovery from Holon.ist App.
-- On Linux you need to have Avahi running (it is usually the case), then run the script. `scripts\Holon.ist_receiver_avahi.sh`. This will publish Holon.ist Receiver on the network and allow autodiscovery.
+- On MacOS Holon.ist automatically detects VCV Rack when Holon.ist Receiver plugin is loaded.
+- Windows requires Bonjour SDK from Apple to be installed: https://developer.apple.com/bonjour/  
+- Check that the Bonjour Service is running
+- Run the script `scripts\Holon.ist receiver bonjour.bat`. This scrip can be found in the plugin folder `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\` The script publishes Holon.ist Receiver on the network to allow autodiscovery from Holon.ist app.
+- On Linux you need to have Avahi running (it is usually the case), then run the script. `scripts\Holon.ist_receiver_avahi.sh`. This publishes Holon.ist Receiver on the network to allow autodiscovery.
 
 Tips
-- Make sure firewall, such as little snitch or others, are not blocking communication. For instance, on MacOS, with Little Snitch firewall, incoming communication must be specifically enabled for Rack.
+- Ensure that firewalls, such as Little Snitch, are not blocking communication. For instance, on MacOS, with Little Snitch firewall, incoming communication must be specifically enabled for Rack.
 - If you cannot get auto discovery to work for some reason, you can always manually create an OSC output in Holon.ist and input your computer IP and port 9000.
 - Please read the Holon.ist manual http://holon.ist/manual/
 
 
 ### Receiving Bank
-The Receiving bank pot selects from which bank the module receives signals from Holon.ist. This allows use of more than one instance of the module in the patch, providing up to 64 channels of voltage control in total!
+The Receiving bank pot selects from which bank the module receives signals from Holon.ist. This allows use of more than one instance of the module in the patch, providing up to 64 channels of voltage control in total.
 
 ### Activity LEDs
 Activity LEDs for each channel indicate when Holon.ist Receiver receives OSC messages for the particular channel and receiving bank.
 
 Note that output jacks will also show output values graphically, but for this to happen, a cable needs to be plugged in the jack.
 
-### Attenuverters
-Attenuverters on each channels lets one scale and invert CV values according to need.  
+### Attenuators
+Attenuators on each channel let one scale and invert CV values according to need.  
 
 ### Low Pass Filters
-The slew is adjustable, in order to avoid stepped signals, and to make more organic CV changes.
+The slew is adjustable, in order to avoid stepped signals, and to make more natural CV changes.
 
 ### Outputs
 VCV rack expects values between 0v and +10v for unipolar and between -5v and +5v for bipolar signals.
@@ -73,20 +75,20 @@ Ensure that values are properly scaled in the Holon.ist scaling section.
 
 Pantry is a Dual CV/Gate Recorder/Looper.
 
-Features :
-- Dual Channel 
-- CV and Gate
-- Record: full loop length when CV rised or button is pressed
-- Overdub: record or record while CV/button is held
-- Length from 1 to 32 with CV
-- Shifting with CV control
+Features:
+- Dual Channel. 
+- CV and Gate Recording.
+- Record: Full loop length with CV or when the button is pressed.
+- Overdub: Record while CV/button is held.
+- Pattern Length from 1 to 32 using CV.
+- CV control of Pattern Shift.
 
 
 ## Swiss Cheese Knife
 
 ![SwissCheeseKnife](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/SwissCheeseKnife.png)
 
-SwissCheeseKnife is a Quad utility module with a twist.
+SwissCheeseKnife is a quad utility module with a twist.
 
 ### Inverter
 Inverts input signal.
