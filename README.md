@@ -1,5 +1,7 @@
 # Holonic Systems - VCV Rack Free Plugins
 
+Holon.ist from http://holonic.systems can communicate with various virtual and physical studio gear using MIDI and OSC protocols. Download the latest beta version from: https://testflight.apple.com/join/mBx4PTxL
+
 ##### Table of Contents  
 - [Holon.ist Receiver for VCV Rack](#holonist-receiver)
 - [Pantry - Dual CV/Gate Recorder/Looper](#pantry)
@@ -12,8 +14,6 @@
 
 ![Holon.ist Receiver](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Holon.ist-Receiver.png)
 
-Holon.ist from http://holonic.systems can communicate with various virtual and physical studio gear using MIDI and OSC protocols. Download the latest beta version from: https://testflight.apple.com/join/mBx4PTxL
-
 Holon.ist Receiver VCV Rack Module integrates with the Holon.ist iOS app and outputs CV control signals to VCV Rack.
 - 8 channels of CV control from Holon.ist to VCV Rack.
 - Per channel activity indicator, attenuverter and low pass filter.
@@ -22,16 +22,26 @@ Holon.ist Receiver VCV Rack Module integrates with the Holon.ist iOS app and out
 ### Demos
 We've put together some VCV demo patches that use the Holon.ist Receiver. They use the default mappings in the Holon.ist app.
 
-Our demos are packaged with the plugins, they are located in: `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\demos` on Windows and `/Users/<you>/Documents/Rack/plugins/HolonicSystems-Free/demos` on MacOS. 
+Our demos are packaged with the plugins, they are located in: `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\demos` (Windows) `/Users/<you>/Documents/Rack/plugins/HolonicSystems-Free/demos` (MacOS) 
 
-Please check the following installation steps below to avoid the common pitfalls, such as firewalls, and to ensure full functionality of the autodetection feature.
+The demo patches require the following VCV Rack plugins to be installed: 
 
+Amalgamated Harmonics
+Audible Instruments
+Befaco
+Holonic Systems - Free
+JW Modules
+ML Modules
+Valley
+Vult Modules - Free 
 
 ### Installing
+Please check the following installation steps below to avoid the common pitfalls, such as firewalls, and to ensure full functionality of the autodetection feature.
+
 - Install the latest version of Holon.ist on your iPhone or iPad from: http://holonic.systems or https://testflight.apple.com/join/mBx4PTxL
 - Install the latest version of VCV rack: https://vcvrack.com/
 - Install the Holon.ist Receiver plugin from the VCV Rack plugin manager: https://vcvrack.com/plugins.html#holonic
-- follow the instruction below  to establish communication between Holon.ist and Receiver.
+- Follow the instruction below  to establish communication between Holon.ist and Receiver.
 
 ### OSC Communication
 mDNS/bonjour is used for autodiscovery.
@@ -78,7 +88,7 @@ Pantry is a Dual CV/Gate Recorder/Looper.
 Features:
 - Dual Channel. 
 - CV and Gate Recording.
-- Record: Full loop length with CV or when the button is pressed.
+- Record: Full loop length triggered or the button is pressed.
 - Overdub: Record while CV/button is held.
 - Pattern Length from 1 to 32 using CV.
 - CV control of Pattern Shift.
