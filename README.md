@@ -12,7 +12,7 @@ Holon.ist from http://holonic.systems can communicate with various virtual and p
 
 ## Holon.ist Receiver
 
-![Holon.ist Receiver](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Holon.ist-Receiver.png)
+![Holon.ist Receiver](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Holon.ist-Receiver.png)    [![Holon.ist Receiver Demo](http://img.youtube.com/vi/eBonU85BfDM/0.jpg)](https://www.youtube.com/watch?v=eBonU85BfDM "Holon.ist Receiver Demo")
 
 Holon.ist Receiver VCV Rack Module integrates with the Holon.ist iOS app and outputs CV control signals to VCV Rack.
 - 8 channels of CV control from Holon.ist to VCV Rack.
