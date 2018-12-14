@@ -193,9 +193,9 @@ struct HolonicSystemsHolonistWidget : ModuleWidget {
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
 		//bank selector
-		HolonicSystemsKnob *busKnob = dynamic_cast<HolonicSystemsKnob*>(ParamWidget::create<HolonicSystemsKnob>(Vec(84, 20), module, HolonicSystemsHolonistModule::BANK_PARAM, 0.0, 7, 0));
+		HolonicSystemsKnob *busKnob = dynamic_cast<HolonicSystemsKnob*>(ParamWidget::create<HolonicSystemsKnob>(Vec(84, 20-4), module, HolonicSystemsHolonistModule::BANK_PARAM, 0.0, 7, 0));
 		HolonicSystemsLabel* const busLabel = new HolonicSystemsLabel;
-		busLabel->box.pos = Vec(40, 27);
+		busLabel->box.pos = Vec(40, 27-2);
 		busLabel->text = "mode";
 		busKnob->names.push_back(std::string("Bus A"));
 		busKnob->names.push_back(std::string("Bus B"));
@@ -211,15 +211,16 @@ struct HolonicSystemsHolonistWidget : ModuleWidget {
 		
 	
 		//channels
+		int start = 66;
 		for (int i=0; i<8 ; i++) {
-			addChild(ModuleLightWidget::create<MediumLight<RedLight>>(	Vec(10			, 70 + i * 36 + 8), module, HolonicSystemsHolonistModule::ACTIVITY_1_LIGHT + i));
-			addParam(ParamWidget::create<RoundSmallBlackKnob>(			Vec(10+30*0.5	, 70 + i * 36), module, HolonicSystemsHolonistModule::ATT_1 + i, 0, 1.0, 1.0));
-			addParam(ParamWidget::create<RoundSmallBlackKnob>(			Vec(10+30*1.5	, 70 + i * 36), module, HolonicSystemsHolonistModule::ALPHA_1 + i, 1.0, 0.0, 0.8));
-			addOutput(Port::create<PJ301MPort>(							Vec(10+30*2.5-3	, 70 + i * 36), Port::OUTPUT, module, HolonicSystemsHolonistModule::OUTPUT_1 + i));
-			addChild(ModuleLightWidget::create<MediumLight<GreenRedLight>>(Vec(10+30*2.5+23, 70+8 + i * 36), module, HolonicSystemsHolonistModule::OUTPUT_LIGHT_POS_1+i*2));
+			addChild(ModuleLightWidget::create<MediumLight<RedLight>>(	Vec(10+4		, start + i * 36 + 8), module, HolonicSystemsHolonistModule::ACTIVITY_1_LIGHT + i));
+			addParam(ParamWidget::create<RoundSmallBlackKnob>(			Vec(10+30*0.5	, start + i * 36), module, HolonicSystemsHolonistModule::ATT_1 + i, 0, 1.0, 1.0));
+			addParam(ParamWidget::create<RoundSmallBlackKnob>(			Vec(10+30*1.5	, start + i * 36), module, HolonicSystemsHolonistModule::ALPHA_1 + i, 1.0, 0.0, 0.8));
+			addOutput(Port::create<PJ301MPort>(							Vec(10+30*2.5-3	, start + i * 36), Port::OUTPUT, module, HolonicSystemsHolonistModule::OUTPUT_1 + i));
+			addChild(ModuleLightWidget::create<MediumLight<GreenRedLight>>(Vec(10+30*2.5+23, start+ i * 36 + 8), module, HolonicSystemsHolonistModule::OUTPUT_LIGHT_POS_1+i*2));
 			
 			HolonistOSCLabel* const inputLabel = new HolonistOSCLabel(10, module, 0, i);
-			inputLabel->box.pos = Vec(10, 30 + i * 18+ 20);
+			inputLabel->box.pos = Vec(5, 30 + i * 18+ 20 - 1);
 			addChild(inputLabel);
 		}
 		
