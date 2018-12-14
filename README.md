@@ -36,7 +36,7 @@ Valley
 Vult Modules - Free 
 
 ### Installing
-Please check the following installation steps below to avoid the common pitfalls, such as firewalls, and to ensure full functionality of the autodetection feature.
+Please check the following installation steps below to avoid common pitfalls, such as firewalls, and to ensure full functionality of the autodetection feature.
 
 - Install the latest version of Holon.ist on your iPhone or iPad from: http://holonic.systems or https://testflight.apple.com/join/mBx4PTxL
 - Install the latest version of VCV rack: https://vcvrack.com/
@@ -49,7 +49,7 @@ mDNS/bonjour is used for autodiscovery.
 - On MacOS Holon.ist automatically detects VCV Rack when Holon.ist Receiver plugin is loaded.
 - Windows requires Bonjour SDK from Apple to be installed: https://developer.apple.com/bonjour/  
 - Check that the Bonjour Service is running
-- Run the script `scripts\Holon.ist receiver bonjour.bat`. This scrip can be found in the plugin folder `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\` The script publishes Holon.ist Receiver on the network to allow autodiscovery from Holon.ist app.
+- Run the script `scripts\Holon.ist receiver bonjour.bat`. This script can be found in the plugin folder `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\` The script publishes Holon.ist Receiver on the network to allow autodiscovery from Holon.ist app.
 - On Linux you need to have Avahi running (it is usually the case), then run the script. `scripts\Holon.ist_receiver_avahi.sh`. This publishes Holon.ist Receiver on the network to allow autodiscovery.
 
 Tips
@@ -64,7 +64,7 @@ The Receiving bank pot selects from which bank the module receives signals from 
 ### Activity LEDs
 Activity LEDs for each channel indicate when Holon.ist Receiver receives OSC messages for the particular channel and receiving bank.
 
-Note that output jacks will also show output values graphically, but for this to happen, a cable needs to be plugged in the jack.
+Note that output jacks will also show output values visually, but for this to happen, a cable needs to be plugged in the jack.
 
 ### Attenuators
 Attenuators on each channel let one scale and invert CV values according to need.  
