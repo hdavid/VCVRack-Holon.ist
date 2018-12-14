@@ -26,14 +26,14 @@ Our demos are packaged with the plugins, they are located in: `c:\Users\<you>\Do
 
 The demo patches require the following VCV Rack plugins to be installed: 
 
-Amalgamated Harmonics
-Audible Instruments
-Befaco
-Holonic Systems - Free
-JW Modules
-ML Modules
-Valley
-Vult Modules - Free 
+- Amalgamated Harmonics
+- Audible Instruments
+- Befaco
+- Holonic Systems - Free
+- JW Modules
+- ML Modules
+- Valley
+- Vult Modules - Free 
 
 ### Installing
 Please check the following installation steps below to avoid common pitfalls, such as firewalls, and to ensure full functionality of the autodetection feature.
@@ -63,8 +63,6 @@ The Receiving bank pot selects from which bank the module receives signals from 
 
 ### Activity LEDs
 Activity LEDs for each channel indicate when Holon.ist Receiver receives OSC messages for the particular channel and receiving bank.
-
-Note that output jacks will also show output values visually, but for this to happen, a cable needs to be plugged in the jack.
 
 ### Attenuators
 Attenuators on each channel let one scale and invert CV values according to need.  
