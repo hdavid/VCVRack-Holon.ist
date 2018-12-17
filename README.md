@@ -14,9 +14,9 @@ Holon.ist from http://holonic.systems can communicate with various virtual and p
 
 ![Holon.ist Receiver](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Holon.ist-Receiver.png)    [![Holon.ist Receiver Demo](http://img.youtube.com/vi/eBonU85BfDM/0.jpg)](https://www.youtube.com/watch?v=eBonU85BfDM "Holon.ist Receiver Demo")
 
-Holon.ist Receiver VCV Rack Module integrates with the Holon.ist iOS app and outputs CV control signals to VCV Rack.
+Holon.ist Receiver module for VCV Rack integrates with the Holon.ist iOS app and outputs CV control signals to VCV Rack.
 - 8 channels of CV control from Holon.ist to VCV Rack.
-- Per channel activity indicator, attenuverter and low pass filter.
+- Per channel activity indicator, attenuator and low pass filter.
 - Multiple Holon.ist receiver modules can run at the same time. Each instance can be set to receive on its own bank, from A to H, allowing for a total of 64 channels of CV.
 
 ### Demos
