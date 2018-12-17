@@ -17,7 +17,7 @@ Holon.ist from http://holonic.systems can communicate with various virtual and p
 Holon.ist Receiver module for VCV Rack integrates with the Holon.ist iOS app and outputs CV control signals to VCV Rack.
 - 8 channels of CV control from Holon.ist to VCV Rack.
 - Per channel activity indicator, attenuator and low pass filter.
-- Multiple Holon.ist receiver modules can run at the same time. Each instance can be set to receive on its own bank, from A to H, allowing for a total of 64 channels of CV.
+- Multiple Holon.ist receiver modules can run at the same time. Each instance can be set to receive on its own bus, from A to H, allowing for a total of 64 channels of CV.
 
 ### Demos
 We've put together some VCV demo patches that use the Holon.ist Receiver. They use the default mappings in the Holon.ist app.
@@ -58,11 +58,11 @@ Tips
 - Please read the Holon.ist manual http://holon.ist/manual/
 
 
-### Receiving Bank
-The Receiving bank pot selects from which bank the module receives signals from Holon.ist. This allows use of more than one instance of the module in the patch, providing up to 64 channels of voltage control in total.
+### Receiving Bus
+The Receiving bus pot selects from which bus the module receives signals from Holon.ist. This allows use of more than one instance of the module in the patch, providing up to 64 channels of voltage control in total.
 
 ### Activity LEDs
-Activity LEDs for each channel indicate when Holon.ist Receiver receives OSC messages for the particular channel and receiving bank.
+Activity LEDs for each channel indicate when Holon.ist Receiver receives OSC messages for the particular channel and receiving bus.
 
 ### Attenuators
 Attenuators on each channel let one scale and invert CV values according to need.  
