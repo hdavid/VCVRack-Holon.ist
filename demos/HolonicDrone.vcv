@@ -3,7 +3,7 @@
   "modules": [
     {
       "plugin": "HolonicSystems-Free",
-      "version": "0.6.1",
+      "version": "0.6.2",
       "model": "HolonicSystems-Holon.ist",
       "params": [
         {
@@ -86,7 +86,7 @@
     },
     {
       "plugin": "HolonicSystems-Free",
-      "version": "0.6.1",
+      "version": "0.6.2",
       "model": "HolonicSystems-SwissCheeseKnife",
       "params": [
         {
@@ -246,8 +246,8 @@
       "params": [],
       "data": {
         "audio": {
-          "driver": 7,
-          "deviceName": "MOTU Audio ASIO",
+          "driver": 5,
+          "deviceName": "Apple Inc.: Built-in Output",
           "offset": 0,
           "maxChannels": 8,
           "sampleRate": 44100,
