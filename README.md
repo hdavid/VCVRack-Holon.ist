@@ -35,6 +35,8 @@ The demo patches require the following VCV Rack plugins to be installed:
 - Valley
 - Vult Modules - Free 
 
+See also http://holon.ist/demos/
+
 ### Installing
 Please check the following installation steps below to avoid common pitfalls, such as firewalls, and to ensure full functionality of the autodetection feature.
 
