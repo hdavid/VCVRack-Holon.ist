@@ -1,6 +1,6 @@
 RACK_DIR ?= ../..
 SLUG = HolonicSystems-Free
-VERSION = 0.6.2
+VERSION = 0.6.3
 
 FLAGS +=
 CFLAGS += 
