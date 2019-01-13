@@ -5,7 +5,7 @@ using namespace rack;
 
 
 struct LooseSchmittTrigger  {
-// UNKNOWN is used to represent a stable state when the previous state is not yet set
+	// UNKNOWN is used to represent a stable state when the previous state is not yet set
 	enum State {
 		UNKNOWN,
 		LOW,
@@ -100,5 +100,6 @@ extern Model *modelHolonicSystemsSwissCheeseKnife;
 extern Model *modelHolonicSystemsGaps;
 extern Model *modelHolonicSystemsPantry;
 extern Model *modelHolonicSystemsJunctions;
+extern Model *modelHolonicSystemsSequence;
 
 
