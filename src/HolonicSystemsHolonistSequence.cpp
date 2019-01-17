@@ -103,11 +103,14 @@ HolonicSystemsSequenceModule::~HolonicSystemsSequenceModule() {
 
 
 void HolonicSystemsSequenceModule::step() {
+	
+	// Triggers
 	bool backward = bckTrigger.process(inputs[IN_BCK].value);
 	bool forward = fwdTrigger.process(inputs[IN_FWD].value);
 	bool reset = rstTrigger.process(inputs[IN_RESET].value);
 	int c = counter;
 	
+	// CV Inputs
 	float in_start = inputs[IN_START].value/10.0;
 	float in_length = inputs[IN_LENGTH].value/10.0;
 	float in_seq = inputs[IN_SEQ].value/10.0;
@@ -129,18 +132,19 @@ void HolonicSystemsSequenceModule::step() {
 	if (in_seq>1){
 		in_seq = 1;
 	}
-	
 	start = (int)(params[PARAM_START].value * (inputs[IN_START].active ? in_start : 1));
 	length = (int)(params[PARAM_LENGTH].value * (inputs[IN_LENGTH].active ? in_length : 1)) + 1;
 	float seq = in_seq * params[PARAM_SEQ].value;
-	//printf("%d %d %d %d\n", start, length, counter, params[PARAM_LENGTH].value);
 	
 	/*
 	- wrap around when backward
 	- dont go below 0 when backward
 	- ping pong end point past 8 ?
-	
 	*/
+
+	bool pingpong = params[PARAM_MODE].value == 0;
+
+	
 	
 	//clocking	
 	if (reset) {
@@ -150,27 +154,32 @@ void HolonicSystemsSequenceModule::step() {
 		if (!inputs[IN_FWD].active || forward) {
 			counter = ( (int)(start + seq * length) )%8;
 		}
-	} else if (forward){
-		if (params[PARAM_MODE].value == 0 && reverse) {
-			counter = (start + ((counter - start - 1)%(length)) )%8;
-		} else {
-			counter = (start + ((counter - start + 1)%(length)) )%8;
-		}
-	} else if (backward){
-		if (params[PARAM_MODE].value == 0 && reverse) {
-			counter = (start + ((counter - start + 1)%(length)) )%8;
-		} else {
-			counter = (start + ((counter - start - 1)%(length)) )%8;
-		}
+	} else if ((forward && !(reverse && pingpong)) 
+		|| (backward && (reverse && pingpong))
+		) {
+		counter = (start + ((counter - start + 1)%(length)) )%8;
+	} else if ((forward && (reverse && pingpong))
+		|| (backward && !(reverse && pingpong) )
+		) {
+		//check above zero and start
+		counter = (start + ((counter - start - 1 + length)%(length))+8)%8;
 	}
 	
 	
 	//ping-pong
-	if (counter != c && params[PARAM_MODE].value == 0){
-		if (counter - start == 0){
-			reverse = false;
-		} else if ((counter - start)%length == length - 1) {
-			reverse = true;
+	if ((forward || backward) && pingpong){
+		if (counter == start){
+			if (forward){
+				reverse = false;
+			} else {
+				reverse = true;
+			}
+		} else if (counter%8 == (start + length - 1)%8) {
+			if (forward){
+				reverse = true;
+			} else {
+				reverse = false;
+			}
 		}
 	}
 
@@ -236,12 +245,16 @@ struct HolonicSystemsSequenceWidget : ModuleWidget {
 		
 		//start
 		addInput(Port::create<PJ301MPort>(							Vec(123, 66+18*2), Port::INPUT, module, HolonicSystemsSequenceModule::IN_START));
-		addParam(ParamWidget::create<RoundSmallBlackKnob>(			Vec(153, 66+18*2), module, HolonicSystemsSequenceModule::PARAM_START, 0, 8.0, 0.0));
+		rack::RoundSmallBlackKnob* param_start = ParamWidget::create<RoundSmallBlackKnob>(			Vec(153, 66+18*2), module, HolonicSystemsSequenceModule::PARAM_START, 0, 8.0, 0.0);
+		param_start->snap = true;
+		addParam(param_start);
 	
 		
 		//length
 		addInput(Port::create<PJ301MPort>(							Vec(123, 66+18*5), Port::INPUT, module, HolonicSystemsSequenceModule::IN_LENGTH));
-		addParam(ParamWidget::create<RoundSmallBlackKnob>(			Vec(153, 66+18*5), module, HolonicSystemsSequenceModule::PARAM_LENGTH, 0, 8.0, 8.0));
+		rack::RoundSmallBlackKnob* param_length = ParamWidget::create<RoundSmallBlackKnob>(			Vec(153, 66+18*5), module, HolonicSystemsSequenceModule::PARAM_LENGTH, 0, 7.0, 7.0);
+		param_length->snap = true;
+		addParam(param_length);
 		
 		//Mode
 		addParam(ParamWidget::create<CKSSThree>(Vec(123, 66+18*7), module, HolonicSystemsSequenceModule::PARAM_MODE, 0, 1.0, 1.0));
@@ -262,7 +275,7 @@ Model *modelHolonicSystemsSequence =
 	Model::create<HolonicSystemsSequenceModule, HolonicSystemsSequenceWidget>(
 		"Holonic Systems",
 	 	"HolonicSystems-Sequence", 
-		"Sequencer",
+		"Sequence",
 		CONTROLLER_TAG, 
 		EXTERNAL_TAG
 );
