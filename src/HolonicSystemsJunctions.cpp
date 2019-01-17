@@ -99,5 +99,5 @@ Model *modelHolonicSystemsJunctions =
 		"Holonic Systems",
 	 	"HolonicSystems-Junctions", 
 		"Junctions",
-		UTILITY_TAG
+		SWITCH_TAG
 );

@@ -311,8 +311,6 @@ Model *modelHolonicSystemsPantry =
 		"Holonic Systems",
 	 	"HolonicSystems-Pantry", 
 		"Pantry",
-		CLOCK_TAG,
-		DELAY_TAG,
 		SEQUENCER_TAG,
 		RECORDING_TAG
 );

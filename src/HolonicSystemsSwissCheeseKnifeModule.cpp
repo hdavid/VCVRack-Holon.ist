@@ -277,5 +277,10 @@ Model *modelHolonicSystemsSwissCheeseKnife =
 		"Holonic Systems",
 	 	"HolonicSystems-SwissCheeseKnife", 
 		"SwissCheeseKnife",
-		UTILITY_TAG
+		UTILITY_TAG,
+		ATTENUATOR_TAG,
+		MIXER_TAG,
+		QUAD_TAG,
+		SAMPLE_AND_HOLD_TAG,
+		SLEW_LIMITER_TAG
 );
