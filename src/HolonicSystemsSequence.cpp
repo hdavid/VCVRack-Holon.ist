@@ -1,5 +1,7 @@
 #include "HolonicSystems-Free.hpp"
 #include "dsp/digital.hpp"
+#include <time.h>
+#include <stdlib.h>
 
 struct HolonicSystemsSequenceModule : Module {
 
@@ -22,9 +24,13 @@ struct HolonicSystemsSequenceModule : Module {
 		PARAM_TRIG_8,
 		PARAM_ATT,
 		PARAM_START,
+		PARAM_START_ATT,
 		PARAM_LENGTH,
+		PARAM_LENGTH_ATT,
 		PARAM_SEQ,
+		PARAM_SEQ_ATT,
 		PARAM_MODE,
+		PARAM_MODE_ATT,
 		NUM_PARAMS
 	};
 
@@ -37,12 +43,12 @@ struct HolonicSystemsSequenceModule : Module {
 		IN_6,
 		IN_7,
 		IN_8,
-		IN_FWD,
-		IN_BCK,
+		IN_CLOCK,
 		IN_RESET,
 		IN_SEQ,
 		IN_START,
 		IN_LENGTH,
+		IN_MODE,
 		NUM_INPUTS
 	};
 
@@ -86,6 +92,7 @@ struct HolonicSystemsSequenceModule : Module {
 	void onReset() override {
 		reverse = false;
 		counter = 0;
+		srand(time(NULL));
 	}
 
 };
@@ -103,40 +110,64 @@ HolonicSystemsSequenceModule::~HolonicSystemsSequenceModule() {
 void HolonicSystemsSequenceModule::step() {
 	
 	// Triggers Inputs
-	bool backward = bckTrigger.process(inputs[IN_BCK].value);
-	bool forward = fwdTrigger.process(inputs[IN_FWD].value);
+	bool clock = fwdTrigger.process(inputs[IN_CLOCK].value);
 	bool reset = rstTrigger.process(inputs[IN_RESET].value);
 	
 	// CV Inputs
 	float in_start = inputs[IN_START].value/10.0;
-	float in_length = inputs[IN_LENGTH].value/10.0;
-	float in_seq = inputs[IN_SEQ].value/10.0;
 	if (in_start<0) {
 		in_start = 0;
 	}
 	if (in_start>1) {
 		in_start = 1;
 	}
+	
+	float in_length = inputs[IN_LENGTH].value/10.0;
 	if (in_length<0) {
 		in_length = 0;
 	}
 	if (in_length>1) {
 		in_length = 1;
 	}
+	
+	float in_seq = inputs[IN_SEQ].value/10.0;
 	if (in_seq<0) {
 		in_seq = 0;
 	}
 	if (in_seq>1) {
 		in_seq = 1;
 	}
+	
+	int in_mode = (int)(inputs[IN_MODE].value/10.0*3);
+	if (in_mode<0) {
+		in_mode = 0;
+	}
+	if (in_mode>3) {
+		in_mode = 3;
+	}
 
 	// Parameters
-	start = (int)(params[PARAM_START].value * (inputs[IN_START].active ? in_start : 1));
-	length = (int)(params[PARAM_LENGTH].value * (inputs[IN_LENGTH].active ? in_length : 1)) + 1;
+	start = (
+			( (int)(params[PARAM_START].value) )
+			+ ( (int)(inputs[IN_START].active ? (in_start*params[PARAM_START_ATT].value * 8) : 0) ) 
+			+ 8
+		)%8;
+	length = (
+			 ( (int)(params[PARAM_LENGTH].value) )
+			+ ( (int)(inputs[IN_LENGTH].active ? (in_length*params[PARAM_LENGTH_ATT].value * 8) : 0) )
+  		 	+ 1 + 8
+		)%8;
+	
 	float seq = in_seq * params[PARAM_SEQ].value;
-	bool pingpong = params[PARAM_MODE].value == 0;
-
-
+	int mode = (((int)params[PARAM_MODE].value) + in_mode)%4;
+	bool forward = mode == 0 || mode == 2;
+	bool backward = mode == 1;
+	bool pingpong = mode == 2;
+	bool randomMode = mode == 3;
+	
+	if (!pingpong) {
+		reverse = false;
+	}
 	int oldCounter = counter;
 
 	
@@ -145,11 +176,13 @@ void HolonicSystemsSequenceModule::step() {
 		counter = start;
 	} else if (inputs[IN_SEQ].active) {
 		// Address Mode
-		if (!inputs[IN_FWD].active || forward) {
-			counter = ( (int)(start + seq * length) )%8;
+		if (!inputs[IN_CLOCK].active || clock) {
+			counter = ( (int)(start +  seq * length) )%8;
 		}
-	} else if (forward || backward){
-		if ((forward && !(reverse && pingpong)) 
+	} else if (clock){
+		if (randomMode){
+			counter = ( (int)(start + ((float)rand())/RAND_MAX  * length) )%8;
+		} else if ((forward && !(reverse && pingpong)) 
 			|| (backward && (reverse && pingpong))
 		) {
 			counter = (start + ((counter - start + 1)%(length)) )%8;
@@ -216,13 +249,12 @@ struct HolonicSystemsSequenceWidget : ModuleWidget {
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));		
 		
 		// Trigger Inputs
-		addInput(Port::create<PJ301MPort>(							Vec(03, 34), Port::INPUT, module, HolonicSystemsSequenceModule::IN_BCK));
-		addInput(Port::create<PJ301MPort>(							Vec(33, 34), Port::INPUT, module, HolonicSystemsSequenceModule::IN_RESET));
-		addInput(Port::create<PJ301MPort>(							Vec(63, 34), Port::INPUT, module, HolonicSystemsSequenceModule::IN_FWD));
+		addInput(Port::create<PJ301MPort>(							Vec(33, 34), Port::INPUT, module, HolonicSystemsSequenceModule::IN_CLOCK));
+		addInput(Port::create<PJ301MPort>(							Vec(63, 34), Port::INPUT, module, HolonicSystemsSequenceModule::IN_RESET));
 		
 		// Address Input
 		addInput(Port::create<PJ301MPort>(							Vec(103, 34), Port::INPUT, module, HolonicSystemsSequenceModule::IN_SEQ));
-		addParam(ParamWidget::create<RoundSmallBlackKnob>(			Vec(133, 34), module, HolonicSystemsSequenceModule::PARAM_SEQ, 0, 1.0, 1.0));
+		addParam(ParamWidget::create<Trimpot>(			Vec(133, 34+3), module, HolonicSystemsSequenceModule::PARAM_SEQ, 0, 1.0, 1.0));
 	
 		// Channels
 		int start = 66;
@@ -233,21 +265,29 @@ struct HolonicSystemsSequenceWidget : ModuleWidget {
 			addParam(ParamWidget::create<CKSSThree>(Vec(10+85, start + i * 36), module, HolonicSystemsSequenceModule::PARAM_TRIG_1+i, 0, 2.0, (i%3==0)? 0 : ((i%2==0)?1:2)) );
 		}
 		
+		
+		// Mode
+		addInput(Port::create<PJ301MPort>(							Vec(113, 66+18*1), Port::INPUT, module, HolonicSystemsSequenceModule::IN_MODE));
+		addParam(ParamWidget::create<Trimpot>(Vec(136, 66+18*1+15), module, HolonicSystemsSequenceModule::PARAM_MODE_ATT, 0, 1.0, 1.0));
+		rack::RoundSmallBlackKnob* param_mode = ParamWidget::create<RoundSmallBlackKnob>(			Vec(153, 66+18*1), module, HolonicSystemsSequenceModule::PARAM_MODE, 0, 3.0, 0.0);
+		param_mode->snap = true;
+		addParam(param_mode);
+		
+		
 		// Start
-		addInput(Port::create<PJ301MPort>(							Vec(123, 66+18*2), Port::INPUT, module, HolonicSystemsSequenceModule::IN_START));
-		rack::RoundSmallBlackKnob* param_start = ParamWidget::create<RoundSmallBlackKnob>(			Vec(153, 66+18*2), module, HolonicSystemsSequenceModule::PARAM_START, 0, 8.0, 0.0);
+		addInput(Port::create<PJ301MPort>(							Vec(113, 66+18*4), Port::INPUT, module, HolonicSystemsSequenceModule::IN_START));
+		addParam(ParamWidget::create<Trimpot>(Vec(136, 66+18*4+15), module, HolonicSystemsSequenceModule::PARAM_START_ATT, 0, 1.0, 1.0));
+		rack::RoundSmallBlackKnob* param_start = ParamWidget::create<RoundSmallBlackKnob>(			Vec(153, 66+18*4), module, HolonicSystemsSequenceModule::PARAM_START, 0, 7.0, 0.0);
 		param_start->snap = true;
 		addParam(param_start);
-	
 		
-		// length
-		addInput(Port::create<PJ301MPort>(							Vec(123, 66+18*5), Port::INPUT, module, HolonicSystemsSequenceModule::IN_LENGTH));
-		rack::RoundSmallBlackKnob* param_length = ParamWidget::create<RoundSmallBlackKnob>(			Vec(153, 66+18*5), module, HolonicSystemsSequenceModule::PARAM_LENGTH, 0, 7.0, 7.0);
+		// Length
+		addInput(Port::create<PJ301MPort>(							Vec(113, 66+18*7), Port::INPUT, module, HolonicSystemsSequenceModule::IN_LENGTH));
+		addParam(ParamWidget::create<Trimpot>(Vec(136, 66+18*7+15), module, HolonicSystemsSequenceModule::PARAM_LENGTH_ATT, 0, 1.0, 1.0));
+		rack::RoundSmallBlackKnob* param_length = ParamWidget::create<RoundSmallBlackKnob>(			Vec(153, 66+18*7), module, HolonicSystemsSequenceModule::PARAM_LENGTH, 0, 7.0, 7.0);
 		param_length->snap = true;
 		addParam(param_length);
 		
-		// PingPong Mode
-		addParam(ParamWidget::create<CKSSThree>(Vec(123, 66+18*7), module, HolonicSystemsSequenceModule::PARAM_MODE, 0, 1.0, 1.0));
 		
 		// Master
 		addParam(ParamWidget::create<RoundSmallBlackKnob>(			Vec(123, 66+18*11), module, HolonicSystemsSequenceModule::PARAM_ATT, 0, 1.0, 1.0));

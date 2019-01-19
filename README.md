@@ -3,24 +3,25 @@
 Holon.ist from http://holonic.systems can communicate with various virtual and physical studio gear using MIDI and OSC protocols. Download the latest beta version from: https://testflight.apple.com/join/mBx4PTxL
 
 ##### Table of Contents  
-- [Holon.ist Receiver for VCV Rack](#holonist-receiver)
+- [Holonic Source for VCV Rack](#holonic-source)
+- [Sequence](#sequence)
 - [Pantry - Dual CV/Gate Recorder/Looper](#pantry)
 - [Swiss Cheese Knife - Quad Utility with a twist](#swiss-cheese-knife)
 - [Gaps - Multimode Clock Divider](#gaps)
 - [Junctions - Dual Switch](#junctions)
 
 
-## Holon.ist Receiver
+## Holonic Source
 
-![Holon.ist Receiver](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Holon.ist-Receiver.png)    [![Holon.ist Receiver Demo](http://img.youtube.com/vi/eBonU85BfDM/0.jpg)](https://www.youtube.com/watch?v=eBonU85BfDM "Holon.ist Receiver Demo")
+![Holonic Source](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/HolonicSource.png)    [![Holon.ist Receiver Demo](http://img.youtube.com/vi/eBonU85BfDM/0.jpg)](https://www.youtube.com/watch?v=eBonU85BfDM "Holon.ist Receiver Demo")
 
-Holon.ist Receiver module for VCV Rack integrates with the Holon.ist iOS app and outputs CV control signals to VCV Rack.
+Holonic Source module for VCV Rack integrates with the Holon.ist iOS app and outputs CV control signals to VCV Rack.
 - 8 channels of CV control from Holon.ist to VCV Rack.
 - Per channel activity indicator, attenuator and low pass filter.
-- Multiple Holon.ist receiver modules can run at the same time. Each instance can be set to receive on its own bus, from A to H, allowing for a total of 64 channels of CV.
+- Multiple Holonic Source modules can run at the same time. Each instance can be set to receive on its own bus, from A to H, allowing for a total of 64 channels of CV.
 
 ### Demos
-We've put together some VCV demo patches that use the Holon.ist Receiver. They use the default mappings in the Holon.ist app.
+We've put together some VCV demo patches that use the Holonic Source. They use the default mappings in the Holon.ist app.
 
 Our demos are packaged with the plugins, they are located in: `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\demos` (Windows) `/Users/<you>/Documents/Rack/plugins/HolonicSystems-Free/demos` (MacOS) 
 
@@ -33,7 +34,8 @@ The demo patches require the following VCV Rack plugins to be installed:
 - JW Modules
 - ML Modules
 - Valley
-- Vult Modules - Free 
+- Vult Modules - Free
+- Some demo patches require Stellare Link. This module needs to be manually installed from https://github.com/stellare-modular/vcv-link/releases. Drop the zip in your plugin folder and restart Rack. 
 
 See also http://holon.ist/demos/
 
@@ -42,23 +44,23 @@ Please check the following installation steps below to avoid common pitfalls, su
 
 - Install the latest version of Holon.ist on your iPhone or iPad from: http://holonic.systems or https://testflight.apple.com/join/mBx4PTxL
 - Install the latest version of VCV rack: https://vcvrack.com/
-- Install the Holon.ist Receiver plugin from the VCV Rack plugin manager: https://vcvrack.com/plugins.html#holonic
-- Follow the instruction below  to establish communication between Holon.ist and Receiver.
+- Install the Holonic Source plugin from the VCV Rack plugin manager: https://vcvrack.com/plugins.html#holonic
+- Follow the instruction below  to establish communication between Holon.ist and Holonic Source.
 
 ### OSC Communication
 
 mDNS/bonjour is used for autodiscovery.
 
 - MacOS 
-  - Holon.ist automatically detects VCV Rack when Holon.ist Receiver plugin is loaded.
+  - Holon.ist automatically detects VCV Rack when Holonic Source plugin is loaded.
 - Windows 
   - requires Bonjour SDK from Apple to be installed: https://developer.apple.com/bonjour/  
   - Check that the Bonjour Service is running.
-  - Run the script `scripts\Holon.ist receiver bonjour.bat`. This script can be found in the plugin folder `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\` The script publishes Holon.ist Receiver on the network to allow autodiscovery from Holon.ist app.
+  - Run the script `Holonic_Source_windows.bat`. This script can be found in the plugin folder `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\` The script publishes Holonic Source on the network to allow autodiscovery from Holon.ist app.
   - do not close the DOS window until your are done with your VCV Session.
 - Linux 
   - Make sure Avahi is running (it is usually the case).
-  - run the script. `scripts\Holon.ist_receiver_avahi.sh`. This publishes Holon.ist Receiver on the network to allow autodiscovery.
+  - run the script. `Holonic_Source_linux.sh`. This publishes Holonic Source on the network to allow autodiscovery.
   - do not close the shell window until your are done with your VCV Session.
 
 Tips
@@ -68,19 +70,19 @@ Tips
 
 #### OSC Message Format
 
-The Holon.ist Receiver OSC message format is used to ensure close integration with our Holon.ist app. In order to use Holon.ist Receiver with any OSC compatible application, please select Port 9000.
+The Holonic Source OSC message format is used to ensure close integration with our Holon.ist app. In order to use Holonic Source with any OSC compatible application, please select Port 9000.
 
 The message OSC path is `/<bus>/<channel>/<mode>` where:
 - `<bus>` is one of `a`/`b`/`c`/`d`/`e`/`f`/`g`/`h`
 - `<channel>` is one of `1`/`2`/`3`/`4`/`5`/`6`/`7`/`8`
 - `<mode>` is one of `cv` for unipolar CV, `cvbi` for bipolar CV.
-- Argument value should be a float. Receiver accepts values in [-1,1] range or in [-10,10] range depending on the switch configuration in the GUI. When [-1,1] is selected, values will effectively be multiplied by 10.
+- Argument value should be a float. Holonic Source accepts values in [-1,1] range or in [-10,10] range depending on the switch configuration in the GUI. When [-1,1] is selected, values will effectively be multiplied by 10.
 
 ### Receiving Bus
 The Receiving bus pot selects from which bus the module receives signals from Holon.ist. This allows use of more than one instance of the module in the patch, providing up to 64 channels of voltage control in total.
 
 ### Activity LEDs
-Activity LEDs for each channel indicate when Holon.ist Receiver receives OSC messages for the particular channel and receiving bus.
+Activity LEDs for each channel indicate when Holonic Source receives OSC messages for the particular channel and receiving bus.
 
 ### Attenuators
 Attenuators on each channel let one scale and invert CV values according to need.  
@@ -91,9 +93,17 @@ The slew is adjustable, in order to avoid stepped signals, and to make more natu
 ### Outputs
 VCV rack expects values between 0v and +10v for unipolar and between -5v and +5v for bipolar signals.
 
-Holon.ist receivers clips signals to -10v, +10v.
+Holonic Source clips signals to -10v, +10v.
   
 Ensure that values are properly scaled in the Holon.ist scaling section.
+
+
+## Sequence
+
+![Pantry](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Sequence.png)
+
+Sequence is a 8 step sequencer. One could see it as a A-155 / A-154 / A-152 merged into one module.
+
 
 ## Pantry
 
