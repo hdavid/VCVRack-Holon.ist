@@ -155,8 +155,8 @@ void HolonicSystemsSequenceModule::step() {
 	length = (
 			 ( (int)(params[PARAM_LENGTH].value) )
 			+ ( (int)(inputs[IN_LENGTH].active ? (in_length*params[PARAM_LENGTH_ATT].value * 8) : 0) )
-  		 	+ 1 + 8
-		)%8;
+  		 	+ 8
+		)%8 + 1;
 	
 	float seq = in_seq * params[PARAM_SEQ].value;
 	int mode = (((int)params[PARAM_MODE].value) + in_mode)%4;
