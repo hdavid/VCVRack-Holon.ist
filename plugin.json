@@ -8,6 +8,35 @@
 	"sourceUrl": "https://github.com/hdavid/VCVRack-Holon.ist",
 	"version": "1.0.0",
 	"modules": {
-		
+		"HolonicSystems-Gaps": {
+			"name": "Gaps",
+			"description": "Clock divider that supports multiple modes",
+			"tags": ["CLOCK"]
+		},
+		"HolonicSystems-Pantry": {
+			"name": "Pantry",
+			"description": "Dual CV/Gate Recorder/Looper",
+			"tags": ["SEQUENCER","RECORDING"]
+		},
+		"HolonicSystems-Sequence A-155": {
+			"name": "Sequence",
+			"description": "8 step sequencer. One could see it as a A-155 / A-154 / A-152 merged into one module",
+			"tags": ["SEQUENCER","ATTENUATOR","SWITCH"]
+		},
+		"HolonicSystems-SwissCheeseKnife": {
+			"name": "SwissCheeseKnife",
+			"description": "Quad utility module with a twist",
+			"tags": ["UTILITY","ATTENUATOR","MIXER","QUAD","SAMPLE_AND_HOLD","SLEW_LIMITER_TAG"]
+		},
+		"HolonicSystems-HolonicSource": {
+			"name": "Holonic Source",
+			"description": "Integrates with the Holon.ist iOS app and outputs CV control signals to VCV Rack",
+			"tags": ["CONTROLLER","EXTERNAL"]
+		},
+		"HolonicSystems-Junctions": {
+			"name": "Junctions",
+			"description": "A simple dual switch. Two inputs, one output",
+			"tags": ["SWITCH"]
+		}
 	}
 }
