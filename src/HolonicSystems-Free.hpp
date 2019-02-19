@@ -13,7 +13,6 @@ struct LooseSchmittTrigger  {
 	};
 	State state = UNKNOWN;
 
-
 	bool process(float in) {
 		switch (state) {
 			case LOW:
@@ -55,11 +54,11 @@ struct HolonicSystemsLabel : Widget {
 		fontSize = _fontSize;
 		box.size.y = BND_WIDGET_HEIGHT;
 	}
-	void draw(NVGcontext *vg) override {
-		//nvgTextAlign(vg, NVG_ALIGN_CENTER);
-		nvgFillColor(vg, nvgRGB(0, 0, 0));
-		nvgFontSize(vg, fontSize);
-		nvgText(vg, box.pos.x, box.pos.y, text.c_str(), NULL);
+	void draw(const DrawArgs &args) override {
+		//nvgTextAlign(args.vg, NVG_ALIGN_CENTER);
+		nvgFillColor(args.vg, nvgRGB(0, 0, 0));
+		nvgFontSize(args.vg, fontSize);
+		nvgText(args.vg, box.pos.x, box.pos.y, text.c_str(), NULL);
 	}
 };
 
@@ -76,7 +75,7 @@ struct HolonicSystemsKnob : RoundSmallBlackKnob {
 		}
 	}
 
-	void onChange(EventChange &e) override {
+	void onChange(const event::Change &e) override {
 		RoundSmallBlackKnob::onChange(e);
 		if (linkedLabel) {
 			linkedLabel->text = formatCurrentValue();
@@ -89,11 +88,11 @@ struct HolonicSystemsKnob : RoundSmallBlackKnob {
 	}
 	
 	std::string formatCurrentValue() {
-		return names[int(value)];
+		return names[int(paramQuantity->getValue())];
 	}
 };
 
-extern Plugin *plugin;
+extern Plugin *pluginInstance;
 
 extern Model *modelHolonicSystemsHolonicSource;
 extern Model *modelHolonicSystemsSwissCheeseKnife;
@@ -101,6 +100,5 @@ extern Model *modelHolonicSystemsGaps;
 extern Model *modelHolonicSystemsPantry;
 extern Model *modelHolonicSystemsJunctions;
 extern Model *modelHolonicSystemsSequence;
-//extern Model *modelHolonicSystemsHolonistReceiver;
 
 

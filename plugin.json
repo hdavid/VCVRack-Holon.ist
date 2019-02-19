@@ -1,0 +1,13 @@
+{
+	"slug": "HolonicSystemsFree",
+	"name": "Holonic Systems - Free",
+	"author": "Holonic Systems",
+	"license": "CC0-1.0",
+	"authorEmail": "henri@holonic.systems",
+	"authorUrl": "https://holonic.systems/",
+	"sourceUrl": "https://github.com/hdavid/VCVRack-Holon.ist",
+	"version": "1.0.0",
+	"modules": {
+		
+	}
+}

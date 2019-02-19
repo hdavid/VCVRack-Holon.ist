@@ -1,16 +1,13 @@
 #include "HolonicSystems-Free.hpp"
 
-Plugin *plugin;
+Plugin *pluginInstance;
 
 void init(Plugin *p) {
-	plugin = p;
-	p->slug = TOSTRING(SLUG);
-	p->version = TOSTRING(VERSION);
+	pluginInstance = p;
 	p->addModel(modelHolonicSystemsHolonicSource);
 	p->addModel(modelHolonicSystemsSwissCheeseKnife);
 	p->addModel(modelHolonicSystemsPantry);
 	p->addModel(modelHolonicSystemsGaps);
 	p->addModel(modelHolonicSystemsJunctions);
 	p->addModel(modelHolonicSystemsSequence);
-	//p->addModel(modelHolonicSystemsHolonistReceiver);
 }
