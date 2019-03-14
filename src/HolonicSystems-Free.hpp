@@ -101,6 +101,7 @@ extern Model *modelHolonicSystemsGaps;
 extern Model *modelHolonicSystemsPantry;
 extern Model *modelHolonicSystemsJunctions;
 extern Model *modelHolonicSystemsSequence;
+extern Model *modelHolonicSystemsQuantiser;
 //extern Model *modelHolonicSystemsHolonistReceiver;
 
 
