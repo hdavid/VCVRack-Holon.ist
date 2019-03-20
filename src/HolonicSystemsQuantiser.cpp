@@ -7,6 +7,7 @@ struct HolonicSystemsQuantiserModule : Module {
 	enum ParamIds {
 		PARAM_SCALE,
 		PARAM_SCALE_CV_ATT,
+		PARAM_ATT,
 		NUM_PARAMS
 	};
 
@@ -63,20 +64,23 @@ struct HolonicSystemsQuantiserModule : Module {
 	PulseGenerator outputTriggers[4];
 	LooseSchmittTrigger inputTriggers[4];
 	
-	bool scales[8 * 12] = {
-		1,0,1,0, 1,1,0,1, 0,1,0,1,
-		1,1,0,1, 0,1,1,0, 1,0,1,0,
-		0,1,1,0, 1,0,1,1, 0,1,0,1,
-		1,0,1,1, 0,1,0,1, 1,0,1,0,
+	bool scales[7 * 12] = {
+		  1,0,1,0,1,1,0,1,0,1,0,1,	// C Ionian (I)
+		//0,1,0,1,1,0,1,0,1,0,1,1,
+		  1,0,1,1,0,1,0,1,0,1,1,0,	// D Dorian (II)
+		//0,1,1,0,1,0,1,0,1,1,0,1,
+		  1,1,0,1,0,1,0,1,1,0,1,0,	// E Phrygian (III)
+		  1,0,1,0,1,0,1,1,0,1,0,1,	// F Lydian (IV)
+		//0,1,0,1,0,1,1,0,1,0,1,1,
+		  1,0,1,0,1,1,0,1,0,1,1,0,	// G Myxolydian (V)
+		//0,1,0,1,1,0,1,0,1,1,0,1,
+		  1,0,1,1,0,1,0,1,1,0,1,0,	// A Aeolian (VI)
+		//0,1,1,0,1,0,1,1,0,1,0,1,
+		  1,1,0,1,0,1,1,0,1,0,1,0	// F Locrian (VII)
 		
-		0,1,0,1, 1,0,1,0, 1,1,0,1,
-		1,0,1,0, 1,1,0,1, 0,1,1,0,
-		0,1,0,1, 0,1,1,0, 1,0,1,1,
-		
-		1,0,1,0,1,0,1,1,0,1,0,1
 	};
 
-	float currentCVs[8] = {0.0f,0.0f,0.0f,0.0f, 0.0f,0.0f,0.0f,0.0f};
+	float currentCVs[4] = {0.0f,0.0f,0.0f,0.0f};
 	 
 };
 
@@ -93,12 +97,16 @@ HolonicSystemsQuantiserModule::~HolonicSystemsQuantiserModule() {
 void HolonicSystemsQuantiserModule::step() {
 	
 	float transposeCV = inputs[INPUT_TRANSPOSE_CV].value;
-	float scaleCV = inputs[INPUT_SCALE_CV].active ? (inputs[INPUT_SCALE_CV].value/10) : 1.0;
+	float scaleCV = inputs[INPUT_SCALE_CV].active ? (inputs[INPUT_SCALE_CV].value/10) : 0.0;
 	float scaleParam = params[PARAM_SCALE].value;
 	float scaleCVATTParam = params[PARAM_SCALE_CV_ATT].value;
 
-	int scaleIndex = ((int)(scaleCV * scaleCVATTParam * 8 + scaleParam))%8;
+	int scaleIndex = ((int)(scaleCV * scaleCVATTParam * 7 + scaleParam))%7;
 	int offset = scaleIndex * 12;
+
+
+	float att = params[PARAM_ATT].value;
+
 
 	//scale display
 	for(int i=0;i<12;i++){
@@ -111,7 +119,7 @@ void HolonicSystemsQuantiserModule::step() {
 			bool triggerIn = inputTriggers[i].process(inputs[INPUT_TRIGGER_1+i].value);
 			if (!inputs[INPUT_TRIGGER_1+i].active || triggerIn) {
 
-				float inputCV = inputs[INPUT_CV_1+i].value;
+				float inputCV = att * inputs[INPUT_CV_1+i].value;
 
 				// transpose
 				if (inputs[INPUT_TRANSPOSE_CV].active){
@@ -175,14 +183,17 @@ struct HolonicSystemsQuantiserWidget : ModuleWidget {
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
  
 		//IN
-		rack::RoundSmallBlackKnob* scale = ParamWidget::create<RoundSmallBlackKnob>(Vec(10,40), module, HolonicSystemsQuantiserModule::PARAM_SCALE, 0, 7, 0);
+		rack::RoundSmallBlackKnob* scale = ParamWidget::create<RoundSmallBlackKnob>(Vec(10,40), module, HolonicSystemsQuantiserModule::PARAM_SCALE, 0, 6, 0);
 		scale->snap = true;
 		addParam(scale);
 		addInput(Port::create<PJ301MPort>(Vec(50, 40), Port::INPUT, module, HolonicSystemsQuantiserModule::INPUT_SCALE_CV));
 		addParam(ParamWidget::create<Trimpot>(Vec(80,40+5), module, HolonicSystemsQuantiserModule::PARAM_SCALE_CV_ATT, 0, 1, 0));
 		
-
+		//transpose CV
 		addInput(Port::create<PJ301MPort>(Vec(10, 70), Port::INPUT, module, HolonicSystemsQuantiserModule::INPUT_TRANSPOSE_CV));
+
+		//common ATT
+		addParam(ParamWidget::create<Trimpot>(Vec(90, 85), module, HolonicSystemsQuantiserModule::PARAM_ATT, 0, 1, 1));
 		
 
 		int rowHeight = 65;
@@ -200,15 +211,15 @@ struct HolonicSystemsQuantiserWidget : ModuleWidget {
 		}
 
 		int x = 7;
-		base = 120;
+		base = 130;
 		for (int i=0;i<12 ;i++ ) {
 			//0		2		4	5		7		9		11
 			//	1		3			6		8		10	
 			if (i == 0 || i == 2 || i == 4 || i == 5 || i == 7 || i == 9 || i == 11) {	
 				x--;
-				addChild(ModuleLightWidget::create<LargeLight<RedLight>>(Vec(10+65, base+ x*30), module, HolonicSystemsQuantiserModule::LIGHT_SCALE_1+i));
+				addChild(ModuleLightWidget::create<LargeLight<RedLight>>(Vec(10+65+20, base+ x*30), module, HolonicSystemsQuantiserModule::LIGHT_SCALE_1+i));
 				if (i==0 || i == 2 || i == 5 || i == 7 || i == 9){
-					addChild(ModuleLightWidget::create<LargeLight<RedLight>>(Vec(10+65+20, base+x*30 - 15), module, HolonicSystemsQuantiserModule::LIGHT_SCALE_1+i+1));
+					addChild(ModuleLightWidget::create<LargeLight<RedLight>>(Vec(10+65, base+x*30 - 15), module, HolonicSystemsQuantiserModule::LIGHT_SCALE_1+i+1));
 				}
 			}
 			
