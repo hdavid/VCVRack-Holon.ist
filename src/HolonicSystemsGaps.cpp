@@ -178,12 +178,15 @@ struct HolonicGapsTrigGateLabel : Widget {
 	void draw(const DrawArgs &args) override {
 		nvgFillColor(args.vg, nvgRGB(0, 0, 0));
 		nvgFontSize(args.vg, fontSize);
-		if ( module->params[HolonicSystemsGapsModule::TRIG_MODE_PARAM].value==0){
-			nvgText(args.vg, box.pos.x, box.pos.y, "gate", NULL);
-		}else{
+		if (module){
+			if (module->params[HolonicSystemsGapsModule::TRIG_MODE_PARAM].value==0){
+				nvgText(args.vg, box.pos.x, box.pos.y, "gate", NULL);
+			}else{
+				nvgText(args.vg, box.pos.x, box.pos.y, "trig", NULL);
+			}
+		} else {
 			nvgText(args.vg, box.pos.x, box.pos.y, "trig", NULL);
 		}
-		
 	}
 };
 
@@ -219,7 +222,9 @@ struct HolonicSystemsGapsWidget : ModuleWidget {
 		modeKnob->names.push_back(std::string("binary"));
 		modeKnob->names.push_back(std::string("rand"));
 		modeKnob->names.push_back(std::string("seq"));
-		modeKnob->connectLabel(modeLabel);
+		if (module){
+			modeKnob->connectLabel(modeLabel);
+		}
 		addChild(modeLabel);
 		addParam(modeKnob);
 		

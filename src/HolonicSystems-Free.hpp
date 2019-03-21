@@ -96,12 +96,13 @@ struct HolonicSystemsKnob : RoundSmallBlackKnob {
 	}
 	
 	std::string formatCurrentValue() {
-		if (names.size() > paramQuantity->getValue() ) {
-			return names[int(paramQuantity->getValue())];
+		int index = int(paramQuantity->getValue());
+		int size =  (int)names.size();
+		if (size>0 && index < size && index >= 0) {
+			return names[index];
 		} else {
 			return "";
 		}
-		
 	}
 };
 

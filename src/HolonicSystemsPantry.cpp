@@ -255,7 +255,9 @@ struct HolonicSystemsPantryWidget : ModuleWidget {
 			lengthKnob->names.push_back(std::string("length 30"));
 			lengthKnob->names.push_back(std::string("length 31"));
 			lengthKnob->names.push_back(std::string("length 32"));
-			lengthKnob->connectLabel(lengthLabel);
+			if (module){
+				lengthKnob->connectLabel(lengthLabel);
+			}
 			addChild(lengthLabel);
 			addParam(lengthKnob);
 			
@@ -298,7 +300,9 @@ struct HolonicSystemsPantryWidget : ModuleWidget {
 			shiftKnob->names.push_back(std::string("shift 29"));
 			shiftKnob->names.push_back(std::string("shift 30"));
 			shiftKnob->names.push_back(std::string("shift 31"));
-			shiftKnob->connectLabel(shiftLabel);
+			if (module){
+				shiftKnob->connectLabel(shiftLabel);
+			}
 			addChild(shiftLabel);
 			addParam(shiftKnob);
 			

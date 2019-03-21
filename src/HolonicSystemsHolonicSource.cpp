@@ -216,7 +216,9 @@ struct HolonicSystemsHolonicSourceWidget : ModuleWidget {
 		busKnob->names.push_back(std::string("Bus F"));
 		busKnob->names.push_back(std::string("Bus G"));
 		busKnob->names.push_back(std::string("Bus H"));
-		busKnob->connectLabel(busLabel);
+		if (module){
+			busKnob->connectLabel(busLabel);
+		}
 		addChild(busLabel);
 		addParam(busKnob);
 		
