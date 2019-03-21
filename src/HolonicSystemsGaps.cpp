@@ -154,9 +154,12 @@ struct HolonicGapsLabel : Widget {
 	void draw(const DrawArgs &args) override {
 		nvgFillColor(args.vg, nvgRGB(0, 0, 0));
 		nvgFontSize(args.vg, fontSize);
-		sprintf(str, "%d", module->divisions[(int)module->params[HolonicSystemsGapsModule::MODE_PARAM].value][index]);
-		nvgText(args.vg, box.pos.x, box.pos.y, str, NULL);
-		
+		if (module) {
+			sprintf(str, "%d", module->divisions[(int)module->params[HolonicSystemsGapsModule::MODE_PARAM].value][index]);
+			nvgText(args.vg, box.pos.x, box.pos.y, str, NULL);
+		} else {
+			nvgText(args.vg, box.pos.x, box.pos.y, "", NULL);
+		}
 	}
 };
 

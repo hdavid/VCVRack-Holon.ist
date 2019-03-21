@@ -180,10 +180,14 @@ struct HolonistOSCLabel : Widget {
 		nvgFontSize(args.vg, fontSize);
   		ret = gettimeofday (&tv, NULL); // timezone structure is obsolete
   	  	if (ret == 0) sec = (int)tv.tv_sec;
-		if (sec%4==0||sec%4==1){
-			nvgText(args.vg, box.pos.x, box.pos.y, module->ports.names[index].c_str(), NULL);
+		if (module){		
+			if (sec%4==0||sec%4==1){
+				nvgText(args.vg, box.pos.x, box.pos.y, module->ports.names[index].c_str(), NULL);
+			} else {
+				nvgText(args.vg, box.pos.x, box.pos.y, module->ports.inputs[index].c_str(), NULL);
+			}
 		} else {
-			nvgText(args.vg, box.pos.x, box.pos.y, module->ports.inputs[index].c_str(), NULL);
+			nvgText(args.vg, box.pos.x, box.pos.y, "", NULL);
 		}
 	}
 };

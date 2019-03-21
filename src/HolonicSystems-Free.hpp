@@ -48,8 +48,10 @@ struct LooseSchmittTrigger  {
 };
 
 struct HolonicSystemsLabel : Widget {
-	std::string text = "xx";
-	int fontSize;
+	
+	std::string text = "";
+	int fontSize = 12;
+
 	HolonicSystemsLabel(int _fontSize = 12) {
 		fontSize = _fontSize;
 		box.size.y = BND_WIDGET_HEIGHT;
@@ -75,7 +77,13 @@ struct HolonicSystemsKnob : RoundSmallBlackKnob {
 		}
 	}
 
-	void onChange(const event::Change &e) override {
+	void onDragMove(const widget::DragMoveEvent &e) override {
+		RoundSmallBlackKnob::onChange(e);
+		if (linkedLabel) {
+			linkedLabel->text = formatCurrentValue();
+		}
+	}
+	void onDragEnd(const widget::DragEndEvent &e) override {
 		RoundSmallBlackKnob::onChange(e);
 		if (linkedLabel) {
 			linkedLabel->text = formatCurrentValue();
@@ -88,7 +96,11 @@ struct HolonicSystemsKnob : RoundSmallBlackKnob {
 	}
 	
 	std::string formatCurrentValue() {
+		if ( && names.size() > int(paramQuantity->getValue() ) {
 		return names[int(paramQuantity->getValue())];
+		} else {
+			return "";
+		}
 	}
 };
 
