@@ -31,6 +31,7 @@ struct HolonicSystemsSequenceModule : Module {
 		PARAM_SEQ_ATT,
 		PARAM_MODE,
 		PARAM_MODE_ATT,
+		//PARAM_CONTINOUS,
 		NUM_PARAMS
 	};
 
@@ -215,9 +216,11 @@ void HolonicSystemsSequenceModule::step() {
 		lights[LIGHT_1+i].setBrightness(counter == i ? 1 : 0);
 		if (counter == i) {
 			//output cv
-			outputs[OUTPUT_CV].value = params[PARAM_ATT].value * params[PARAM_ATT_1+i].value * (inputs[IN_1+i].active ? inputs[IN_1+i].value : 10.0);
+			if ((inputs[IN_CLOCK].active && clock) || counter != oldCounter ){//|| params[PARAM_CONTINOUS].value == 1) {
+				outputs[OUTPUT_CV].value = params[PARAM_ATT].value * params[PARAM_ATT_1+i].value * (inputs[IN_1+i].active ? inputs[IN_1+i].value : 10.0);
+			}
 			//trigger
-			if (counter != oldCounter){
+			if ((inputs[IN_CLOCK].active && clock) || counter != oldCounter){
 				if (params[PARAM_TRIG_1+i].value == 1){
 					outputTrigger1.trigger(1e-3);
 				} else if (params[PARAM_TRIG_1+i].value == 2){
@@ -287,6 +290,8 @@ struct HolonicSystemsSequenceWidget : ModuleWidget {
 		rack::RoundSmallBlackKnob* param_length = ParamWidget::create<RoundSmallBlackKnob>(			Vec(153, 66+18*7), module, HolonicSystemsSequenceModule::PARAM_LENGTH, 0, 7.0, 7.0);
 		param_length->snap = true;
 		addParam(param_length);
+		
+		//addParam(ParamWidget::create<CKSS>(Vec(113, 66+18*8+15), module, HolonicSystemsSequenceModule::PARAM_CONTINOUS, 0, 1.0, 1.0));
 		
 		
 		// Master
