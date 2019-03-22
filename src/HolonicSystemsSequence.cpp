@@ -27,10 +27,11 @@ struct HolonicSystemsSequenceModule : Module {
 		PARAM_START_ATT,
 		PARAM_LENGTH,
 		PARAM_LENGTH_ATT,
-		PARAM_ADR,
-		PARAM_ADR_ATT,
+		PARAM_SEQ,
+		PARAM_SEQ_ATT,
 		PARAM_MODE,
 		PARAM_MODE_ATT,
+		//PARAM_CONTINOUS,
 		NUM_PARAMS
 	};
 
@@ -45,7 +46,7 @@ struct HolonicSystemsSequenceModule : Module {
 		IN_8,
 		IN_CLOCK,
 		IN_RESET,
-		IN_ADR,
+		IN_SEQ,
 		IN_START,
 		IN_LENGTH,
 		IN_MODE,
@@ -96,7 +97,7 @@ struct HolonicSystemsSequenceModule : Module {
 		params[PARAM_START_ATT].config(0.f, 1.f, 1.f, "Start CV Att");
 		params[PARAM_LENGTH].config(0.f, 7.f, 7.f, "Length");
 		params[PARAM_LENGTH_ATT].config(0.f, 1.f, 1.f, "Length CV Att");
-		params[PARAM_ADR_ATT].config(0.f, 1.f, 1.f, "Address CV Att");
+		params[PARAM_SEQ_ATT].config(0.f, 1.f, 1.f, "Address CV Att");
 		params[PARAM_MODE].config(0.f, 3.f, 0.f, "Mode");
 		params[PARAM_MODE_ATT].config( 0.f, 1.f, 1.f, "Mode CV Att");
 
@@ -138,12 +139,12 @@ struct HolonicSystemsSequenceModule : Module {
 			in_length = 1;
 		}
 		
-		float in_adr = inputs[IN_ADR].value/10.0;
-		if (in_adr<0) {
-			in_adr = 0;
+		float in_seq = inputs[IN_SEQ].value/10.0;
+		if (in_seq<0) {
+			in_seq = 0;
 		}
-		if (in_adr>1) {
-			in_adr = 1;
+		if (in_seq>1) {
+			in_seq = 1;
 		}
 		
 		int in_mode = (int)(inputs[IN_MODE].value/10.0*3);
@@ -166,7 +167,7 @@ struct HolonicSystemsSequenceModule : Module {
 				+ 8
 			)%8 + 1;
 		
-		float adr = in_adr * params[PARAM_ADR].value;
+		float seq = in_seq * params[PARAM_SEQ].value;
 		int mode = (((int)params[PARAM_MODE].value) + in_mode)%4;
 		bool forward = mode == 0 || mode == 2;
 		bool backward = mode == 1;
@@ -182,10 +183,10 @@ struct HolonicSystemsSequenceModule : Module {
 		// Clocking	
 		if (reset) {
 			counter = start;
-		} else if (inputs[IN_ADR].active) {
+		} else if (inputs[IN_SEQ].active) {
 			// Address Mode
 			if (!inputs[IN_CLOCK].active || clock) {
-				counter = ( (int)(start +  adr * length) )%8;
+				counter = ( (int)(start +  seq * length) )%8;
 			}
 		} else if (clock){
 			if (randomMode){
@@ -223,9 +224,11 @@ struct HolonicSystemsSequenceModule : Module {
 			lights[LIGHT_1+i].setBrightness(counter == i ? 1 : 0);
 			if (counter == i) {
 				//output cv
-				outputs[OUTPUT_CV].value = params[PARAM_OUTPUT_ATT].value * params[PARAM_ATT_1+i].value * (inputs[IN_1+i].active ? inputs[IN_1+i].value : 10.0);
+				if ((inputs[IN_CLOCK].active && clock) || counter != oldCounter ){//|| params[PARAM_CONTINOUS].value == 1) {
+					outputs[OUTPUT_CV].value = params[PARAM_OUTPUT_ATT].value * params[PARAM_ATT_1+i].value * (inputs[IN_1+i].active ? inputs[IN_1+i].value : 10.0);
+				}
 				//trigger
-				if (counter != oldCounter){
+				if ((inputs[IN_CLOCK].active && clock) || counter != oldCounter){
 					if (params[PARAM_TRIG_1+i].value == 1){
 						outputTrigger1.trigger(1e-3);
 					} else if (params[PARAM_TRIG_1+i].value == 2){
@@ -261,8 +264,8 @@ struct HolonicSystemsSequenceWidget : ModuleWidget {
 		addInput(createInput<PJ301MPort>(Vec(63, 34), module, HolonicSystemsSequenceModule::IN_RESET));
 		
 		// Address Input
-		addInput(createInput<PJ301MPort>(Vec(103, 34), module, HolonicSystemsSequenceModule::IN_ADR));
-		addParam(createParam<Trimpot>(Vec(133, 34+3), module, HolonicSystemsSequenceModule::PARAM_ADR_ATT));
+		addInput(createInput<PJ301MPort>(Vec(103, 34), module, HolonicSystemsSequenceModule::IN_SEQ));
+		addParam(createParam<Trimpot>(Vec(133, 34+3), module, HolonicSystemsSequenceModule::PARAM_SEQ_ATT));
 	
 		// Channels
 		int start = 66;
@@ -296,6 +299,7 @@ struct HolonicSystemsSequenceWidget : ModuleWidget {
 		param_length->snap = true;
 		addParam(param_length);
 		
+		//addParam(ParamWidget::create<CKSS>(Vec(113, 66+18*8+15), module, HolonicSystemsSequenceModule::PARAM_CONTINOUS, 0, 1.0, 1.0));
 		
 		// Master
 		addParam(createParam<RoundSmallBlackKnob>(Vec(123, 66+18*11), module, HolonicSystemsSequenceModule::PARAM_OUTPUT_ATT));

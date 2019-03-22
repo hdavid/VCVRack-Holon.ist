@@ -65,7 +65,7 @@ struct HolonicSystemsPantryModule : Module {
 	LooseSchmittTrigger clearTrigger[2];
 
 	std::vector<float> cvs[2] = {std::vector<float>(64),std::vector<float>(64)};
-	std::vector<float> gates[2]= {std::vector<float>(64),std::vector<float>(64)};  
+	std::vector<float> gates[2]= {std::vector<float>(64),std::vector<float>(64)};
 
 
 	HolonicSystemsPantryModule() {

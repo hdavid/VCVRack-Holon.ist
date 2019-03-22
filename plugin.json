@@ -37,6 +37,11 @@
 			"name": "Junctions",
 			"description": "A simple dual switch. Two inputs, one output",
 			"tags": ["SWITCH"]
+		},
+		"HolonicSystems-Quantiser": {
+			"name": "Quantiser",
+			"description": "Quad Quantiser with scales",
+			"tags": ["QUANTIZER","QUAD"]
 		}
 	}
 }

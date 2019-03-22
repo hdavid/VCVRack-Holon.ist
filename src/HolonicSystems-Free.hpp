@@ -13,6 +13,7 @@ struct LooseSchmittTrigger  {
 	};
 	State state = UNKNOWN;
 
+
 	bool process(float in) {
 		switch (state) {
 			case LOW:
@@ -48,10 +49,8 @@ struct LooseSchmittTrigger  {
 };
 
 struct HolonicSystemsLabel : Widget {
-	
-	std::string text = "";
-	int fontSize = 12;
-
+	std::string text = "xx";
+	int fontSize;
 	HolonicSystemsLabel(int _fontSize = 12) {
 		fontSize = _fontSize;
 		box.size.y = BND_WIDGET_HEIGHT;
@@ -114,5 +113,6 @@ extern Model *modelHolonicSystemsGaps;
 extern Model *modelHolonicSystemsPantry;
 extern Model *modelHolonicSystemsJunctions;
 extern Model *modelHolonicSystemsSequence;
+extern Model *modelHolonicSystemsQuantiser;
 
 
