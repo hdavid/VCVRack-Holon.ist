@@ -42,6 +42,7 @@ struct HolonicSystemsGapsModule : Module {
 		NUM_LIGHTS
 	};	
 	
+
 	LooseSchmittTrigger clockTrigger;
 	LooseSchmittTrigger resetTrigger;
 	
@@ -54,6 +55,7 @@ struct HolonicSystemsGapsModule : Module {
 		{3,5,7,9, 11,13,15,17}, // odd
 		{2,3,5,7, 11,13,17,19}, // prime
 		{2,4,8,16, 32,64,128,256}, // binary
+
 		{2,3,4,5, 6,7,8,9}, // random
 		{1,2,3, 4,5,6,7,8} // seq
 	};
