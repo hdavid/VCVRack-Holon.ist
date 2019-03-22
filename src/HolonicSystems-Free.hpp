@@ -56,7 +56,6 @@ struct HolonicSystemsLabel : Widget {
 		box.size.y = BND_WIDGET_HEIGHT;
 	}
 	void draw(NVGcontext *vg) override {
-		//nvgTextAlign(vg, NVG_ALIGN_CENTER);
 		nvgFillColor(vg, nvgRGB(0, 0, 0));
 		nvgFontSize(vg, fontSize);
 		nvgText(vg, box.pos.x, box.pos.y, text.c_str(), NULL);

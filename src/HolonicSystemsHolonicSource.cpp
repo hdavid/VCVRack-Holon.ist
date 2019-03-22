@@ -74,9 +74,13 @@ struct HolonicSystemsHolonicSourceModule : Module {
 	float lightValues[8];
 	double outputValues[8];
 	Ports ports;
+
 	
 	HolonicSystemsHolonicSourceModule();
-	~HolonicSystemsHolonicSourceModule();
+
+	~HolonicSystemsHolonicSourceModule(){
+		ports.stop();
+	}
 	
 	void step() override;
 	
@@ -92,13 +96,9 @@ struct HolonicSystemsHolonicSourceModule : Module {
 
 HolonicSystemsHolonicSourceModule::HolonicSystemsHolonicSourceModule() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
 	onReset();
- 	ports.start();
+	ports.start();
 }
 
-
-HolonicSystemsHolonicSourceModule::~HolonicSystemsHolonicSourceModule() {
-	ports.stop();
-}
 
 
 void HolonicSystemsHolonicSourceModule::step() {

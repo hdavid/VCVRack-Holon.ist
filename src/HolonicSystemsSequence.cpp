@@ -22,7 +22,7 @@ struct HolonicSystemsSequenceModule : Module {
 		PARAM_TRIG_6,
 		PARAM_TRIG_7,
 		PARAM_TRIG_8,
-		PARAM_ATT,
+		PARAM_OUTPUT_ATT,
 		PARAM_START,
 		PARAM_START_ATT,
 		PARAM_LENGTH,
@@ -217,7 +217,7 @@ void HolonicSystemsSequenceModule::step() {
 		if (counter == i) {
 			//output cv
 			if ((inputs[IN_CLOCK].active && clock) || counter != oldCounter ){//|| params[PARAM_CONTINOUS].value == 1) {
-				outputs[OUTPUT_CV].value = params[PARAM_ATT].value * params[PARAM_ATT_1+i].value * (inputs[IN_1+i].active ? inputs[IN_1+i].value : 10.0);
+					outputs[OUTPUT_CV].value = params[PARAM_OUTPUT_ATT].value * params[PARAM_ATT_1+i].value * (inputs[IN_1+i].active ? inputs[IN_1+i].value : 10.0);
 			}
 			//trigger
 			if ((inputs[IN_CLOCK].active && clock) || counter != oldCounter){
@@ -257,7 +257,7 @@ struct HolonicSystemsSequenceWidget : ModuleWidget {
 		
 		// Address Input
 		addInput(Port::create<PJ301MPort>(							Vec(103, 34), Port::INPUT, module, HolonicSystemsSequenceModule::IN_SEQ));
-		addParam(ParamWidget::create<Trimpot>(			Vec(133, 34+3), module, HolonicSystemsSequenceModule::PARAM_SEQ, 0, 1.0, 1.0));
+		addParam(ParamWidget::create<Trimpot>(			Vec(133, 34+3), module, HolonicSystemsSequenceModule::PARAM_SEQ_ATT, 0, 1.0, 1.0));
 	
 		// Channels
 		int start = 66;
@@ -295,7 +295,7 @@ struct HolonicSystemsSequenceWidget : ModuleWidget {
 		
 		
 		// Master
-		addParam(ParamWidget::create<RoundSmallBlackKnob>(			Vec(123, 66+18*11), module, HolonicSystemsSequenceModule::PARAM_ATT, 0, 1.0, 1.0));
+		addParam(ParamWidget::create<RoundSmallBlackKnob>(			Vec(123, 66+18*11), module, HolonicSystemsSequenceModule::PARAM_OUTPUT_ATT, 0, 1.0, 1.0));
 		addOutput(Port::create<PJ301MPort>(							Vec(153, 66+18*11), Port::OUTPUT, module, HolonicSystemsSequenceModule::OUTPUT_CV));
 		
 		// Triggers

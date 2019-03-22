@@ -42,15 +42,7 @@ struct HolonicSystemsGapsModule : Module {
 		NUM_LIGHTS
 	};	
 	
-	HolonicSystemsGapsModule();
-	~HolonicSystemsGapsModule();
-	
-	
-	void onReset() override {
-		srand(time(NULL));
-	}
-	
-	void step() override;
+
 	LooseSchmittTrigger clockTrigger;
 	LooseSchmittTrigger resetTrigger;
 	
@@ -67,6 +59,17 @@ struct HolonicSystemsGapsModule : Module {
 								{2,3,4,5, 6,7,8,9}, // random
 								{1,2,3, 4,5,6,7,8} // seq
 							};
+							
+							
+ 	HolonicSystemsGapsModule();
+	~HolonicSystemsGapsModule();
+	
+	
+	void onReset() override {
+		srand(time(NULL));
+	}
+	
+	void step() override;
 };
 
 
@@ -155,7 +158,7 @@ struct HolonicGapsLabel : Widget {
 		if (module) {
 			sprintf(str, "%d", module->divisions[(int)module->params[HolonicSystemsGapsModule::MODE_PARAM].value][index]);
 			nvgText(vg, box.pos.x, box.pos.y, str, NULL);
-		}else {
+		 } else {
 			nvgText(vg, box.pos.x, box.pos.y, "", NULL);
 		}
 		
