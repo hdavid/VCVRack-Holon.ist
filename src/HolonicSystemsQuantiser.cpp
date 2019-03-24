@@ -8,6 +8,18 @@ struct HolonicSystemsQuantiserModule : Module {
 		PARAM_SCALE,
 		PARAM_SCALE_CV_ATT,
 		PARAM_ATT,
+		PARAM_SCALE_1,
+		PARAM_SCALE_2,
+		PARAM_SCALE_3,
+		PARAM_SCALE_4,
+		PARAM_SCALE_5,
+		PARAM_SCALE_6,
+		PARAM_SCALE_7,
+		PARAM_SCALE_8,
+		PARAM_SCALE_9,
+		PARAM_SCALE_10,
+		PARAM_SCALE_11,
+		PARAM_SCALE_12,
 		NUM_PARAMS
 	};
 
@@ -51,18 +63,12 @@ struct HolonicSystemsQuantiserModule : Module {
 		LIGHT_SCALE_11,
 		LIGHT_SCALE_12,
 		NUM_LIGHTS
-	};	
-	
-	HolonicSystemsQuantiserModule();
-	~HolonicSystemsQuantiserModule();
-	
-	void onReset() override {
-	}
-	
-	void step() override;
+	};
+
 	
 	PulseGenerator outputTriggers[4];
 	LooseSchmittTrigger inputTriggers[4];
+	LooseSchmittTrigger scaleButtons[12];
 	
 	bool scales[7 * 12] = {
 		  1,0,1,0,1,1,0,1,0,1,0,1,	// C Ionian (I)
@@ -81,6 +87,38 @@ struct HolonicSystemsQuantiserModule : Module {
 	};
 
 	float currentCVs[4] = {0.0f,0.0f,0.0f,0.0f};
+	
+	HolonicSystemsQuantiserModule();
+	~HolonicSystemsQuantiserModule();
+	
+	void onReset() override {
+	}
+	
+	void step() override;
+	
+	json_t *toJson() override {
+		json_t *rootJ = json_object();
+		// scales
+		json_t *scalesJ = json_array();
+		for (int i = 0; i < 7*12; i++) {
+			json_t *itemJ = json_boolean(scales[i]);
+			json_array_append_new(scalesJ, itemJ);
+		}
+		json_object_set_new(rootJ, "scales", scalesJ);
+		return rootJ;
+	}
+
+	void fromJson(json_t *rootJ) override {
+		// scales
+		json_t *scalesJ = json_object_get(rootJ, "scales");
+		if (scalesJ) {
+			for (int i = 0; i < 7*12; i++) {
+			json_t *itemJ = json_array_get(scalesJ, i);
+			if (itemJ)
+				scales[i] = json_boolean_value(itemJ);
+			}
+		}
+	}
 	 
 };
 
@@ -108,6 +146,13 @@ void HolonicSystemsQuantiserModule::step() {
 	float att = params[PARAM_ATT].value;
 
 
+	for(int i=0;i<12;i++){
+		bool buttonStatus 	= scaleButtons[i].process(params[PARAM_SCALE_1+i].value);
+		if (buttonStatus){
+			scales[offset+i] = !scales[offset+i];
+		}
+	}
+		
 	//scale display
 	for(int i=0;i<12;i++){
 		lights[LIGHT_SCALE_1+i].setBrightness(scales[offset+i]?10:0);
@@ -211,15 +256,20 @@ struct HolonicSystemsQuantiserWidget : ModuleWidget {
 		}
 
 		int x = 7;
-		base = 130;
+		base = 180;
+		int row = 20;
+		int left = 95;
 		for (int i=0;i<12 ;i++ ) {
 			//0		2		4	5		7		9		11
 			//	1		3			6		8		10	
 			if (i == 0 || i == 2 || i == 4 || i == 5 || i == 7 || i == 9 || i == 11) {	
 				x--;
-				addChild(ModuleLightWidget::create<LargeLight<RedLight>>(Vec(10+65+20, base+ x*30), module, HolonicSystemsQuantiserModule::LIGHT_SCALE_1+i));
+				addParam(ParamWidget::create<TL1105>(Vec(left, base+ x*row), module, HolonicSystemsQuantiserModule::PARAM_SCALE_1+i,0,1,0));
+				addChild(ModuleLightWidget::create<LargeLight<RedLight>>(Vec(left, base+ x*row), module, HolonicSystemsQuantiserModule::LIGHT_SCALE_1+i));
+				
 				if (i==0 || i == 2 || i == 5 || i == 7 || i == 9){
-					addChild(ModuleLightWidget::create<LargeLight<RedLight>>(Vec(10+65, base+x*30 - 15), module, HolonicSystemsQuantiserModule::LIGHT_SCALE_1+i+1));
+					addParam(ParamWidget::create<TL1105>(Vec(left-20, base+x*row - row/2), module, HolonicSystemsQuantiserModule::PARAM_SCALE_1+i+1,0,1,0));
+					addChild(ModuleLightWidget::create<LargeLight<RedLight>>(Vec(left-20, base+x*row - row/2), module, HolonicSystemsQuantiserModule::LIGHT_SCALE_1+i+1));
 				}
 			}
 			
