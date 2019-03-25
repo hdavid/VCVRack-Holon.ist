@@ -31,7 +31,7 @@ struct HolonicSystemsSequenceModule : Module {
 		PARAM_SEQ_ATT,
 		PARAM_MODE,
 		PARAM_MODE_ATT,
-		//PARAM_CONTINOUS,
+		PARAM_SW_OR_SEQ,
 		NUM_PARAMS
 	};
 
@@ -216,7 +216,7 @@ void HolonicSystemsSequenceModule::step() {
 		lights[LIGHT_1+i].setBrightness(counter == i ? 1 : 0);
 		if (counter == i) {
 			//output cv
-			if ((inputs[IN_CLOCK].active && clock) || counter != oldCounter ){//|| params[PARAM_CONTINOUS].value == 1) {
+				if ((inputs[IN_CLOCK].active && clock) || counter != oldCounter || params[PARAM_SW_OR_SEQ].value == 1) {
 					outputs[OUTPUT_CV].value = params[PARAM_OUTPUT_ATT].value * params[PARAM_ATT_1+i].value * (inputs[IN_1+i].active ? inputs[IN_1+i].value : 10.0);
 			}
 			//trigger
@@ -239,8 +239,31 @@ void HolonicSystemsSequenceModule::step() {
 
 
 
+struct HolonicSequencerSEQSWLabel : Widget {
+	int fontSize;
+	HolonicSystemsSequenceModule *module = nullptr;
 
+	
+	HolonicSequencerSEQSWLabel(int _fontSize,HolonicSystemsSequenceModule *_module) {
+		fontSize = _fontSize;
+		box.size.y = BND_WIDGET_HEIGHT;
+		module = _module;
+	}
 
+	void draw(NVGcontext *vg) override {
+		nvgFillColor(vg, nvgRGB(0, 0, 0));
+		nvgFontSize(vg, fontSize);
+		if (module){
+			if (module->params[HolonicSystemsSequenceModule::PARAM_SW_OR_SEQ].value==0){
+				nvgText(vg, box.pos.x, box.pos.y, "sequencer (s/h)", NULL);
+			}else{
+				nvgText(vg, box.pos.x, box.pos.y, "switch", NULL);
+			}
+		} else {
+			nvgText(vg, box.pos.x, box.pos.y, "switch", NULL);
+		}
+	}
+};
 struct HolonicSystemsSequenceWidget : ModuleWidget {
 	HolonicSystemsSequenceWidget(HolonicSystemsSequenceModule *module) : ModuleWidget(module) {
 		setPanel(SVG::load(assetPlugin(plugin, "res/HolonicSystems-Sequence.svg")));
@@ -291,7 +314,11 @@ struct HolonicSystemsSequenceWidget : ModuleWidget {
 		param_length->snap = true;
 		addParam(param_length);
 		
-		//addParam(ParamWidget::create<CKSS>(Vec(113, 66+18*8+15), module, HolonicSystemsSequenceModule::PARAM_CONTINOUS, 0, 1.0, 1.0));
+
+		addParam(ParamWidget::create<CKSS>(Vec(43, 355), module, HolonicSystemsSequenceModule::PARAM_SW_OR_SEQ, 0, 1.0, 0.0));
+		HolonicSequencerSEQSWLabel* const modeLabel = new HolonicSequencerSEQSWLabel(10, module);
+		modeLabel->box.pos = Vec(30, 355/2+7);
+		addChild(modeLabel);
 		
 		
 		// Master
