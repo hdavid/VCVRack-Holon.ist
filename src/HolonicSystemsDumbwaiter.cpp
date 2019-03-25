@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdlib.h>
 
-struct HolonicSystemsSequenceModule : Module {
+struct HolonicSystemsDumbwaiterModule : Module {
 
 	enum ParamIds {
 		PARAM_ATT_1,
@@ -85,8 +85,8 @@ struct HolonicSystemsSequenceModule : Module {
 	PulseGenerator outputTrigger1;
 	PulseGenerator outputTrigger2;
 	
-	HolonicSystemsSequenceModule();
-	~HolonicSystemsSequenceModule();
+	HolonicSystemsDumbwaiterModule();
+	~HolonicSystemsDumbwaiterModule();
 	
 	void step() override;
 	
@@ -99,16 +99,16 @@ struct HolonicSystemsSequenceModule : Module {
 };
 
 
-HolonicSystemsSequenceModule::HolonicSystemsSequenceModule() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
+HolonicSystemsDumbwaiterModule::HolonicSystemsDumbwaiterModule() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
 	onReset();
 }
 
 
-HolonicSystemsSequenceModule::~HolonicSystemsSequenceModule() {
+HolonicSystemsDumbwaiterModule::~HolonicSystemsDumbwaiterModule() {
 }
 
 
-void HolonicSystemsSequenceModule::step() {
+void HolonicSystemsDumbwaiterModule::step() {
 	
 	// Triggers Inputs
 	bool clock = fwdTrigger.process(inputs[IN_CLOCK].value);
@@ -239,12 +239,12 @@ void HolonicSystemsSequenceModule::step() {
 
 
 
-struct HolonicSequencerSEQSWLabel : Widget {
+struct HolonicDumbwaiterSEQSWLabel : Widget {
 	int fontSize;
-	HolonicSystemsSequenceModule *module = nullptr;
+	HolonicSystemsDumbwaiterModule *module = nullptr;
 
 	
-	HolonicSequencerSEQSWLabel(int _fontSize,HolonicSystemsSequenceModule *_module) {
+	HolonicDumbwaiterSEQSWLabel(int _fontSize,HolonicSystemsDumbwaiterModule *_module) {
 		fontSize = _fontSize;
 		box.size.y = BND_WIDGET_HEIGHT;
 		module = _module;
@@ -254,7 +254,7 @@ struct HolonicSequencerSEQSWLabel : Widget {
 		nvgFillColor(vg, nvgRGB(0, 0, 0));
 		nvgFontSize(vg, fontSize);
 		if (module){
-			if (module->params[HolonicSystemsSequenceModule::PARAM_SW_OR_SEQ].value==0){
+			if (module->params[HolonicSystemsDumbwaiterModule::PARAM_SW_OR_SEQ].value==0){
 				nvgText(vg, box.pos.x, box.pos.y, "sequencer (s/h)", NULL);
 			}else{
 				nvgText(vg, box.pos.x, box.pos.y, "switch", NULL);
@@ -264,9 +264,9 @@ struct HolonicSequencerSEQSWLabel : Widget {
 		}
 	}
 };
-struct HolonicSystemsSequenceWidget : ModuleWidget {
-	HolonicSystemsSequenceWidget(HolonicSystemsSequenceModule *module) : ModuleWidget(module) {
-		setPanel(SVG::load(assetPlugin(plugin, "res/HolonicSystems-Sequence.svg")));
+struct HolonicSystemsDumbwaiterWidget : ModuleWidget {
+	HolonicSystemsDumbwaiterWidget(HolonicSystemsDumbwaiterModule *module) : ModuleWidget(module) {
+		setPanel(SVG::load(assetPlugin(plugin, "res/HolonicSystems-Dumbwaiter.svg")));
 		
 		// Screws
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
@@ -275,67 +275,68 @@ struct HolonicSystemsSequenceWidget : ModuleWidget {
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));		
 		
 		// Trigger Inputs
-		addInput(Port::create<PJ301MPort>(							Vec(33, 34), Port::INPUT, module, HolonicSystemsSequenceModule::IN_CLOCK));
-		addInput(Port::create<PJ301MPort>(							Vec(63, 34), Port::INPUT, module, HolonicSystemsSequenceModule::IN_RESET));
+		addInput(Port::create<PJ301MPort>(							Vec(33, 34), Port::INPUT, module, HolonicSystemsDumbwaiterModule::IN_CLOCK));
+		addInput(Port::create<PJ301MPort>(							Vec(63, 34), Port::INPUT, module, HolonicSystemsDumbwaiterModule::IN_RESET));
 		
 		// Address Input
-		addInput(Port::create<PJ301MPort>(							Vec(103, 34), Port::INPUT, module, HolonicSystemsSequenceModule::IN_SEQ));
-		addParam(ParamWidget::create<Trimpot>(			Vec(133, 34+3), module, HolonicSystemsSequenceModule::PARAM_SEQ_ATT, 0, 1.0, 1.0));
+		addInput(Port::create<PJ301MPort>(							Vec(103, 34), Port::INPUT, module, HolonicSystemsDumbwaiterModule::IN_SEQ));
+		addParam(ParamWidget::create<Trimpot>(			Vec(133, 34+3), module, HolonicSystemsDumbwaiterModule::PARAM_SEQ_ATT, 0, 1.0, 1.0));
 	
 		// Channels
 		int start = 66;
 		for (int i=0; i<8 ; i++) {
-			addChild(ModuleLightWidget::create<MediumLight<RedLight>>(	Vec(10+5		, start + i * 36 + 8), module, HolonicSystemsSequenceModule::LIGHT_1 + i));
-			addInput(Port::create<PJ301MPort>(							Vec(10+20, start + i * 36), Port::INPUT, module, HolonicSystemsSequenceModule::IN_1 + i));
-			addParam(ParamWidget::create<RoundSmallBlackKnob>(			Vec(10+50, start + i * 36), module, HolonicSystemsSequenceModule::PARAM_ATT_1 + i, 0, 1.0, 1.0));
-			addParam(ParamWidget::create<CKSSThree>(Vec(10+85, start + i * 36), module, HolonicSystemsSequenceModule::PARAM_TRIG_1+i, 0, 2.0, (i%3==0)? 0 : ((i%2==0)?1:2)) );
+			addChild(ModuleLightWidget::create<MediumLight<RedLight>>(	Vec(10+5		, start + i * 36 + 8), module, HolonicSystemsDumbwaiterModule::LIGHT_1 + i));
+			addInput(Port::create<PJ301MPort>(							Vec(10+20, start + i * 36), Port::INPUT, module, HolonicSystemsDumbwaiterModule::IN_1 + i));
+			addParam(ParamWidget::create<RoundSmallBlackKnob>(			Vec(10+50, start + i * 36), module, HolonicSystemsDumbwaiterModule::PARAM_ATT_1 + i, 0, 1.0, 1.0));
+			addParam(ParamWidget::create<CKSSThree>(Vec(10+85, start + i * 36), module, HolonicSystemsDumbwaiterModule::PARAM_TRIG_1+i, 0, 2.0, (i%3==0)? 0 : ((i%2==0)?1:2)) );
 		}
 		
 		
 		// Mode
-		addInput(Port::create<PJ301MPort>(							Vec(113, 66+18*1), Port::INPUT, module, HolonicSystemsSequenceModule::IN_MODE));
-		addParam(ParamWidget::create<Trimpot>(Vec(136, 66+18*1+15), module, HolonicSystemsSequenceModule::PARAM_MODE_ATT, 0, 1.0, 1.0));
-		rack::RoundSmallBlackKnob* param_mode = ParamWidget::create<RoundSmallBlackKnob>(			Vec(153, 66+18*1), module, HolonicSystemsSequenceModule::PARAM_MODE, 0, 3.0, 0.0);
+		addInput(Port::create<PJ301MPort>(							Vec(113, 66+18*1), Port::INPUT, module, HolonicSystemsDumbwaiterModule::IN_MODE));
+		addParam(ParamWidget::create<Trimpot>(Vec(136, 66+18*1+15), module, HolonicSystemsDumbwaiterModule::PARAM_MODE_ATT, 0, 1.0, 1.0));
+		rack::RoundSmallBlackKnob* param_mode = ParamWidget::create<RoundSmallBlackKnob>(			Vec(153, 66+18*1), module, HolonicSystemsDumbwaiterModule::PARAM_MODE, 0, 3.0, 0.0);
 		param_mode->snap = true;
 		addParam(param_mode);
 		
 		
 		// Start
-		addInput(Port::create<PJ301MPort>(							Vec(113, 66+18*4), Port::INPUT, module, HolonicSystemsSequenceModule::IN_START));
-		addParam(ParamWidget::create<Trimpot>(Vec(136, 66+18*4+15), module, HolonicSystemsSequenceModule::PARAM_START_ATT, 0, 1.0, 1.0));
-		rack::RoundSmallBlackKnob* param_start = ParamWidget::create<RoundSmallBlackKnob>(			Vec(153, 66+18*4), module, HolonicSystemsSequenceModule::PARAM_START, 0, 7.0, 0.0);
+		addInput(Port::create<PJ301MPort>(							Vec(113, 66+18*4), Port::INPUT, module, HolonicSystemsDumbwaiterModule::IN_START));
+		addParam(ParamWidget::create<Trimpot>(Vec(136, 66+18*4+15), module, HolonicSystemsDumbwaiterModule::PARAM_START_ATT, 0, 1.0, 1.0));
+		rack::RoundSmallBlackKnob* param_start = ParamWidget::create<RoundSmallBlackKnob>(			Vec(153, 66+18*4), module, HolonicSystemsDumbwaiterModule::PARAM_START, 0, 7.0, 0.0);
 		param_start->snap = true;
 		addParam(param_start);
 		
 		// Length
-		addInput(Port::create<PJ301MPort>(							Vec(113, 66+18*7), Port::INPUT, module, HolonicSystemsSequenceModule::IN_LENGTH));
-		addParam(ParamWidget::create<Trimpot>(Vec(136, 66+18*7+15), module, HolonicSystemsSequenceModule::PARAM_LENGTH_ATT, 0, 1.0, 1.0));
-		rack::RoundSmallBlackKnob* param_length = ParamWidget::create<RoundSmallBlackKnob>(			Vec(153, 66+18*7), module, HolonicSystemsSequenceModule::PARAM_LENGTH, 0, 7.0, 7.0);
+		addInput(Port::create<PJ301MPort>(							Vec(113, 66+18*7), Port::INPUT, module, HolonicSystemsDumbwaiterModule::IN_LENGTH));
+		addParam(ParamWidget::create<Trimpot>(Vec(136, 66+18*7+15), module, HolonicSystemsDumbwaiterModule::PARAM_LENGTH_ATT, 0, 1.0, 1.0));
+		rack::RoundSmallBlackKnob* param_length = ParamWidget::create<RoundSmallBlackKnob>(			Vec(153, 66+18*7), module, HolonicSystemsDumbwaiterModule::PARAM_LENGTH, 0, 7.0, 7.0);
 		param_length->snap = true;
 		addParam(param_length);
 		
 
-		addParam(ParamWidget::create<CKSS>(Vec(43, 355), module, HolonicSystemsSequenceModule::PARAM_SW_OR_SEQ, 0, 1.0, 0.0));
-		HolonicSequencerSEQSWLabel* const modeLabel = new HolonicSequencerSEQSWLabel(10, module);
+		addParam(ParamWidget::create<CKSS>(Vec(43, 355), module, HolonicSystemsDumbwaiterModule::PARAM_SW_OR_SEQ, 0, 1.0, 0.0));
+		HolonicDumbwaiterSEQSWLabel* const modeLabel = new HolonicDumbwaiterSEQSWLabel(10, module);
 		modeLabel->box.pos = Vec(30, 355/2+7);
 		addChild(modeLabel);
 		
 		
 		// Master
-		addParam(ParamWidget::create<RoundSmallBlackKnob>(			Vec(123, 66+18*11), module, HolonicSystemsSequenceModule::PARAM_OUTPUT_ATT, 0, 1.0, 1.0));
-		addOutput(Port::create<PJ301MPort>(							Vec(153, 66+18*11), Port::OUTPUT, module, HolonicSystemsSequenceModule::OUTPUT_CV));
+		addParam(ParamWidget::create<RoundSmallBlackKnob>(			Vec(123, 66+18*11), module, HolonicSystemsDumbwaiterModule::PARAM_OUTPUT_ATT, 0, 1.0, 1.0));
+		addOutput(Port::create<PJ301MPort>(							Vec(153, 66+18*11), Port::OUTPUT, module, HolonicSystemsDumbwaiterModule::OUTPUT_CV));
 		
 		// Triggers
-		addOutput(Port::create<PJ301MPort>(							Vec(123, 66+18*14), Port::OUTPUT, module, HolonicSystemsSequenceModule::OUTPUT_TRIG_1));
-		addOutput(Port::create<PJ301MPort>(							Vec(153, 66+18*14), Port::OUTPUT, module, HolonicSystemsSequenceModule::OUTPUT_TRIG_2));
+		addOutput(Port::create<PJ301MPort>(							Vec(123, 66+18*14), Port::OUTPUT, module, HolonicSystemsDumbwaiterModule::OUTPUT_TRIG_1));
+		addOutput(Port::create<PJ301MPort>(							Vec(153, 66+18*14), Port::OUTPUT, module, HolonicSystemsDumbwaiterModule::OUTPUT_TRIG_2));
 	}
 };
 
-Model *modelHolonicSystemsSequence = 
-	Model::create<HolonicSystemsSequenceModule, HolonicSystemsSequenceWidget>(
+Model *modelHolonicSystemsDumbwaiter = 
+	Model::create<HolonicSystemsDumbwaiterModule, HolonicSystemsDumbwaiterWidget>(
 		"Holonic Systems",
-	 	"HolonicSystems-Sequence A-155", 
-		"Sequence",
+	 	"HolonicSystems-Dumbwaiter Sequencer", 
+		"Dumbwaiter",
 		SEQUENCER_TAG,
+		SWITCH_TAG,
 		ATTENUATOR_TAG
 );

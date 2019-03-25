@@ -2,7 +2,7 @@
 #include "dsp/digital.hpp"
 
 
-struct HolonicSystemsQuantiserModule : Module {
+struct HolonicSystemsLazySusanModule : Module {
 
 	enum ParamIds {
 		PARAM_SCALE,
@@ -88,8 +88,8 @@ struct HolonicSystemsQuantiserModule : Module {
 
 	float currentCVs[4] = {0.0f,0.0f,0.0f,0.0f};
 	
-	HolonicSystemsQuantiserModule();
-	~HolonicSystemsQuantiserModule();
+	HolonicSystemsLazySusanModule();
+	~HolonicSystemsLazySusanModule();
 	
 	void onReset() override {
 	}
@@ -123,16 +123,16 @@ struct HolonicSystemsQuantiserModule : Module {
 };
 
 
-HolonicSystemsQuantiserModule::HolonicSystemsQuantiserModule() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
+HolonicSystemsLazySusanModule::HolonicSystemsLazySusanModule() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
 	onReset();
 }
 
 
-HolonicSystemsQuantiserModule::~HolonicSystemsQuantiserModule() {
+HolonicSystemsLazySusanModule::~HolonicSystemsLazySusanModule() {
 }
 
 
-void HolonicSystemsQuantiserModule::step() {
+void HolonicSystemsLazySusanModule::step() {
 	
 	float transposeCV = inputs[INPUT_TRANSPOSE_CV].value;
 	float scaleCV = inputs[INPUT_SCALE_CV].active ? (inputs[INPUT_SCALE_CV].value/10) : 0.0;
@@ -216,10 +216,10 @@ void HolonicSystemsQuantiserModule::step() {
 }
 
 
-struct HolonicSystemsQuantiserWidget : ModuleWidget {
+struct HolonicSystemsLazySusanWidget : ModuleWidget {
 
-	HolonicSystemsQuantiserWidget(HolonicSystemsQuantiserModule *module) : ModuleWidget(module) {
-		setPanel(SVG::load(assetPlugin(plugin, "res/HolonicSystems-Quantiser.svg")));
+	HolonicSystemsLazySusanWidget(HolonicSystemsLazySusanModule *module) : ModuleWidget(module) {
+		setPanel(SVG::load(assetPlugin(plugin, "res/HolonicSystems-LazySusan.svg")));
 		
 		//screws
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
@@ -228,17 +228,17 @@ struct HolonicSystemsQuantiserWidget : ModuleWidget {
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
  
 		//IN
-		rack::RoundSmallBlackKnob* scale = ParamWidget::create<RoundSmallBlackKnob>(Vec(10,40), module, HolonicSystemsQuantiserModule::PARAM_SCALE, 0, 6, 0);
+		rack::RoundSmallBlackKnob* scale = ParamWidget::create<RoundSmallBlackKnob>(Vec(10,40), module, HolonicSystemsLazySusanModule::PARAM_SCALE, 0, 6, 0);
 		scale->snap = true;
 		addParam(scale);
-		addInput(Port::create<PJ301MPort>(Vec(50, 40), Port::INPUT, module, HolonicSystemsQuantiserModule::INPUT_SCALE_CV));
-		addParam(ParamWidget::create<Trimpot>(Vec(80,40+5), module, HolonicSystemsQuantiserModule::PARAM_SCALE_CV_ATT, 0, 1, 0));
+		addInput(Port::create<PJ301MPort>(Vec(50, 40), Port::INPUT, module, HolonicSystemsLazySusanModule::INPUT_SCALE_CV));
+		addParam(ParamWidget::create<Trimpot>(Vec(80,40+5), module, HolonicSystemsLazySusanModule::PARAM_SCALE_CV_ATT, 0, 1, 0));
 		
 		//transpose CV
-		addInput(Port::create<PJ301MPort>(Vec(10, 70), Port::INPUT, module, HolonicSystemsQuantiserModule::INPUT_TRANSPOSE_CV));
+		addInput(Port::create<PJ301MPort>(Vec(10, 70), Port::INPUT, module, HolonicSystemsLazySusanModule::INPUT_TRANSPOSE_CV));
 
 		//common ATT
-		addParam(ParamWidget::create<Trimpot>(Vec(90, 85), module, HolonicSystemsQuantiserModule::PARAM_ATT, 0, 1, 1));
+		addParam(ParamWidget::create<Trimpot>(Vec(90, 105), module, HolonicSystemsLazySusanModule::PARAM_ATT, 0, 1, 1));
 		
 
 		int rowHeight = 65;
@@ -247,11 +247,11 @@ struct HolonicSystemsQuantiserWidget : ModuleWidget {
 
 		for (int i=0;i<4;i++){
 			
-			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*0, base + i*rowHeight), Port::INPUT, module, HolonicSystemsQuantiserModule::INPUT_CV_1+i));
-			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*0, base + i*rowHeight+30), Port::INPUT, module, HolonicSystemsQuantiserModule::INPUT_TRIGGER_1+i));
+			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*0, base + i*rowHeight), Port::INPUT, module, HolonicSystemsLazySusanModule::INPUT_CV_1+i));
+			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*0, base + i*rowHeight+30), Port::INPUT, module, HolonicSystemsLazySusanModule::INPUT_TRIGGER_1+i));
 			
-			addOutput(Port::create<PJ301MPort>(Vec(10+vSpace*1, base + i*rowHeight), Port::OUTPUT, module, HolonicSystemsQuantiserModule::OUTPUT_CV_1+i));
-			addOutput(Port::create<PJ301MPort>(Vec(10+vSpace*1, base + i*rowHeight+30), Port::OUTPUT, module, HolonicSystemsQuantiserModule::OUTPUT_TRIGGER_1+i));
+			addOutput(Port::create<PJ301MPort>(Vec(10+vSpace*1, base + i*rowHeight), Port::OUTPUT, module, HolonicSystemsLazySusanModule::OUTPUT_CV_1+i));
+			addOutput(Port::create<PJ301MPort>(Vec(10+vSpace*1, base + i*rowHeight+30), Port::OUTPUT, module, HolonicSystemsLazySusanModule::OUTPUT_TRIGGER_1+i));
 
 		}
 
@@ -264,12 +264,12 @@ struct HolonicSystemsQuantiserWidget : ModuleWidget {
 			//	1		3			6		8		10	
 			if (i == 0 || i == 2 || i == 4 || i == 5 || i == 7 || i == 9 || i == 11) {	
 				x--;
-				addParam(ParamWidget::create<TL1105>(Vec(left, base+ x*row), module, HolonicSystemsQuantiserModule::PARAM_SCALE_1+i,0,1,0));
-				addChild(ModuleLightWidget::create<LargeLight<RedLight>>(Vec(left, base+ x*row), module, HolonicSystemsQuantiserModule::LIGHT_SCALE_1+i));
+				addParam(ParamWidget::create<TL1105>(Vec(left, base+ x*row), module, HolonicSystemsLazySusanModule::PARAM_SCALE_1+i,0,1,0));
+				addChild(ModuleLightWidget::create<LargeLight<RedLight>>(Vec(left, base+ x*row), module, HolonicSystemsLazySusanModule::LIGHT_SCALE_1+i));
 				
 				if (i==0 || i == 2 || i == 5 || i == 7 || i == 9){
-					addParam(ParamWidget::create<TL1105>(Vec(left-20, base+x*row - row/2), module, HolonicSystemsQuantiserModule::PARAM_SCALE_1+i+1,0,1,0));
-					addChild(ModuleLightWidget::create<LargeLight<RedLight>>(Vec(left-20, base+x*row - row/2), module, HolonicSystemsQuantiserModule::LIGHT_SCALE_1+i+1));
+					addParam(ParamWidget::create<TL1105>(Vec(left-20, base+x*row - row/2), module, HolonicSystemsLazySusanModule::PARAM_SCALE_1+i+1,0,1,0));
+					addChild(ModuleLightWidget::create<LargeLight<RedLight>>(Vec(left-20, base+x*row - row/2), module, HolonicSystemsLazySusanModule::LIGHT_SCALE_1+i+1));
 				}
 			}
 			
@@ -279,10 +279,11 @@ struct HolonicSystemsQuantiserWidget : ModuleWidget {
 };
 
 
-Model *modelHolonicSystemsQuantiser = 
-	Model::create<HolonicSystemsQuantiserModule, HolonicSystemsQuantiserWidget>(
+Model *modelHolonicSystemsLazySusan = 
+	Model::create<HolonicSystemsLazySusanModule, HolonicSystemsLazySusanWidget>(
 		"Holonic Systems",
-	 	"HolonicSystems-Quantiser", 
-		"Quantiser",
-		QUANTIZER_TAG
+	 	"HolonicSystems-LazySusan Quantizer", 
+		"LazySusan",
+		QUANTIZER_TAG,
+		QUAD_TAG
 );
