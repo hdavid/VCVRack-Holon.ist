@@ -8,7 +8,8 @@ Holon.ist from http://holonic.systems can communicate with various virtual and p
 - [Pantry - Dual CV/Gate Recorder/Looper](#pantry)
 - [Swiss Cheese Knife - Quad Utility with a twist](#swiss-cheese-knife)
 - [Gaps - Multimode Clock Divider](#gaps)
-- [Junctions - Dual Switch](#junctions)
+- [Dumbwaiter - Sequencer/Switch](#Dumbwaiter)
+- [LazySusan - Quad Quantiser](#Lazy-Susan)
 
 
 ## Holonic Source
