@@ -31,7 +31,7 @@ struct HolonicSystemsSequenceModule : Module {
 		PARAM_SEQ_ATT,
 		PARAM_MODE,
 		PARAM_MODE_ATT,
-		//PARAM_CONTINOUS,
+		PARAM_SW_OR_SEQ,
 		NUM_PARAMS
 	};
 
@@ -89,8 +89,8 @@ struct HolonicSystemsSequenceModule : Module {
 	HolonicSystemsSequenceModule() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		for(int i=0;i<8;i++){
-			params[PARAM_ATT_1 + i].config( 0.f, 1.0f, 1.0f, "Attenutor 1");
-			params[PARAM_TRIG_1 + i].config(0.f, 2.f, (i%3==0)? 0.f : ((i%2==0)?1.f:2.f), "Trigger 1");
+			params[PARAM_ATT_1 + i].config( 0.f, 1.0f, 1.0f, "Attenutor n");
+			params[PARAM_TRIG_1 + i].config(0.f, 2.f, (i%3==0)? 0.f : ((i%2==0)?1.f:2.f), "Trigger n");
 		}
 		params[PARAM_OUTPUT_ATT].config(0.f, 1.f, 1.f, "Output Att");
 		params[PARAM_START].config(0.f, 7.f, 0.f, "Start");
@@ -98,8 +98,11 @@ struct HolonicSystemsSequenceModule : Module {
 		params[PARAM_LENGTH].config(0.f, 7.f, 7.f, "Length");
 		params[PARAM_LENGTH_ATT].config(0.f, 1.f, 1.f, "Length CV Att");
 		params[PARAM_SEQ_ATT].config(0.f, 1.f, 1.f, "Address CV Att");
-		params[PARAM_MODE].config(0.f, 3.f, 0.f, "Mode");
-		params[PARAM_MODE_ATT].config( 0.f, 1.f, 1.f, "Mode CV Att");
+		params[PARAM_MODE].config(0.f, 3.f, 0.f, "Mode (fwd / bkwd / pendulum / rnd)");
+		params[PARAM_MODE_ATT].config(0.f, 1.f, 1.f, "Mode CV Att");
+
+		params[PARAM_SW_OR_SEQ].config(0.f, 1.f, 0.f, "Sample Hold Sequencer mode / Continous Switch mode");
+
 
 		onReset();
 	}
@@ -224,7 +227,7 @@ struct HolonicSystemsSequenceModule : Module {
 			lights[LIGHT_1+i].setBrightness(counter == i ? 1 : 0);
 			if (counter == i) {
 				//output cv
-				if ((inputs[IN_CLOCK].active && clock) || counter != oldCounter ){//|| params[PARAM_CONTINOUS].value == 1) {
+				if ((inputs[IN_CLOCK].active && clock) || counter != oldCounter || params[PARAM_SW_OR_SEQ].value == 1) {
 					outputs[OUTPUT_CV].value = params[PARAM_OUTPUT_ATT].value * params[PARAM_ATT_1+i].value * (inputs[IN_1+i].active ? inputs[IN_1+i].value : 10.0);
 				}
 				//trigger
@@ -246,6 +249,34 @@ struct HolonicSystemsSequenceModule : Module {
 	}
 
 };
+
+
+struct HolonicSequencerSEQSWLabel : Widget {
+	int fontSize;
+	HolonicSystemsSequenceModule *module = nullptr;
+
+	
+	HolonicSequencerSEQSWLabel(int _fontSize,HolonicSystemsSequenceModule *_module) {
+		fontSize = _fontSize;
+		box.size.y = BND_WIDGET_HEIGHT;
+		module = _module;
+	}
+
+	void draw(const DrawArgs &args) override {
+		nvgFillColor(args.vg, nvgRGB(0, 0, 0));
+		nvgFontSize(args.vg, fontSize);
+		if (module){
+			if (module->params[HolonicSystemsSequenceModule::PARAM_SW_OR_SEQ].value==0){
+				nvgText(args.vg, box.pos.x, box.pos.y, "sequencer (s/h)", NULL);
+			}else{
+				nvgText(args.vg, box.pos.x, box.pos.y, "switch", NULL);
+			}
+		} else {
+			nvgText(args.vg, box.pos.x, box.pos.y, "switch", NULL);
+		}
+	}
+};
+
 
 
 struct HolonicSystemsSequenceWidget : ModuleWidget {
@@ -299,7 +330,12 @@ struct HolonicSystemsSequenceWidget : ModuleWidget {
 		param_length->snap = true;
 		addParam(param_length);
 		
-		//addParam(ParamWidget::create<CKSS>(Vec(113, 66+18*8+15), module, HolonicSystemsSequenceModule::PARAM_CONTINOUS, 0, 1.0, 1.0));
+
+		addParam(createParam<CKSS>(Vec(43, 355), module, HolonicSystemsSequenceModule::PARAM_SW_OR_SEQ));
+		HolonicSequencerSEQSWLabel* const modeLabel = new HolonicSequencerSEQSWLabel(10, module);
+		modeLabel->box.pos = Vec(30, 355/2+7);
+		addChild(modeLabel);
+
 		
 		// Master
 		addParam(createParam<RoundSmallBlackKnob>(Vec(123, 66+18*11), module, HolonicSystemsSequenceModule::PARAM_OUTPUT_ATT));
