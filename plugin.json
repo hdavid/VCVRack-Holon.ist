@@ -18,9 +18,9 @@
 			"description": "Dual CV/Gate Recorder/Looper",
 			"tags": ["SEQUENCER","RECORDING"]
 		},
-		"HolonicSystems-Sequence A-155": {
-			"name": "Sequence",
-			"description": "8 step sequencer. One could see it as a A-155 / A-154 / A-152 merged into one module",
+		"HolonicSystems-Dumbwaiter Sequencer": {
+			"name": "Dumbwaiter",
+			"description": "8 step sequencer and switch. One could see it as a A-155 / A-154 / A-152 merged into one module",
 			"tags": ["SEQUENCER","ATTENUATOR","SWITCH"]
 		},
 		"HolonicSystems-SwissCheeseKnife": {
@@ -38,9 +38,9 @@
 			"description": "A simple dual switch. Two inputs, one output",
 			"tags": ["SWITCH"]
 		},
-		"HolonicSystems-Quantiser": {
-			"name": "Quantiser",
-			"description": "Quad Quantiser with scales",
+		"HolonicSystems-LazySusan Quantiser": {
+			"name": "Lazy Susan",
+			"description": "Quad Quantiser with user editable scales",
 			"tags": ["QUANTIZER","QUAD"]
 		}
 	}

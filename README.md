@@ -98,11 +98,19 @@ Holonic Source clips signals to -10v, +10v.
 Ensure that values are properly scaled in the Holon.ist scaling section.
 
 
-## Sequence
+## Dumbwaiter
 
-![Pantry](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Sequence.png)
+![Dumbwaiter](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Dumbwaiter.png)
 
-Sequence is a 8 step sequencer. One could see it as a A-155 / A-154 / A-152 merged into one module.
+Dumbwaiter is a 8 step sequencer and 8 inputs switch. One could see it as a A-155 / A-154 / A-152 merged into one module.
+
+## Lazy Susan
+
+![Lazy Susan](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/LazySusan.png)
+
+Lazy Susan is a quad quantiser with user editable scales.
+
+By default the scales are the standard modes : Ionian, Dorian, Phrygian, Lydian, Myxolydian, Aealian (minor), Locrian.
 
 
 ## Pantry
