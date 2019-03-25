@@ -4,11 +4,13 @@ Holon.ist from http://holonic.systems can communicate with various virtual and p
 
 ##### Table of Contents  
 - [Holonic Source for VCV Rack](#holonic-source)
-- [Sequence](#sequence)
+- [Dumbwaiter - Sequencer/Switch](#Dumbwaiter)
+- [LazySusan - Quad Quantiser](#Lazy-Susan)
 - [Pantry - Dual CV/Gate Recorder/Looper](#pantry)
 - [Swiss Cheese Knife - Quad Utility with a twist](#swiss-cheese-knife)
 - [Gaps - Multimode Clock Divider](#gaps)
-- [Junctions - Dual Switch](#junctions)
+- [Junctions - simple dual switch](#Junctions)
+
 
 
 ## Holonic Source
@@ -100,7 +102,7 @@ Ensure that values are properly scaled in the Holon.ist scaling section.
 
 ## Dumbwaiter
 
-![Dumbwaiter](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Dumbwaiter.png)
+![Dumbwaiter](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Dumbwaiter.png).
 
 Dumbwaiter is a 8 step sequencer and 8 inputs switch. One could see it as a A-155 / A-154 / A-152 merged into one module.
 
@@ -108,9 +110,9 @@ Dumbwaiter is a 8 step sequencer and 8 inputs switch. One could see it as a A-15
 
 ![Lazy Susan](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/LazySusan.png)
 
-Lazy Susan is a quad quantiser with user editable scales.
+Lazy Susan is a quad quantiser with user editable scales
 
-By default the scales are the standard modes : Ionian, Dorian, Phrygian, Lydian, Myxolydian, Aealian (minor), Locrian.
+By default the scales are the standard modes : Ionian, Dorian, Phrygian, Lydian, Myxolydian, Aealian (minor), Locrian
 
 
 ## Pantry
