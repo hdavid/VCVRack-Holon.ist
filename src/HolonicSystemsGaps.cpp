@@ -42,15 +42,7 @@ struct HolonicSystemsGapsModule : Module {
 		NUM_LIGHTS
 	};	
 	
-	HolonicSystemsGapsModule();
-	~HolonicSystemsGapsModule();
-	
-	
-	void onReset() override {
-		srand(time(NULL));
-	}
-	
-	void step() override;
+
 	LooseSchmittTrigger clockTrigger;
 	LooseSchmittTrigger resetTrigger;
 	
@@ -67,6 +59,17 @@ struct HolonicSystemsGapsModule : Module {
 								{2,3,4,5, 6,7,8,9}, // random
 								{1,2,3, 4,5,6,7,8} // seq
 							};
+							
+							
+ 	HolonicSystemsGapsModule();
+	~HolonicSystemsGapsModule();
+	
+	
+	void onReset() override {
+		srand(time(NULL));
+	}
+	
+	void step() override;
 };
 
 
@@ -152,8 +155,12 @@ struct HolonicGapsLabel : Widget {
 	void draw(NVGcontext *vg) override {
 		nvgFillColor(vg, nvgRGB(0, 0, 0));
 		nvgFontSize(vg, fontSize);
-		sprintf(str, "%d", module->divisions[(int)module->params[HolonicSystemsGapsModule::MODE_PARAM].value][index]);
-		nvgText(vg, box.pos.x, box.pos.y, str, NULL);
+		if (module) {
+			sprintf(str, "%d", module->divisions[(int)module->params[HolonicSystemsGapsModule::MODE_PARAM].value][index]);
+			nvgText(vg, box.pos.x, box.pos.y, str, NULL);
+		 } else {
+			nvgText(vg, box.pos.x, box.pos.y, "", NULL);
+		}
 		
 	}
 };
@@ -173,8 +180,12 @@ struct HolonicGapsTrigGateLabel : Widget {
 	void draw(NVGcontext *vg) override {
 		nvgFillColor(vg, nvgRGB(0, 0, 0));
 		nvgFontSize(vg, fontSize);
-		if ( module->params[HolonicSystemsGapsModule::TRIG_MODE_PARAM].value==0){
-			nvgText(vg, box.pos.x, box.pos.y, "gate", NULL);
+		if (module){
+			if ( module->params[HolonicSystemsGapsModule::TRIG_MODE_PARAM].value==0){
+				nvgText(vg, box.pos.x, box.pos.y, "gate", NULL);
+			}else{
+				nvgText(vg, box.pos.x, box.pos.y, "trig", NULL);
+			}
 		}else{
 			nvgText(vg, box.pos.x, box.pos.y, "trig", NULL);
 		}
@@ -213,7 +224,9 @@ struct HolonicSystemsGapsWidget : ModuleWidget {
 		modeKnob->names.push_back(std::string("binary"));
 		modeKnob->names.push_back(std::string("rand"));
 		modeKnob->names.push_back(std::string("seq"));
-		modeKnob->connectLabel(modeLabel);
+		if (module){
+			modeKnob->connectLabel(modeLabel);
+		}
 		addChild(modeLabel);
 		addParam(modeKnob);
 		

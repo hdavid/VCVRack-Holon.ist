@@ -53,6 +53,18 @@ struct HolonicSystemsPantryModule : Module {
 		NUM_LIGHTS
 	};	
 	
+	LooseSchmittTrigger clockTrigger;
+	LooseSchmittTrigger resetTrigger;
+	
+	
+	long counters[2] = {0,0};
+	int recordingSteps[2] = {-1,-1};
+	LooseSchmittTrigger recordTrigger[2];
+	LooseSchmittTrigger overdubTrigger[2];
+	LooseSchmittTrigger clearTrigger[2];
+	std::vector<float> cvs[2] = {std::vector<float>(64),std::vector<float>(64)};
+	std::vector<float> gates[2]= {std::vector<float>(64),std::vector<float>(64)};
+	
 	HolonicSystemsPantryModule();
 	~HolonicSystemsPantryModule();
 	
@@ -68,17 +80,7 @@ struct HolonicSystemsPantryModule : Module {
 	
 	void step() override;
 	
-	SchmittTrigger clockTrigger;
-	SchmittTrigger resetTrigger;
-	
-	
-	long counters[2] = {0,0};
-	int recordingSteps[2] = {-1,-1};
-	LooseSchmittTrigger recordTrigger[2];
-	LooseSchmittTrigger overdubTrigger[2];
-	LooseSchmittTrigger clearTrigger[2];
-	std::vector<float> cvs[2] = {std::vector<float>(64),std::vector<float>(64)};
-	std::vector<float> gates[2]= {std::vector<float>(64),std::vector<float>(64)};  
+  
 	
 	
 	 
@@ -249,7 +251,9 @@ struct HolonicSystemsPantryWidget : ModuleWidget {
 			lengthKnob->names.push_back(std::string("length 30"));
 			lengthKnob->names.push_back(std::string("length 31"));
 			lengthKnob->names.push_back(std::string("length 32"));
-			lengthKnob->connectLabel(lengthLabel);
+			if (module){
+				lengthKnob->connectLabel(lengthLabel);
+			}
 			addChild(lengthLabel);
 			addParam(lengthKnob);
 			
@@ -295,7 +299,9 @@ struct HolonicSystemsPantryWidget : ModuleWidget {
 			shiftKnob->names.push_back(std::string("shift 29"));
 			shiftKnob->names.push_back(std::string("shift 30"));
 			shiftKnob->names.push_back(std::string("shift 31"));
-			shiftKnob->connectLabel(shiftLabel);
+			if (module){
+				shiftKnob->connectLabel(shiftLabel);
+			}
 			addChild(shiftLabel);
 			addParam(shiftKnob);
 			

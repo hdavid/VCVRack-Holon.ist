@@ -74,9 +74,13 @@ struct HolonicSystemsHolonicSourceModule : Module {
 	float lightValues[8];
 	double outputValues[8];
 	Ports ports;
+
 	
 	HolonicSystemsHolonicSourceModule();
-	~HolonicSystemsHolonicSourceModule();
+
+	~HolonicSystemsHolonicSourceModule(){
+		ports.stop();
+	}
 	
 	void step() override;
 	
@@ -92,13 +96,9 @@ struct HolonicSystemsHolonicSourceModule : Module {
 
 HolonicSystemsHolonicSourceModule::HolonicSystemsHolonicSourceModule() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
 	onReset();
- 	ports.start();
+	ports.start();
 }
 
-
-HolonicSystemsHolonicSourceModule::~HolonicSystemsHolonicSourceModule() {
-	ports.stop();
-}
 
 
 void HolonicSystemsHolonicSourceModule::step() {
@@ -174,10 +174,14 @@ struct HolonistOSCLabel : Widget {
 		nvgFontSize(vg, fontSize);
   		ret = gettimeofday (&tv, NULL); // timezone structure is obsolete
   	  	if (ret == 0) sec = (int)tv.tv_sec;
-		if (sec%4==0||sec%4==1){
-			nvgText(vg, box.pos.x, box.pos.y, module->ports.names[index].c_str(), NULL);
+		if (module){
+			if (sec%4==0||sec%4==1){
+				nvgText(vg, box.pos.x, box.pos.y, module->ports.names[index].c_str(), NULL);
+			} else {
+				nvgText(vg, box.pos.x, box.pos.y, module->ports.inputs[index].c_str(), NULL);
+			}
 		} else {
-			nvgText(vg, box.pos.x, box.pos.y, module->ports.inputs[index].c_str(), NULL);
+			nvgText(vg, box.pos.x, box.pos.y, "", NULL);
 		}
 	}
 };
@@ -205,7 +209,9 @@ struct HolonicSystemsHolonicSourceWidget : ModuleWidget {
 		busKnob->names.push_back(std::string("Bus F"));
 		busKnob->names.push_back(std::string("Bus G"));
 		busKnob->names.push_back(std::string("Bus H"));
-		busKnob->connectLabel(busLabel);
+		if (module){
+			busKnob->connectLabel(busLabel);
+		}
 		addChild(busLabel);
 		addParam(busKnob);
 		

@@ -11,6 +11,6 @@ void init(Plugin *p) {
 	p->addModel(modelHolonicSystemsPantry);
 	p->addModel(modelHolonicSystemsGaps);
 	p->addModel(modelHolonicSystemsJunctions);
-	p->addModel(modelHolonicSystemsSequence);
-	//p->addModel(modelHolonicSystemsHolonistReceiver);
+	p->addModel(modelHolonicSystemsDumbwaiter);
+	p->addModel(modelHolonicSystemsLazySusan);
 }
