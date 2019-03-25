@@ -100,15 +100,15 @@ Ensure that values are properly scaled in the Holon.ist scaling section.
 
 ## Dumbwaiter
 
-![Dumbwaiter](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Dumbwaiter.png)
+![Dumbwaiter](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Dumbwaiter.png).
 
 Dumbwaiter is a 8 step sequencer and 8 inputs switch. One could see it as a A-155 / A-154 / A-152 merged into one module.
 
-## Lady Susan
+## Lazy Susan
 
-![Lady Susan](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/LadySusan.png)
+![Lazy Susan](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/LazySusan.png)
 
-Lady Susan is a quad quantiser with user editable scales
+Lazy Susan is a quad quantiser with user editable scales
 
 By default the scales are the standard modes : Ionian, Dorian, Phrygian, Lydian, Myxolydian, Aealian (minor), Locrian
 
