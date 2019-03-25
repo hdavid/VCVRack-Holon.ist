@@ -4,12 +4,13 @@ Holon.ist from http://holonic.systems can communicate with various virtual and p
 
 ##### Table of Contents  
 - [Holonic Source for VCV Rack](#holonic-source)
-- [Sequence](#sequence)
+- [Dumbwaiter - Sequencer/Switch](#Dumbwaiter)
+- [LazySusan - Quad Quantiser](#Lazy-Susan)
 - [Pantry - Dual CV/Gate Recorder/Looper](#pantry)
 - [Swiss Cheese Knife - Quad Utility with a twist](#swiss-cheese-knife)
 - [Gaps - Multimode Clock Divider](#gaps)
-- [Dumbwaiter - Sequencer/Switch](#Dumbwaiter)
-- [LazySusan - Quad Quantiser](#Lazy-Susan)
+- [Junctions - simple dual switch](#Junctions)
+
 
 
 ## Holonic Source
