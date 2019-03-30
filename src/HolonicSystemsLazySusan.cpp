@@ -282,7 +282,7 @@ struct HolonicSystemsLazySusanWidget : ModuleWidget {
 Model *modelHolonicSystemsLazySusan = 
 	Model::create<HolonicSystemsLazySusanModule, HolonicSystemsLazySusanWidget>(
 		"Holonic Systems",
-	 	"HolonicSystems-LazySusan Quantizer", 
+	 	"HolonicSystems-LazySusan Quantiser", 
 		"LazySusan",
 		QUANTIZER_TAG,
 		QUAD_TAG
