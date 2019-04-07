@@ -5,7 +5,7 @@ Holon.ist from http://holonic.systems can communicate with various virtual and p
 ##### Table of Contents  
 - [Holonic Source for VCV Rack](#holonic-source)
 - [Dumbwaiter - Sequencer/Switch](#Dumbwaiter)
-- [LazySusan - Quad Quantiser](#Lazy-Susan)
+- [Lazy Susan - Quad Quantiser](#Lazy-Susan)
 - [Pantry - Dual CV/Gate Recorder/Looper](#pantry)
 - [Swiss Cheese Knife - Quad Utility with a twist](#swiss-cheese-knife)
 - [Gaps - Multimode Clock Divider](#gaps)
@@ -22,7 +22,7 @@ Holonic Source module for VCV Rack integrates with the Holon.ist iOS app and out
 - Per channel activity indicator, attenuator and low pass filter.
 - Multiple Holonic Source modules can run at the same time. Each instance can be set to receive on its own bus, from A to H, allowing for a total of 64 channels of CV.
 
-### Demos
+### Demo Patches
 We've put together some VCV demo patches that use the Holonic Source. They use the default mappings in the Holon.ist app.
 
 Our demos are packaged with the plugins, they are located in: `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\demos` (Windows) `/Users/<you>/Documents/Rack/plugins/HolonicSystems-Free/demos` (MacOS) 
@@ -35,6 +35,7 @@ The demo patches require the following VCV Rack plugins to be installed:
 - Holonic Systems - Free
 - JW Modules
 - ML Modules
+- MSM
 - Valley
 - Vult Modules - Free
 - Some demo patches require Stellare Link. This module needs to be manually installed from https://github.com/stellare-modular/vcv-link/releases. Drop the zip in your plugin folder and restart Rack. 
@@ -46,7 +47,7 @@ Please check the following installation steps below to avoid common pitfalls, su
 
 - Install the latest version of Holon.ist on your iPhone or iPad from: http://holonic.systems or https://testflight.apple.com/join/mBx4PTxL
 - Install the latest version of VCV rack: https://vcvrack.com/
-- Install the Holonic Source plugin from the VCV Rack plugin manager: https://vcvrack.com/plugins.html#holonic
+- Install the Holonic Systems - Free plugin suite from the VCV Rack plugin manager: https://vcvrack.com/plugins.html#holonic
 - Follow the instruction below  to establish communication between Holon.ist and Holonic Source.
 
 ### OSC Communication
@@ -54,7 +55,7 @@ Please check the following installation steps below to avoid common pitfalls, su
 mDNS/bonjour is used for autodiscovery.
 
 - MacOS 
-  - Holon.ist automatically detects VCV Rack when Holonic Source plugin is loaded.
+  - Holon.ist automatically detects VCV Rack when the Holonic Source plugin is loaded.
 - Windows 
   - requires Bonjour SDK from Apple to be installed: https://developer.apple.com/bonjour/  
   - Check that the Bonjour Service is running.
@@ -62,12 +63,12 @@ mDNS/bonjour is used for autodiscovery.
   - do not close the DOS window until your are done with your VCV Session.
 - Linux 
   - Make sure Avahi is running (it is usually the case).
-  - run the script. `Holonic_Source_linux.sh`. This publishes Holonic Source on the network to allow autodiscovery.
-  - do not close the shell window until your are done with your VCV Session.
+  - Run the script. `Holonic_Source_linux.sh`. This publishes Holonic Source on the network to allow autodiscovery.
+  - Do not close the shell window until you are done with your VCV Session.
 
 Tips
 - Ensure that firewalls, such as Little Snitch, are not blocking communication. For instance, on MacOS, with Little Snitch firewall, incoming communication must be specifically enabled for Rack.
-- If you cannot get auto discovery to work for some reason, you can always manually create an OSC output in Holon.ist and input your computer IP and port 9000.
+- If you cannot get autodiscovery to work for some reason, you can always manually create an OSC output in Holon.ist and input your computer IP and port 9000.
 - Please read the Holon.ist manual http://holon.ist/manual/
 
 #### OSC Message Format
@@ -79,6 +80,7 @@ The message OSC path is `/<bus>/<channel>/<mode>` where:
 - `<channel>` is one of `1`/`2`/`3`/`4`/`5`/`6`/`7`/`8`
 - `<mode>` is one of `cv` for unipolar CV, `cvbi` for bipolar CV.
 - Argument value should be a float. Holonic Source accepts values in [-1,1] range or in [-10,10] range depending on the switch configuration in the GUI. When [-1,1] is selected, values will effectively be multiplied by 10.
+- for instance `/a/2/cv` will address channel 2 of bus a in CV mode. 
 
 ### Receiving Bus
 The Receiving bus pot selects from which bus the module receives signals from Holon.ist. This allows use of more than one instance of the module in the patch, providing up to 64 channels of voltage control in total.
@@ -87,7 +89,7 @@ The Receiving bus pot selects from which bus the module receives signals from Ho
 Activity LEDs for each channel indicate when Holonic Source receives OSC messages for the particular channel and receiving bus.
 
 ### Attenuators
-Attenuators on each channel let one scale and invert CV values according to need.  
+Attenuators on each channel let one scale CV values according to need.  
 
 ### Low Pass Filters
 The slew is adjustable, in order to avoid stepped signals, and to make more natural CV changes.
@@ -104,15 +106,16 @@ Ensure that values are properly scaled in the Holon.ist scaling section.
 
 ![Dumbwaiter](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Dumbwaiter.png).
 
-Dumbwaiter is a 8 step sequencer and 8 inputs switch. One could see it as a A-155 / A-154 / A-152 merged into one module.
+Dumbwaiter is a 8 step sequencer and 8 inputs switch. One could see it as a A-155 / A-154 merged into one module.
 
 ## Lazy Susan
 
 ![Lazy Susan](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/LazySusan.png)
 
-Lazy Susan is a quad quantiser with user editable scales
+Lazy Susan is a quad quantiser with user editable scales.
 
-By default the scales are the standard modes : Ionian, Dorian, Phrygian, Lydian, Myxolydian, Aealian (minor), Locrian
+By default, the scales are the 7 standard modes: Ionian, Dorian, Phrygian, Lydian, Mixolydian, Aeolian, Locrian.
+
 
 
 ## Pantry
@@ -124,7 +127,7 @@ Pantry is a Dual CV/Gate Recorder/Looper.
 Features:
 - Dual Channel. 
 - CV and Gate Recording.
-- Record: Full loop length triggered or the button is pressed.
+- Record: Full loop length is recorded.
 - Overdub: Record while CV/button is held.
 - Pattern Length from 1 to 32 using CV.
 - CV control of Pattern Shift.
@@ -152,7 +155,9 @@ VCA with response shape ranging from linear to exponential.
 Simple low pass filter.
 
 ### Slew Limiter
-Slew limiter.
+Slew limiter with adjustable independent Rise and Fall times.
+
+Slope shape is adjustable between linear and exponential.
 
 ### DC Offset Remover
 While in AC mode, any DC offset is removed. 
@@ -161,8 +166,7 @@ While in AC mode, any DC offset is removed.
 Signal offset.
 
 ### Mixer
-Last on the signal path, but not least. SwissCheeseKnife can also mix 4 signals, as its outputs are normalled.
-
+Last on the signal path, but not least. Swiss Cheese Knife can also mix four signals, as its outputs are normalled.
 
 ## Gaps
 
