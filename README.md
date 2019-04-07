@@ -79,8 +79,9 @@ The message OSC path is `/<bus>/<channel>/<mode>` where:
 - `<bus>` is one of `a`/`b`/`c`/`d`/`e`/`f`/`g`/`h`
 - `<channel>` is one of `1`/`2`/`3`/`4`/`5`/`6`/`7`/`8`
 - `<mode>` is one of `cv` for unipolar CV, `cvbi` for bipolar CV.
+- For instance `/a/2/cv` will address channel 2 of bus a in CV mode. 
 - Argument value should be a float. Holonic Source accepts values in [-1,1] range or in [-10,10] range depending on the switch configuration in the GUI. When [-1,1] is selected, values will effectively be multiplied by 10.
-- for instance `/a/2/cv` will address channel 2 of bus a in CV mode. 
+
 
 ### Receiving Bus
 The Receiving bus pot selects from which bus the module receives signals from Holon.ist. This allows use of more than one instance of the module in the patch, providing up to 64 channels of voltage control in total.
