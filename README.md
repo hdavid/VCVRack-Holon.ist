@@ -38,7 +38,7 @@ The demo patches require the following VCV Rack plugins to be installed:
 - MSM
 - Valley
 - Vult Modules - Free
-- Some demo patches require Stellare Link. This module needs to be manually installed from https://github.com/stellare-modular/vcv-link/releases. Drop the zip in your plugin folder and restart Rack. 
+- Stellare Link
 
 See also http://holon.ist/demos/
 
