@@ -1,6 +1,6 @@
 # Holonic Systems - VCV Rack Free Plugins
 
-Holon.ist from http://holonic.systems can communicate with various virtual and physical studio gear using MIDI and OSC protocols. Download the latest beta version from: https://testflight.apple.com/join/mBx4PTxL
+Holon.ist from http://holonic.systems can communicate with various virtual and physical studio gear using MIDI and OSC protocols. Download the latest beta version from: https://itunes.apple.com/us/app/holon-ist/id1359763686?mt=8
 
 ##### Table of Contents  
 - [Holonic Source for VCV Rack](#holonic-source)
@@ -47,7 +47,7 @@ Please check the following installation steps below to avoid common pitfalls, su
 
 - Install the latest version of Holon.ist on your iPhone or iPad from: http://holonic.systems or https://testflight.apple.com/join/mBx4PTxL
 - Install the latest version of VCV rack: https://vcvrack.com/
-- Install the Holonic Systems - Free plugin suite from the VCV Rack plugin manager: https://vcvrack.com/plugins.html#holonic
+- Install the Holonic Systems plugin suite from the VCV Rack plugin manager: https://vcvrack.com/plugins.html#holonic
 - Follow the instruction below  to establish communication between Holon.ist and Holonic Source.
 
 ### OSC Communication
@@ -60,11 +60,11 @@ mDNS/bonjour is used for autodiscovery.
   - requires Bonjour SDK from Apple to be installed: https://developer.apple.com/bonjour/  
   - Check that the Bonjour Service is running.
   - Run the script `Holonic_Source_windows.bat`. This script can be found in the plugin folder `c:\Users\<you>\Documents\Rack\Plugins\HolonicSystems-Free\` The script publishes Holonic Source on the network to allow autodiscovery from Holon.ist app.
-  - do not close the DOS window until your are done with your VCV Session.
+  - The DOS window needs to remain open for the duration of the VCV session.
 - Linux 
-  - Make sure Avahi is running (it is usually the case).
+  - Ensure Avahi is running.
   - Run the script. `Holonic_Source_linux.sh`. This publishes Holonic Source on the network to allow autodiscovery.
-  - Do not close the shell window until you are done with your VCV Session.
+  - The shell window needs to remain open for the duration of the VCV session.
 
 Tips
 - Ensure that firewalls, such as Little Snitch, are not blocking communication. For instance, on MacOS, with Little Snitch firewall, incoming communication must be specifically enabled for Rack.
@@ -73,7 +73,7 @@ Tips
 
 #### OSC Message Format
 
-The Holonic Source OSC message format is used to ensure close integration with our Holon.ist app. In order to use Holonic Source with any OSC compatible application, please select Port 9000.
+The Holonic Source OSC message format is used to ensure close integration with our Holon.ist app. In order to use Holonic Source with any other OSC compatible application, please select port 9000.
 
 The message OSC path is `/<bus>/<channel>/<mode>` where:
 - `<bus>` is one of `a`/`b`/`c`/`d`/`e`/`f`/`g`/`h`
@@ -84,7 +84,7 @@ The message OSC path is `/<bus>/<channel>/<mode>` where:
 
 
 ### Receiving Bus
-The Receiving bus pot selects from which bus the module receives signals from Holon.ist. This allows use of more than one instance of the module in the patch, providing up to 64 channels of voltage control in total.
+The Receiving bus selector determines from which bus the module receives signals from Holon.ist. This allows use of more than one instance of the module in the patch, providing up to 64 channels of voltage control in total.
 
 ### Activity LEDs
 Activity LEDs for each channel indicate when Holonic Source receives OSC messages for the particular channel and receiving bus.
@@ -93,7 +93,7 @@ Activity LEDs for each channel indicate when Holonic Source receives OSC message
 Attenuators on each channel let one scale CV values according to need.  
 
 ### Low Pass Filters
-The slew is adjustable, in order to avoid stepped signals, and to make more natural CV changes.
+An adjustable slew is included to smooth signals as desired.
 
 ### Outputs
 VCV rack expects values between 0v and +10v for unipolar and between -5v and +5v for bipolar signals.
@@ -107,7 +107,7 @@ Ensure that values are properly scaled in the Holon.ist scaling section.
 
 ![Dumbwaiter](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Dumbwaiter.png).
 
-Dumbwaiter is a 8 step sequencer and 8 inputs switch. One could see it as a A-155 / A-154 merged into one module.
+Dumbwaiter is a addressable 8 step sequencer and switch. One could see it as the lower row of the Doepfer A-155 with a large helping of A-154 functionality.
 
 ## Lazy Susan
 
@@ -115,9 +115,11 @@ Dumbwaiter is a 8 step sequencer and 8 inputs switch. One could see it as a A-15
 
 Lazy Susan is a quad quantiser with user editable scales.
 
+For your convenience, your custom scales are saved with each patch.
+
 By default, the scales are the 7 standard modes: Ionian, Dorian, Phrygian, Lydian, Mixolydian, Aeolian, Locrian.
 
-
+Serving suggestion: The Doepfer A-156 Quantiser minor mode is a melodic minor scale (CmMaj7). Choose the Dorian scale and sharpen the 7th to harmonize with your Eurorack.
 
 ## Pantry
 
@@ -128,7 +130,7 @@ Pantry is a Dual CV/Gate Recorder/Looper.
 Features:
 - Dual Channel. 
 - CV and Gate Recording.
-- Record: Full loop length is recorded.
+- Record: Full loop length recording via cv or button
 - Overdub: Record while CV/button is held.
 - Pattern Length from 1 to 32 using CV.
 - CV control of Pattern Shift.
@@ -138,27 +140,25 @@ Features:
 
 ![SwissCheeseKnife](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/SwissCheeseKnife.png)
 
-SwissCheeseKnife is a quad utility module with a twist.
+SwissCheeseKnife is a fully featured quad utility module.
 
 ### Inverter
 Inverts input signal.
 
 ### Attenuator 
-Signal attenuator.
+Signal Attenuator.
 
 ### Sample and Hold
-Classic Trigger and Hold.
+Classic Sample and Hold.
 
 ### VCA
-VCA with response shape ranging from linear to exponential.
+VCA with variable response shape ranging from linear to exponential.
 
 ### Low Pass Filter
 Simple low pass filter.
 
 ### Slew Limiter
-Slew limiter with adjustable independent Rise and Fall times.
-
-Slope shape is adjustable between linear and exponential.
+Slew limiter with independently adjustable slope shape and Rise and Fall times.
 
 ### DC Offset Remover
 While in AC mode, any DC offset is removed. 
@@ -188,4 +188,4 @@ Gaps is a clock divider that supports multiple modes.
 
 ![Junctions](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/Junctions.png)
 
-A simple dual switch. Two inputs, one output.
+A simple dual switch with two inputs and one output.
