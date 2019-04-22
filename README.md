@@ -15,7 +15,7 @@ Holon.ist from http://holonic.systems can communicate with various virtual and p
 
 ## Holonic Source
 
-![Holonic Source](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/HolonicSource.png)    [![Holon.ist Receiver Demo](http://img.youtube.com/vi/eBonU85BfDM/0.jpg)](https://www.youtube.com/watch?v=eBonU85BfDM "Holon.ist Receiver Demo")
+![Holonic Source](https://raw.githubusercontent.com/hdavid/VCVRack-Holon.ist/master/screencaps/HolonicSource.jpg)    [![Holon.ist Receiver Demo](http://img.youtube.com/vi/eBonU85BfDM/0.jpg)](https://www.youtube.com/watch?v=eBonU85BfDM "Holon.ist Receiver Demo")
 
 Holonic Source module for VCV Rack integrates with the Holon.ist iOS app and outputs CV control signals to VCV Rack.
 - 8 channels of CV control from Holon.ist to VCV Rack.
