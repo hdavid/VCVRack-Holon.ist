@@ -176,6 +176,18 @@ void HolonicSystemsLazySusanModule::step() {
 				float semitones = (inputCV-octave)*12;
 				int below=0;
 				int above=0;
+				// set starting points
+				// below is last note of below octave in scale
+				// above is first note of above octave in scale
+				for (int j=0; j<12; j++) {
+					if (scales[offset+j]) {
+						below = j-12;
+						if (above==0){
+							above = j+12;
+						}
+					}
+				}
+				// find closest above and below notes
 				for (int j=0; j<12; j++) {
 					if (scales[offset+j]) {
 						if (semitones<j){
@@ -186,14 +198,13 @@ void HolonicSystemsLazySusanModule::step() {
 						}
 					}
 				}
-
-				//TODO: handle over octave stuff.
+				// round to the closest note.
 				if (abs(above - semitones) > abs(below - semitones)){
 					semitones=below;
 				} else {
 					semitones=above;
 				}
-
+				
 				float newValue = octave + semitones / 12;
 
 				if (!inputs[INPUT_TRIGGER_1+1].active || triggerIn) {
