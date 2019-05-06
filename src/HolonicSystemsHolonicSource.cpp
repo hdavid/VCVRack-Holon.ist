@@ -79,11 +79,11 @@ struct HolonicSystemsHolonicSourceModule : Module {
 	HolonicSystemsHolonicSourceModule() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		for(int i=0l;i<8;i++){
-			params[ATT_1].config(0.f, 1.f, 1.f, "Attenuator");
-			params[ALPHA_1].config(1.0f, 0.0f, 0.8f, "LPF");
+			configParam(ATT_1+i,0.f, 1.f, 1.f, "Attenuator");
+			configParam(ALPHA_1+1, 1.0f, 0.0f, 0.8f, "LPF");
 		}
-		params[BANK_PARAM].config(0.f, 7.f, 0.f, "Bus");
-		params[ONE_TEN_VOLT_OSC_PARAM_1].config( 0.0f, 1.0f, 1.0f, "One or Ten");
+		configParam(BANK_PARAM, 0.f, 7.f, 0.f, "Bus");
+		configParam(ONE_TEN_VOLT_OSC_PARAM_1, 0.0f, 1.0f, 1.0f, "One or Ten");
 		onReset();
 		ports.start();
 	}

@@ -70,16 +70,16 @@ struct HolonicSystemsPantryModule : Module {
 
 	HolonicSystemsPantryModule() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-		params[PARAM_RECORD_1].config(0.f, 1.f, 0.f, "Record 1");
-		params[PARAM_OVERDUB_1].config(0.f, 1.f, 0.0f, "Overdub 1");
-		params[PARAM_CLEAR_1].config(0.f, 1.f, 0.0f, "Clear 1");
-		params[PARAM_LENGTH_1].config(0.f, 31.f, 16.f, "Lenth 1");
-		params[PARAM_SHIFT_1].config(0.f, 31.f, 0.f, "Shift 1");
-		params[PARAM_RECORD_2].config(0.f, 1.f, 0.f, "Record 2");
-		params[PARAM_OVERDUB_2].config(0.f, 1.f, 0.0f, "Overdub 2");
-		params[PARAM_CLEAR_2].config(0.f, 1.f, 0.0f, "Clear 2");
-		params[PARAM_LENGTH_2].config(0.f, 31.f, 16.f, "Lenth 2");
-		params[PARAM_SHIFT_2].config(0.f, 31.f, 0.f, "Shift 2");
+		configParam(PARAM_RECORD_1,0.f, 1.f, 0.f, "Record 1");
+		configParam(PARAM_OVERDUB_1,0.f, 1.f, 0.0f, "Overdub 1");
+		configParam(PARAM_CLEAR_1,0.f, 1.f, 0.0f, "Clear 1");
+		configParam(PARAM_LENGTH_1,0.f, 31.f, 16.f, "Lenth 1");
+		configParam(PARAM_SHIFT_1,0.f, 31.f, 0.f, "Shift 1");
+		configParam(PARAM_RECORD_2,0.f, 1.f, 0.f, "Record 2");
+		configParam(PARAM_OVERDUB_2,0.f, 1.f, 0.0f, "Overdub 2");
+		configParam(PARAM_CLEAR_2,0.f, 1.f, 0.0f, "Clear 2");
+		configParam(PARAM_LENGTH_2,0.f, 31.f, 16.f, "Lenth 2");
+		configParam(PARAM_SHIFT_2,0.f, 31.f, 0.f, "Shift 2");
 		onReset();
 	}
 

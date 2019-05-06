@@ -89,19 +89,20 @@ struct HolonicSystemsDumbwaiterModule : Module {
 	HolonicSystemsDumbwaiterModule() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		for(int i=0;i<8;i++){
-			params[PARAM_ATT_1 + i].config( 0.f, 1.0f, 1.0f, "Attenutor n");
-			params[PARAM_TRIG_1 + i].config(0.f, 2.f, (i%3==0)? 0.f : ((i%2==0)?1.f:2.f), "Trigger n");
+			configParam(PARAM_ATT_1 + i, 0.f, 1.0f, 1.0f, "Attenutor n");
+			configParam(PARAM_TRIG_1 + i,0.f, 2.f, (i%3==0)? 0.f : ((i%2==0)?1.f:2.f), "Trigger n");
 		}
-		params[PARAM_OUTPUT_ATT].config(0.f, 1.f, 1.f, "Output Att");
-		params[PARAM_START].config(0.f, 7.f, 0.f, "Start");
-		params[PARAM_START_ATT].config(0.f, 1.f, 1.f, "Start CV Att");
-		params[PARAM_LENGTH].config(0.f, 7.f, 7.f, "Length");
-		params[PARAM_LENGTH_ATT].config(0.f, 1.f, 1.f, "Length CV Att");
-		params[PARAM_SEQ_ATT].config(0.f, 1.f, 1.f, "Address CV Att");
-		params[PARAM_MODE].config(0.f, 3.f, 0.f, "Mode (fwd / bkwd / pendulum / rnd)");
-		params[PARAM_MODE_ATT].config(0.f, 1.f, 1.f, "Mode CV Att");
+		
+		configParam(PARAM_OUTPUT_ATT,0.f, 1.f, 1.f, "Output Att");
+		configParam(PARAM_START,0.f, 7.f, 0.f, "Start");
+		configParam(PARAM_START_ATT,0.f, 1.f, 1.f, "Start CV Att");
+		configParam(PARAM_LENGTH,0.f, 7.f, 7.f, "Length");
+		configParam(PARAM_LENGTH_ATT,0.f, 1.f, 1.f, "Length CV Att");
+		configParam(PARAM_SEQ_ATT,0.f, 1.f, 1.f, "Address CV Att");
+		configParam(PARAM_MODE,0.f, 3.f, 0.f, "Mode (fwd / bkwd / pendulum / rnd)");
+		configParam(PARAM_MODE_ATT,0.f, 1.f, 1.f, "Mode CV Att");
 
-		params[PARAM_SW_OR_SEQ].config(0.f, 1.f, 0.f, "Sample Hold Sequencer mode / Continous Switch mode");
+		configParam(PARAM_SW_OR_SEQ,0.f, 1.f, 0.f, "Sample Hold Sequencer mode / Continous Switch mode");
 
 
 		onReset();

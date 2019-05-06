@@ -75,13 +75,13 @@ struct HolonicSystemsKnob : RoundSmallBlackKnob {
 		}
 	}
 
-	void onDragMove(const widget::DragMoveEvent &e) override {
+	void onDragMove(const rack::event::DragMove &e) override {
 		RoundSmallBlackKnob::onDragMove(e);
 		if (linkedLabel) {
 			linkedLabel->text = formatCurrentValue();
 		}
 	}
-	void onDragEnd(const widget::DragEndEvent &e) override {
+	void onDragEnd(const rack::event::DragEnd &e) override {
 		RoundSmallBlackKnob::onDragEnd(e);
 		if (linkedLabel) {
 			linkedLabel->text = formatCurrentValue();

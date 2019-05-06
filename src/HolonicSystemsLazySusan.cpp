@@ -92,9 +92,9 @@ struct HolonicSystemsLazySusanModule : Module {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		
 		//IN
-		params[PARAM_SCALE].config(0.f, 6.f, 0.f, "scale");	
-		params[PARAM_SCALE_CV_ATT].config(0.f, 1.f, 1.f, "scale cv att");		
-		params[PARAM_ATT].config(0.f, 1.f, 1.f, "common att");
+		configParam(PARAM_SCALE,0.f, 6.f, 0.f, "scale");	
+		configParam(PARAM_SCALE_CV_ATT,0.f, 1.f, 1.f, "scale cv att");		
+		configParam(PARAM_ATT,0.f, 1.f, 1.f, "common att");
 
 		onReset();
 	}
@@ -133,7 +133,6 @@ struct HolonicSystemsLazySusanModule : Module {
 	}
 	
 	void process(const ProcessArgs &args) override {
-		float transposeCV = inputs[INPUT_TRANSPOSE_CV].value;
 		float scaleCV = inputs[INPUT_SCALE_CV].active ? (inputs[INPUT_SCALE_CV].value/10) : 0.0;
 		float scaleParam = params[PARAM_SCALE].value;
 		float scaleCVATTParam = params[PARAM_SCALE_CV_ATT].value;
@@ -167,33 +166,50 @@ struct HolonicSystemsLazySusanModule : Module {
 
 					// transpose
 					if (inputs[INPUT_TRANSPOSE_CV].active){
-						inputCV += transposeCV;
+						inputCV += inputs[INPUT_TRANSPOSE_CV].value;
 					}
+
+					//offset so that negative voltage are handled just the same.
+					inputCV += 100; 
 
 					//quantising
 					int octave = (int)inputCV;
 					float semitones = (inputCV-octave)*12;
 					int below=0;
 					int above=0;
+					// set starting points
+					// below is last note of below octave in scale
+					// above is first note of above octave in scale
 					for (int j=0; j<12; j++) {
 						if (scales[offset+j]) {
-							if (semitones<j){
+							below = j-12;
+							if (above==0){
+								above = j+12;
+							}
+						}
+					}
+				
+					// find closest above and below notes
+					for (int j=0; j<12; j++) {
+						if (scales[offset+j]) {
+							if (j<semitones){
 								below = j;
 							}
-							if (semitones>=j){
+							if (j>=semitones){
 								above = j;
+								break;
 							}
 						}
 					}
 
 					//TODO: handle over octave stuff.
-					if (abs(above - semitones) > abs(below - semitones)){
-						semitones=below;
-					} else {
+					if (abs(above - semitones) < abs(below - semitones)){
 						semitones=above;
+					} else {
+						semitones=below;
 					}
-
-					float newValue = octave + semitones / 12;
+				
+					float newValue = octave + semitones / 12 - 100;
 
 					if (!inputs[INPUT_TRIGGER_1+1].active || triggerIn) {
 						if (newValue != currentCVs[i]) {

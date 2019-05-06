@@ -63,8 +63,8 @@ struct HolonicSystemsGapsModule : Module {
 
 	HolonicSystemsGapsModule(){
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-		params[MODE_PARAM].config(0.f, 6.f, 0.f, "Division Mode");
-		params[TRIG_MODE_PARAM].config(0.f, 1.f, 0.f, "Trigger/Gate Mode");
+		configParam(MODE_PARAM,0.f, 6.f, 0.f, "Division Mode");
+		configParam(TRIG_MODE_PARAM,0.f, 1.f, 0.f, "Trigger/Gate Mode");
 		onReset();
 	}
 
