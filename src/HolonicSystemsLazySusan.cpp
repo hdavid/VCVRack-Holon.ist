@@ -177,7 +177,6 @@ void HolonicSystemsLazySusanModule::step() {
 				//quantising
 				int octave = (int)inputCV;
 				float semitones = (inputCV-octave)*12;
-				float semitonesBefore = (inputCV-octave)*12;
 				int below=0;
 				int above=0;
 				// set starting points
