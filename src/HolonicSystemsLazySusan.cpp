@@ -133,8 +133,7 @@ HolonicSystemsLazySusanModule::~HolonicSystemsLazySusanModule() {
 
 
 void HolonicSystemsLazySusanModule::step() {
-	
-	float transposeCV = inputs[INPUT_TRANSPOSE_CV].value;
+
 	float scaleCV = inputs[INPUT_SCALE_CV].active ? (inputs[INPUT_SCALE_CV].value/10) : 0.0;
 	float scaleParam = params[PARAM_SCALE].value;
 	float scaleCVATTParam = params[PARAM_SCALE_CV_ATT].value;
@@ -168,12 +167,17 @@ void HolonicSystemsLazySusanModule::step() {
 
 				// transpose
 				if (inputs[INPUT_TRANSPOSE_CV].active){
-					inputCV += transposeCV;
+					inputCV += inputs[INPUT_TRANSPOSE_CV].value;
 				}
+				
+				//offset so that negative voltage are handled just the same.
+				inputCV += 100; 
+
 
 				//quantising
 				int octave = (int)inputCV;
 				float semitones = (inputCV-octave)*12;
+				float semitonesBefore = (inputCV-octave)*12;
 				int below=0;
 				int above=0;
 				// set starting points
@@ -187,25 +191,28 @@ void HolonicSystemsLazySusanModule::step() {
 						}
 					}
 				}
+				
 				// find closest above and below notes
 				for (int j=0; j<12; j++) {
 					if (scales[offset+j]) {
-						if (semitones<j){
+						if (j<semitones){
 							below = j;
 						}
-						if (semitones>=j){
+						if (j>=semitones){
 							above = j;
+							break;
 						}
 					}
 				}
+				
 				// round to the closest note.
-				if (abs(above - semitones) > abs(below - semitones)){
-					semitones=below;
-				} else {
+				if (abs(above - semitones) < abs(below - semitones)){
 					semitones=above;
+				} else {
+					semitones=below;
 				}
 				
-				float newValue = octave + semitones / 12;
+				float newValue = octave + semitones / 12 - 100;
 
 				if (!inputs[INPUT_TRIGGER_1+1].active || triggerIn) {
 					if (newValue != currentCVs[i]) {
