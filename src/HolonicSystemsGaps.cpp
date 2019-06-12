@@ -86,7 +86,12 @@ void HolonicSystemsGapsModule::step() {
 	
 	bool clock = clockTrigger.process(inputs[INPUT_CLOCK].value);
 	bool reset = resetTrigger.process(inputs[INPUT_RESET].value);
-	bool trigMode = params[TRIG_MODE_PARAM].value > 0;
+	
+	bool clockIsHigh = clockTrigger.isHigh();
+	bool trigMode = params[TRIG_MODE_PARAM].value == 1;
+	bool gateMode = params[TRIG_MODE_PARAM].value == 0;
+	
+	
 	float deltaTime = engineGetSampleTime();
 	
 	if (reset) {
@@ -113,8 +118,13 @@ void HolonicSystemsGapsModule::step() {
 				}
 				outputs[OUTPUT_1+i].value = pulses[i].process(deltaTime) ? 10.0 : 0.0;
 				lights[LED_1+i].setBrightnessSmooth(outputs[OUTPUT_1+i].value);
-			} else {
+			} else if (gateMode) {
 				outputs[OUTPUT_1+i].value = on ? 10 : 0;
+				lights[LED_1+i].setBrightness(outputs[OUTPUT_1+i].value);
+				int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
+				f = f+1;
+			} else {
+				outputs[OUTPUT_1+i].value = outputs[OUTPUT_1+i].value = on && clockIsHigh ? 10 : 0;
 				lights[LED_1+i].setBrightness(outputs[OUTPUT_1+i].value);
 				int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
 				f = f+1;
@@ -124,7 +134,12 @@ void HolonicSystemsGapsModule::step() {
 			if (trigMode) {
 				outputs[OUTPUT_1+i].value = pulses[i].process(deltaTime) ? 10.0 : 0.0;
 				lights[LED_1+i].setBrightnessSmooth(outputs[OUTPUT_1+i].value);
+			} else if (gateMode){
+				int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
+				f = f+1;
 			} else {
+				outputs[OUTPUT_1+i].value = outputs[OUTPUT_1+i].value = outputs[OUTPUT_1+i].value>0 && clockIsHigh ? 10 : 0;
+				lights[LED_1+i].setBrightness(outputs[OUTPUT_1+i].value);
 				int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
 				f = f+1;
 			}
@@ -181,10 +196,12 @@ struct HolonicGapsTrigGateLabel : Widget {
 		nvgFillColor(vg, nvgRGB(0, 0, 0));
 		nvgFontSize(vg, fontSize);
 		if (module){
-			if ( module->params[HolonicSystemsGapsModule::TRIG_MODE_PARAM].value==0){
+			if (module->params[HolonicSystemsGapsModule::TRIG_MODE_PARAM].value==0){
 				nvgText(vg, box.pos.x, box.pos.y, "gate", NULL);
-			}else{
+			} else if (module->params[HolonicSystemsGapsModule::TRIG_MODE_PARAM].value==1){
 				nvgText(vg, box.pos.x, box.pos.y, "trig", NULL);
+			}else{
+				nvgText(vg, box.pos.x, box.pos.y, "as is", NULL);
 			}
 		}else{
 			nvgText(vg, box.pos.x, box.pos.y, "trig", NULL);
@@ -207,7 +224,7 @@ struct HolonicSystemsGapsWidget : ModuleWidget {
 		addInput(Port::create<PJ301MPort>(Vec(5, 57), Port::INPUT, module, HolonicSystemsGapsModule::INPUT_CLOCK));
 		addInput(Port::create<PJ301MPort>(Vec(30, 57), Port::INPUT, module, HolonicSystemsGapsModule::INPUT_RESET));
 		
-		addParam(ParamWidget::create<CKSS>(Vec(43, 355), module, HolonicSystemsGapsModule::TRIG_MODE_PARAM, 0, 1.0, 0.0));
+		addParam(ParamWidget::create<CKSSThree>(Vec(43, 350), module, HolonicSystemsGapsModule::TRIG_MODE_PARAM, 0, 2.0, 0.0));
 		HolonicGapsTrigGateLabel* const trigGateLabel = new HolonicGapsTrigGateLabel(10, module);
 		trigGateLabel->box.pos = Vec(10, 355/2+5);
 		addChild(trigGateLabel);
