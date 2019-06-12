@@ -27,7 +27,6 @@ struct HolonicSystemsDumbwaiterModule : Module {
 		PARAM_START_ATT,
 		PARAM_LENGTH,
 		PARAM_LENGTH_ATT,
-		PARAM_SEQ,
 		PARAM_SEQ_ATT,
 		PARAM_MODE,
 		PARAM_MODE_ATT,
@@ -159,7 +158,7 @@ void HolonicSystemsDumbwaiterModule::step() {
   		 	+ 8
 		)%8 + 1;
 	
-	float seq = in_seq * params[PARAM_SEQ].value;
+	float seq = in_seq * params[PARAM_SEQ_ATT].value;
 	int mode = (((int)params[PARAM_MODE].value) + in_mode)%4;
 	bool forward = mode == 0 || mode == 2;
 	bool backward = mode == 1;
@@ -186,12 +185,11 @@ void HolonicSystemsDumbwaiterModule::step() {
 		} else if ((forward && !(reverse && pingpong)) 
 			|| (backward && (reverse && pingpong))
 		) {
-			counter = (start + ((counter - start + 1)%(length)) )%8;
+		    counter = ((((counter + 8 - start)%8 + 1 + length)%length + 8)%8 + start)%8;
 		} else if ((forward && (reverse && pingpong))
 			|| (backward && !(reverse && pingpong) )
 			) {
-			//check above zero and start
-			counter = (start + ((counter - start - 1 + length)%(length))+8)%8;
+		    counter = ((((counter + 8 - start)%8 - 1 + length)%length + 8)%8 + start)%8;
 		}
 		// ping-pong
 		if (pingpong) {
@@ -216,8 +214,8 @@ void HolonicSystemsDumbwaiterModule::step() {
 		lights[LIGHT_1+i].setBrightness(counter == i ? 1 : 0);
 		if (counter == i) {
 			//output cv
-				if ((inputs[IN_CLOCK].active && clock) || counter != oldCounter || params[PARAM_SW_OR_SEQ].value == 1) {
-					outputs[OUTPUT_CV].value = params[PARAM_OUTPUT_ATT].value * params[PARAM_ATT_1+i].value * (inputs[IN_1+i].active ? inputs[IN_1+i].value : 10.0);
+			if ((inputs[IN_CLOCK].active && clock) || counter != oldCounter || params[PARAM_SW_OR_SEQ].value == 1) {
+				outputs[OUTPUT_CV].value = params[PARAM_OUTPUT_ATT].value * params[PARAM_ATT_1+i].value * (inputs[IN_1+i].active ? inputs[IN_1+i].value : 10.0);
 			}
 			//trigger
 			if ((inputs[IN_CLOCK].active && clock) || counter != oldCounter){
