@@ -135,12 +135,14 @@ HolonicSystemsLazySusanModule::~HolonicSystemsLazySusanModule() {
 void HolonicSystemsLazySusanModule::step() {
 
 	float scaleCV = inputs[INPUT_SCALE_CV].active ? (inputs[INPUT_SCALE_CV].value/10) : 0.0;
+	if (scaleCV<0){
+		scaleCV = 0;
+	}
 	float scaleParam = params[PARAM_SCALE].value;
 	float scaleCVATTParam = params[PARAM_SCALE_CV_ATT].value;
 
 	int scaleIndex = ((int)(scaleCV * scaleCVATTParam * 7 + scaleParam))%7;
 	int offset = scaleIndex * 12;
-
 
 	float att = params[PARAM_ATT].value;
 
@@ -249,7 +251,7 @@ struct HolonicSystemsLazySusanWidget : ModuleWidget {
 		scale->snap = true;
 		addParam(scale);
 		addInput(Port::create<PJ301MPort>(Vec(50, 40), Port::INPUT, module, HolonicSystemsLazySusanModule::INPUT_SCALE_CV));
-		addParam(ParamWidget::create<Trimpot>(Vec(80,40+5), module, HolonicSystemsLazySusanModule::PARAM_SCALE_CV_ATT, 0, 1, 0));
+		addParam(ParamWidget::create<Trimpot>(Vec(80,40+5), module, HolonicSystemsLazySusanModule::PARAM_SCALE_CV_ATT, 0, 1, 1));
 		
 		//transpose CV
 		addInput(Port::create<PJ301MPort>(Vec(10, 70), Port::INPUT, module, HolonicSystemsLazySusanModule::INPUT_TRANSPOSE_CV));
