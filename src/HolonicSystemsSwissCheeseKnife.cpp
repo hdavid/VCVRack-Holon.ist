@@ -153,7 +153,7 @@ struct HolonicSystemsSwissCheeseKnifeModule : Module {
 
 			//slew
 			if (params[PARAM_SLEW_UP_1+i].value>0.01 || params[PARAM_SLEW_DOWN_1+i].value>0.01) {
-				float shape = params[PARAM_SLEW_SHAPE_1+i].value;
+				float shape = 1.0 - params[PARAM_SLEW_SHAPE_1+i].value;
 				// minimum and maximum slopes in volts per second
 				const float slewMin = 0.1;
 				const float slewMax = 10000.0;

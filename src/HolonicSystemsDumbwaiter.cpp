@@ -27,7 +27,6 @@ struct HolonicSystemsDumbwaiterModule : Module {
 		PARAM_START_ATT,
 		PARAM_LENGTH,
 		PARAM_LENGTH_ATT,
-		PARAM_SEQ,
 		PARAM_SEQ_ATT,
 		PARAM_MODE,
 		PARAM_MODE_ATT,
@@ -171,7 +170,7 @@ struct HolonicSystemsDumbwaiterModule : Module {
 				+ 8
 			)%8 + 1;
 		
-		float seq = in_seq * params[PARAM_SEQ].value;
+		float seq = in_seq * params[PARAM_SEQ_ATT].value;
 		int mode = (((int)params[PARAM_MODE].value) + in_mode)%4;
 		bool forward = mode == 0 || mode == 2;
 		bool backward = mode == 1;

@@ -134,6 +134,9 @@ struct HolonicSystemsLazySusanModule : Module {
 	
 	void process(const ProcessArgs &args) override {
 		float scaleCV = inputs[INPUT_SCALE_CV].active ? (inputs[INPUT_SCALE_CV].value/10) : 0.0;
+		if (scaleCV<0){
+			scaleCV = 0;
+		}
 		float scaleParam = params[PARAM_SCALE].value;
 		float scaleCVATTParam = params[PARAM_SCALE_CV_ATT].value;
 
