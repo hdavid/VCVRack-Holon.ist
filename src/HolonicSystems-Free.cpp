@@ -4,11 +4,11 @@ Plugin *pluginInstance;
 
 void init(Plugin *p) {
 	pluginInstance = p;
-	p->addModel(modelHolonicSystemsHolonicSource);
-	p->addModel(modelHolonicSystemsSwissCheeseKnife);
-	p->addModel(modelHolonicSystemsPantry);
-	p->addModel(modelHolonicSystemsGaps);
-	p->addModel(modelHolonicSystemsJunctions);
-	p->addModel(modelHolonicSystemsDumbwaiter);
-	p->addModel(modelHolonicSystemsLazySusan);
+	p->addModel(modelHolonicSource);
+	p->addModel(modelSwissCheeseKnife);
+	p->addModel(modelPantry);
+	p->addModel(modelGaps);
+	p->addModel(modelJunctions);
+	p->addModel(modelDumbwaiter);
+	p->addModel(modelLazySusan);
 }

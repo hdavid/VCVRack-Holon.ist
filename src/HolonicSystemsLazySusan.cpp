@@ -252,11 +252,7 @@ struct HolonicSystemsLazySusanWidget : ModuleWidget {
 		rack::RoundSmallBlackKnob* scale = createParam<RoundSmallBlackKnob>(Vec(10,40), module, HolonicSystemsLazySusanModule::PARAM_SCALE);
 		scale->snap = true;
 		addParam(scale);
-		
-		addParam(createParam<RoundSmallBlackKnob>(Vec(123, 66+18*11), module, HolonicSystemsLazySusanModule::PARAM_SCALE_CV_ATT));
-		
 		addInput(createInput<PJ301MPort>(Vec(60, 40), module, HolonicSystemsLazySusanModule::INPUT_SCALE_CV));
-
 		addParam(createParam<Trimpot>(Vec(90,40+5), module, HolonicSystemsLazySusanModule::PARAM_SCALE_CV_ATT));
 		
 		//transpose CV
@@ -271,14 +267,14 @@ struct HolonicSystemsLazySusanWidget : ModuleWidget {
 		int base = 105;
 
 		for (int i=0;i<4;i++){
+		
 			addInput(createInput<PJ301MPort>(Vec(10+vSpace*0, base + i*rowHeight), module, HolonicSystemsLazySusanModule::INPUT_CV_1+i));
 			addInput(createInput<PJ301MPort>(Vec(10+vSpace*0, base + i*rowHeight+30), module, HolonicSystemsLazySusanModule::INPUT_TRIGGER_1+i));
 			
 			addOutput(createOutput<PJ301MPort>(Vec(10+vSpace*1, base + i*rowHeight), module, HolonicSystemsLazySusanModule::OUTPUT_CV_1+i));
 			addOutput(createOutput<PJ301MPort>(Vec(10+vSpace*1, base + i*rowHeight+30), module, HolonicSystemsLazySusanModule::OUTPUT_TRIGGER_1+i));
-		}
-		
-		
+
+		}	
 
 		int x = 7;
 		base = 180;
@@ -304,6 +300,6 @@ struct HolonicSystemsLazySusanWidget : ModuleWidget {
 
 
 
-Model *modelHolonicSystemsLazySusan = createModel<HolonicSystemsLazySusanModule, HolonicSystemsLazySusanWidget>("HolonicSystems-LazySusan Quantiser");
+Model *modelLazySusan = createModel<HolonicSystemsLazySusanModule, HolonicSystemsLazySusanWidget>("LazySusan");
 
 

@@ -6,28 +6,37 @@
 struct HolonicSystemsHolonicSourceModule : Module {
 
 	enum ParamIds {
-		ATT_1,
-		ATT_2,
-		ATT_3,
-		ATT_4,
-		ATT_5,
-		ATT_6,
-		ATT_7,
-		ATT_8,
-		ALPHA_1,
-		ALPHA_2,
-		ALPHA_3,
-		ALPHA_4,
-		ALPHA_5,
-		ALPHA_6,
-		ALPHA_7,
-		ALPHA_8,
-		BANK_PARAM,
-		ONE_TEN_VOLT_OSC_PARAM_1,
+		PARAM_ATT_1,
+		PARAM_ATT_2,
+		PARAM_ATT_3,
+		PARAM_ATT_4,
+		PARAM_ATT_5,
+		PARAM_ATT_6,
+		PARAM_ATT_7,
+		PARAM_ATT_8,
+		PARAM_ALPHA_1,
+		PARAM_ALPHA_2,
+		PARAM_ALPHA_3,
+		PARAM_ALPHA_4,
+		PARAM_ALPHA_5,
+		PARAM_ALPHA_6,
+		PARAM_ALPHA_7,
+		PARAM_ALPHA_8,
+		PARAM_BUS,
+		PARAM_ONE_TEN_VOLT_OSC_1,
+		PARAM_S_H_1,
+		PARAM_S_H_2,
+		PARAM_S_H_3,
+		PARAM_S_H_4,
+		PARAM_S_H_5,
+		PARAM_S_H_6,
+		PARAM_S_H_7,
+		PARAM_S_H_8,
 		NUM_PARAMS
 	};
 
 	enum InputIds {
+		INPUT_CLOCK,
 		NUM_INPUTS
 	};
 
@@ -44,46 +53,48 @@ struct HolonicSystemsHolonicSourceModule : Module {
 	};
 	
 	enum LightIds {
-		ACTIVITY_1_LIGHT,
-		ACTIVITY_2_LIGHT,
-		ACTIVITY_3_LIGHT,
-		ACTIVITY_4_LIGHT,
-		ACTIVITY_5_LIGHT,
-		ACTIVITY_6_LIGHT,
-		ACTIVITY_7_LIGHT,
-		ACTIVITY_8_LIGHT,
-		OUTPUT_LIGHT_POS_1,
-		OUTPUT_LIGHT_NEG_1,
-		OUTPUT_LIGHT_POS_2,
-		OUTPUT_LIGHT_NEG_2,
-		OUTPUT_LIGHT_POS_3,
-		OUTPUT_LIGHT_NEG_3,
-		OUTPUT_LIGHT_POS_4,
-		OUTPUT_LIGHT_NEG_4,
-		OUTPUT_LIGHT_POS_5,
-		OUTPUT_LIGHT_NEG_5,
-		OUTPUT_LIGHT_POS_6,
-		OUTPUT_LIGHT_NEG_6,
-		OUTPUT_LIGHT_POS_7,
-		OUTPUT_LIGHT_NEG_7,
-		OUTPUT_LIGHT_POS_8,
-		OUTPUT_LIGHT_NEG_8,
+		LIGHT_ACTIVITY_1,
+		LIGHT_ACTIVITY_2,
+		LIGHT_ACTIVITY_3,
+		LIGHT_ACTIVITY_4,
+		LIGHT_ACTIVITY_5,
+		LIGHT_ACTIVITY_6,
+		LIGHT_ACTIVITY_7,
+		LIGHT_ACTIVITY_8,
+		LIGHT_OUTPUT_POS_1,
+		LIGHT_OUTPUT_NEG_1,
+		LIGHT_OUTPUT_POS_2,
+		LIGHT_OUTPUT_NEG_2,
+		LIGHT_OUTPUT_POS_3,
+		LIGHT_OUTPUT_NEG_3,
+		LIGHT_OUTPUT_POS_4,
+		LIGHT_OUTPUT_NEG_4,
+		LIGHT_OUTPUT_POS_5,
+		LIGHT_OUTPUT_NEG_5,
+		LIGHT_OUTPUT_POS_6,
+		LIGHT_OUTPUT_NEG_6,
+		LIGHT_OUTPUT_POS_7,
+		LIGHT_OUTPUT_NEG_7,
+		LIGHT_OUTPUT_POS_8,
+		LIGHT_OUTPUT_NEG_8,
 		NUM_LIGHTS
 	};	
 	
 	float lightValues[8];
 	double outputValues[8];
 	Ports ports;
+	LooseSchmittTrigger clockTrigger;
 
 	
 	HolonicSystemsHolonicSourceModule() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		for(int i=0l;i<8;i++){
-			configParam(ATT_1+i,0.f, 1.f, 1.f, "Attenuator");
-			configParam(ALPHA_1+1, 1.0f, 0.0f, 0.8f, "LPF");
+			configParam(PARAM_ATT_1+i,0.f, 1.f, 1.f, "Attenuator");
+			configParam(PARAM_ALPHA_1+1, 1.0f, 0.0f, 0.8f, "LPF");
+			configParam(PARAM_S_H_1+1, 1.0f, 0.0f, 0.0f, "S/H");
 		}
-		configParam(BANK_PARAM, 0.f, 7.f, 0.f, "Bus");
-		configParam(ONE_TEN_VOLT_OSC_PARAM_1, 0.0f, 1.0f, 1.0f, "One or Ten");
+		configParam(PARAM_BUS, 0.f, 7.f, 0.f, "Bus");
+		configParam(PARAM_ONE_TEN_VOLT_OSC_1, 0.0f, 1.0f, 1.0f, "One or Ten");
 		onReset();
 		ports.start();
 	}
@@ -103,9 +114,10 @@ struct HolonicSystemsHolonicSourceModule : Module {
 
 
 	void process(const ProcessArgs &args) override {
-		
+	
+		bool clock = clockTrigger.process(inputs[INPUT_CLOCK].value);
 		//bank
-		ports.setBank((int) params[BANK_PARAM].value);
+		ports.setBank((int) params[PARAM_BUS].value);
 		
 		float deltaTime = APP->engine->getSampleTime();
 		
@@ -113,16 +125,16 @@ struct HolonicSystemsHolonicSourceModule : Module {
 		for (int i=0; i<NUM_OUTPUTS; i++) {
 			
 			//previous value
-			float out = outputs[i].value;
+			float out = outputValues[i];
 			
 			//get value
 			ports.computeChannel(i, deltaTime);
 			
 			//attenuverter
-			float in = params[ATT_1 + i].value * ports.channelValues[i] * ((ports.channelModes[i]==4 || ports.channelModes[i]==50) && params[ONE_TEN_VOLT_OSC_PARAM_1].value > 0 ? 10 : 1);
+			float in = params[PARAM_ATT_1 + i].value * ports.channelValues[i] * ((ports.channelModes[i]==4 || ports.channelModes[i]==50) && params[PARAM_ONE_TEN_VOLT_OSC_1].value > 0 ? 10 : 1);
 			
 			//filter
-			float alpha = params[ALPHA_1+i].value;
+			float alpha = params[PARAM_ALPHA_1+i].value;
 			if (alpha < 0.95) {
 				// make our alpha sample rate linked
 				// and exponantial 
@@ -133,11 +145,16 @@ struct HolonicSystemsHolonicSourceModule : Module {
 				out = in;
 			}
 			
-			//publish output
-			outputs[i].value = out;
+			outputValues[i] = out;
+			
+			
+			if (params[PARAM_S_H_1+i].value == 0 || (clock && params[PARAM_S_H_1+i].value > 0) ) {
+				//publish output if on clock or no s_h
+				outputs[i].value = outputValues[i];
+			}
 			//monitoring leds
-			lights[OUTPUT_LIGHT_POS_1 + 2*i].setSmoothBrightness(fmaxf(0.0, outputs[i].value/5.0),APP->engine->getSampleTime());	
-			lights[OUTPUT_LIGHT_NEG_1 + 2*i].setSmoothBrightness(fmaxf(0.0, -1 * outputs[i].value/5.0),APP->engine->getSampleTime());
+			lights[LIGHT_OUTPUT_POS_1 + 2*i].setSmoothBrightness(fmaxf(0.0, outputs[i].value/5.0),APP->engine->getSampleTime());	
+			lights[LIGHT_OUTPUT_NEG_1 + 2*i].setSmoothBrightness(fmaxf(0.0, -1 * outputs[i].value/5.0),APP->engine->getSampleTime());
 			
 			//activity led
 			if (ports.channelUpdated[i]) {
@@ -146,7 +163,7 @@ struct HolonicSystemsHolonicSourceModule : Module {
 			}
 			
 			lights[i].setBrightness(lightValues[i]);
-			lightValues[ACTIVITY_1_LIGHT+i] *= 1 - 10 * APP->engine->getSampleTime();
+			lightValues[LIGHT_ACTIVITY_1+i] *= 1 - 10 * APP->engine->getSampleTime();
 		}
 
 	}
@@ -204,9 +221,9 @@ struct HolonicSystemsHolonicSourceWidget : ModuleWidget {
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
 		//bank selector
-		HolonicSystemsKnob *busKnob = dynamic_cast<HolonicSystemsKnob*>(createParam<HolonicSystemsKnob>(Vec(84, 20-4), module, HolonicSystemsHolonicSourceModule::BANK_PARAM));
+		HolonicSystemsKnob *busKnob = dynamic_cast<HolonicSystemsKnob*>(createParam<HolonicSystemsKnob>(Vec(118, 20-3), module, HolonicSystemsHolonicSourceModule::PARAM_BUS));
 		HolonicSystemsLabel* const busLabel = new HolonicSystemsLabel;
-		busLabel->box.pos = Vec(40, 27-2);
+		busLabel->box.pos = Vec(40+18, 27-2);
 		busLabel->text = "mode";
 		busKnob->names.push_back(std::string("Bus A"));
 		busKnob->names.push_back(std::string("Bus B"));
@@ -222,25 +239,27 @@ struct HolonicSystemsHolonicSourceWidget : ModuleWidget {
 		addChild(busLabel);
 		addParam(busKnob);
 		
+		addInput(createInput<PJ301MPort>(Vec(81, 20), module, HolonicSystemsHolonicSourceModule::INPUT_CLOCK));
 	
 		//channels
 		int start = 66;
 		for (int i=0; i<8 ; i++) {
-			addChild(createLight<MediumLight<RedLight>>(	Vec(10+4		, start + i * 36 + 8), module, HolonicSystemsHolonicSourceModule::ACTIVITY_1_LIGHT + i));
-			addParam(createParam<RoundSmallBlackKnob>(			Vec(10+30*0.5	, start + i * 36), module, HolonicSystemsHolonicSourceModule::ATT_1 + i));
-			addParam(createParam<RoundSmallBlackKnob>(			Vec(10+30*1.5	, start + i * 36), module, HolonicSystemsHolonicSourceModule::ALPHA_1 + i));
-			addOutput(createOutput<PJ301MPort>(							Vec(10+30*2.5-3	, start + i * 36), module, HolonicSystemsHolonicSourceModule::OUTPUT_1 + i));
-			addChild(createLight<MediumLight<GreenRedLight>>(Vec(10+30*2.5+23, start+ i * 36 + 8), module, HolonicSystemsHolonicSourceModule::OUTPUT_LIGHT_POS_1+i*2));
+			addChild(createLight<MediumLight<RedLight>>(	Vec(10+4		, start + i * 36 + 8), module, HolonicSystemsHolonicSourceModule::LIGHT_ACTIVITY_1 + i));
+			addParam(createParam<RoundSmallBlackKnob>(			Vec(10+30*0.5	, start + i * 36), module, HolonicSystemsHolonicSourceModule::PARAM_ATT_1 + i));
+			addParam(createParam<RoundSmallBlackKnob>(			Vec(10+30*1.5	, start + i * 36), module, HolonicSystemsHolonicSourceModule::PARAM_ALPHA_1 + i));
+			addParam(createParam<CKSS>(Vec(10+30*2.5	, start + i * 36 +3), module, HolonicSystemsHolonicSourceModule::PARAM_S_H_1+i));
+			addOutput(createOutput<PJ301MPort>(							Vec(10+30*3-3 + 10	, start + i * 36), module, HolonicSystemsHolonicSourceModule::OUTPUT_1 + i));
+			addChild(createLight<MediumLight<GreenRedLight>>(Vec(10+30*3+23 + 10, start+ i * 36 + 8), module, HolonicSystemsHolonicSourceModule::LIGHT_OUTPUT_POS_1+i*2));
 			
 			HolonistOSCLabel* const inputLabel = new HolonistOSCLabel(10, module, 0, i);
 			inputLabel->box.pos = Vec(5, 30 + i * 18+ 20 - 1);
 			addChild(inputLabel);
+			
+			
 		}
 		
-		addParam(createParam<CKSS>(Vec(47, 353), module, HolonicSystemsHolonicSourceModule::ONE_TEN_VOLT_OSC_PARAM_1));
+		addParam(createParam<CKSS>(Vec(47, 353), module, HolonicSystemsHolonicSourceModule::PARAM_ONE_TEN_VOLT_OSC_1));
 	}
 };
 
-Model *modelHolonicSystemsHolonicSource = createModel<HolonicSystemsHolonicSourceModule, HolonicSystemsHolonicSourceWidget>("HolonicSystems-HolonicSource");
-		
-// Model *modelHolonicSystemsHolonistReceiver =	createModel<HolonicSystemsHolonicSourceModule, HolonicSystemsHolonicSourceWidget>("HolonicSystems-Holon.ist");
+Model *modelHolonicSource = createModel<HolonicSystemsHolonicSourceModule, HolonicSystemsHolonicSourceWidget>("HolonicSource");

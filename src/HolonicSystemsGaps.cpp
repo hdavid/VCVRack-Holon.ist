@@ -81,7 +81,9 @@ struct HolonicSystemsGapsModule : Module {
 		
 		bool clock = clockTrigger.process(inputs[INPUT_CLOCK].value);
 		bool reset = resetTrigger.process(inputs[INPUT_RESET].value);
-		bool trigMode = params[TRIG_MODE_PARAM].value > 0;
+		bool clockIsHigh = clockTrigger.isHigh();
+		bool trigMode = params[TRIG_MODE_PARAM].value == 1;
+		bool gateMode = params[TRIG_MODE_PARAM].value == 0;
 		float deltaTime = APP->engine->getSampleTime();
 		
 		if (reset) {
@@ -108,8 +110,13 @@ struct HolonicSystemsGapsModule : Module {
 					}
 					outputs[OUTPUT_1+i].value = pulses[i].process(deltaTime) ? 10.0 : 0.0;
 					lights[LED_1+i].setSmoothBrightness(outputs[OUTPUT_1+i].value, APP->engine->getSampleTime());
-				} else {
+				} else if (gateMode) {
 					outputs[OUTPUT_1+i].value = on ? 10 : 0;
+					lights[LED_1+i].setSmoothBrightness(outputs[OUTPUT_1+i].value, APP->engine->getSampleTime());
+					int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
+					f = f+1;
+				} else {
+					outputs[OUTPUT_1+i].value = outputs[OUTPUT_1+i].value = on && clockIsHigh ? 10 : 0;
 					lights[LED_1+i].setBrightness(outputs[OUTPUT_1+i].value);
 					int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
 					f = f+1;
@@ -119,7 +126,12 @@ struct HolonicSystemsGapsModule : Module {
 				if (trigMode) {
 					outputs[OUTPUT_1+i].value = pulses[i].process(deltaTime) ? 10.0 : 0.0;
 					lights[LED_1+i].setSmoothBrightness(outputs[OUTPUT_1+i].value, APP->engine->getSampleTime());
+				} else if (gateMode){
+					int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
+					f = f+1;
 				} else {
+					outputs[OUTPUT_1+i].value = outputs[OUTPUT_1+i].value = outputs[OUTPUT_1+i].value>0 && clockIsHigh ? 10 : 0;
+					lights[LED_1+i].setSmoothBrightness(outputs[OUTPUT_1+i].value, APP->engine->getSampleTime());
 					int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
 					f = f+1;
 				}
@@ -162,6 +174,7 @@ struct HolonicGapsLabel : Widget {
 		} else {
 			nvgText(args.vg, box.pos.x, box.pos.y, "", NULL);
 		}
+		
 	}
 };
 
@@ -183,8 +196,10 @@ struct HolonicGapsTrigGateLabel : Widget {
 		if (module){
 			if (module->params[HolonicSystemsGapsModule::TRIG_MODE_PARAM].value==0){
 				nvgText(args.vg, box.pos.x, box.pos.y, "gate", NULL);
-			}else{
+			} else if (module->params[HolonicSystemsGapsModule::TRIG_MODE_PARAM].value==1){
 				nvgText(args.vg, box.pos.x, box.pos.y, "trig", NULL);
+			}else{
+				nvgText(args.vg, box.pos.x, box.pos.y, "as is", NULL);
 			}
 		} else {
 			nvgText(args.vg, box.pos.x, box.pos.y, "trig", NULL);
@@ -246,4 +261,4 @@ struct HolonicSystemsGapsWidget : ModuleWidget {
 
 
 
-Model *modelHolonicSystemsGaps = createModel<HolonicSystemsGapsModule, HolonicSystemsGapsWidget>("HolonicSystems-Gaps");
+Model *modelGaps = createModel<HolonicSystemsGapsModule, HolonicSystemsGapsWidget>("Gaps");

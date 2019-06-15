@@ -106,12 +106,12 @@ struct HolonicSystemsKnob : RoundSmallBlackKnob {
 
 extern Plugin *pluginInstance;
 
-extern Model *modelHolonicSystemsHolonicSource;
-extern Model *modelHolonicSystemsSwissCheeseKnife;
-extern Model *modelHolonicSystemsGaps;
-extern Model *modelHolonicSystemsPantry;
-extern Model *modelHolonicSystemsJunctions;
-extern Model *modelHolonicSystemsDumbwaiter;
-extern Model *modelHolonicSystemsLazySusan;
+extern Model *modelHolonicSource;
+extern Model *modelSwissCheeseKnife;
+extern Model *modelGaps;
+extern Model *modelPantry;
+extern Model *modelJunctions;
+extern Model *modelDumbwaiter;
+extern Model *modelLazySusan;
 
 

@@ -281,5 +281,5 @@ struct HolonicSystemsSwissCheeseKnifeWidget : ModuleWidget {
 };
 
 
-Model *modelHolonicSystemsSwissCheeseKnife = 
-	createModel<HolonicSystemsSwissCheeseKnifeModule, HolonicSystemsSwissCheeseKnifeWidget>("HolonicSystems-SwissCheeseKnife");
+Model *modelSwissCheeseKnife = 
+	createModel<HolonicSystemsSwissCheeseKnifeModule, HolonicSystemsSwissCheeseKnifeWidget>("SwissCheeseKnife");

@@ -91,4 +91,4 @@ struct HolonicSystemsJunctionsWidget : ModuleWidget {
 };
 
 
-Model *modelHolonicSystemsJunctions = createModel<HolonicSystemsJunctionsModule, HolonicSystemsJunctionsWidget>("HolonicSystems-Junctions");
+Model *modelJunctions = createModel<HolonicSystemsJunctionsModule, HolonicSystemsJunctionsWidget>("Junctions");

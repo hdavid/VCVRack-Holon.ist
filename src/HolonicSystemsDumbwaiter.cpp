@@ -197,12 +197,11 @@ struct HolonicSystemsDumbwaiterModule : Module {
 			} else if ((forward && !(reverse && pingpong)) 
 				|| (backward && (reverse && pingpong))
 			) {
-				counter = (start + ((counter - start + 1)%(length)) )%8;
+				counter = ((((counter + 8 - start)%8 + 1 + length)%length + 8)%8 + start)%8;
 			} else if ((forward && (reverse && pingpong))
 				|| (backward && !(reverse && pingpong) )
 				) {
-				//check above zero and start
-				counter = (start + ((counter - start - 1 + length)%(length))+8)%8;
+				counter = ((((counter + 8 - start)%8 - 1 + length)%length + 8)%8 + start)%8;
 			}
 			// ping-pong
 			if (pingpong) {
@@ -347,5 +346,5 @@ struct HolonicSystemsDumbwaiterWidget : ModuleWidget {
 	}
 };
 
-Model *modelHolonicSystemsDumbwaiter = createModel<HolonicSystemsDumbwaiterModule, HolonicSystemsDumbwaiterWidget>("HolonicSystems-Dumbwaiter Sequencer");
+Model *modelDumbwaiter = createModel<HolonicSystemsDumbwaiterModule, HolonicSystemsDumbwaiterWidget>("Dumbwaiter");
 
