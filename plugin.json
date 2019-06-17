@@ -16,7 +16,7 @@
 			"slug": "Gaps",
 			"name": "Gaps",
 			"description": "Clock divider with multiple modes",
-			"tags": ["CLOCK"]
+			"tags": ["CLOCK MODULATOR"]
 		},
 		{
 			"slug":"Pantry",
@@ -34,7 +34,7 @@
 			"slug": "SwissCheeseKnife",
 			"name": "SwissCheeseKnife",
 			"description": "Quad utility module with a twist",
-			"tags": ["UTILITY","ATTENUATOR","MIXER","QUAD","SAMPLE_AND_HOLD","SLEW_LIMITER_TAG"]
+			"tags": ["UTILITY","ATTENUATOR","MIXER","QUAD","VCA","SAMPLE AND HOLD","SLEW LIMITER TAG"]
 		},
 		{
 			"slug": "HolonicSource",
@@ -46,7 +46,7 @@
 			"slug": "Junctions",
 			"name": "Junctions",
 			"description": "A simple dual switch. Two inputs, one output",
-			"tags": ["SWITCH"]
+			"tags": ["SWITCH", "DUAL"]
 		},
 		{
 			"slug": "LazySusan",
