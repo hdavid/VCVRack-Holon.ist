@@ -34,7 +34,7 @@
 			"slug": "SwissCheeseKnife",
 			"name": "SwissCheeseKnife",
 			"description": "Quad utility module with a twist",
-			"tags": ["UTILITY","ATTENUATOR","MIXER","QUAD","VCA","SAMPLE AND HOLD","SLEW LIMITER TAG"]
+			"tags": ["UTILITY","ATTENUATOR","MIXER","QUAD","VCA","SAMPLE AND HOLD","SLEW LIMITER"]
 		},
 		{
 			"slug": "HolonicSource",
