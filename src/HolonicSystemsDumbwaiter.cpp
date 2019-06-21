@@ -346,5 +346,5 @@ struct HolonicSystemsDumbwaiterWidget : ModuleWidget {
 	}
 };
 
-Model *modelDumbwaiter = createModel<HolonicSystemsDumbwaiterModule, HolonicSystemsDumbwaiterWidget>("HolonicSystems-Dumbwaiter");
+Model *modelDumbwaiter = createModel<HolonicSystemsDumbwaiterModule, HolonicSystemsDumbwaiterWidget>("HolonicSystems-DumbwaiterSequencer");
 

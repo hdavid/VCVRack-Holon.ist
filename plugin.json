@@ -25,7 +25,7 @@
 			"tags": ["SEQUENCER","RECORDING"]
 		},
 		{
-			"slug": "HolonicSystems-Dumbwaiter",
+			"slug": "HolonicSystems-DumbwaiterSequencer",
 			"name": "Dumbwaiter",
 			"description": "8 step sequencer and switch. One could see it as a A-155 / A-154 / A-152 merged into one module",
 			"tags": ["SEQUENCER","ATTENUATOR","SWITCH"]
@@ -49,7 +49,7 @@
 			"tags": ["SWITCH", "DUAL"]
 		},
 		{
-			"slug": "HolonicSystems-LazySusan",
+			"slug": "HolonicSystems-LazySusanQuantiser",
 			"name": "Lazy Susan",
 			"description": "Quad Quantiser with user editable scales",
 			"tags": ["QUANTIZER","QUAD"]
