@@ -313,4 +313,4 @@ struct HolonicSystemsPantryWidget : ModuleWidget {
 };
 
 
-Model *modelPantry = createModel<HolonicSystemsPantryModule, HolonicSystemsPantryWidget>("Pantry");
+Model *modelPantry = createModel<HolonicSystemsPantryModule, HolonicSystemsPantryWidget>("HolonicSystems-Pantry");

@@ -300,6 +300,6 @@ struct HolonicSystemsLazySusanWidget : ModuleWidget {
 
 
 
-Model *modelLazySusan = createModel<HolonicSystemsLazySusanModule, HolonicSystemsLazySusanWidget>("LazySusan");
+Model *modelLazySusan = createModel<HolonicSystemsLazySusanModule, HolonicSystemsLazySusanWidget>("HolonicSystems-LazySusan");
 
 

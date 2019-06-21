@@ -262,4 +262,4 @@ struct HolonicSystemsHolonicSourceWidget : ModuleWidget {
 	}
 };
 
-Model *modelHolonicSource = createModel<HolonicSystemsHolonicSourceModule, HolonicSystemsHolonicSourceWidget>("HolonicSource");
+Model *modelHolonicSource = createModel<HolonicSystemsHolonicSourceModule, HolonicSystemsHolonicSourceWidget>("HolonicSystems-HolonicSource");

@@ -261,4 +261,4 @@ struct HolonicSystemsGapsWidget : ModuleWidget {
 
 
 
-Model *modelGaps = createModel<HolonicSystemsGapsModule, HolonicSystemsGapsWidget>("Gaps");
+Model *modelGaps = createModel<HolonicSystemsGapsModule, HolonicSystemsGapsWidget>("HolonicSystems-Gaps");
