@@ -63,8 +63,8 @@ struct HolonicSystemsGapsModule : Module {
 
 	HolonicSystemsGapsModule(){
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-		configParam(MODE_PARAM,0.f, 6.f, 0.f, "Division Mode");
-		configParam(TRIG_MODE_PARAM,0.f, 1.f, 0.f, "Trigger/Gate Mode");
+		configParam(MODE_PARAM, 0.f, 6.f, 0.f, "Division Mode");
+		configParam(TRIG_MODE_PARAM, 0.f, 2.f, 0.f, "Trigger/Gate Mode");
 		onReset();
 	}
 
@@ -112,7 +112,7 @@ struct HolonicSystemsGapsModule : Module {
 					lights[LED_1+i].setSmoothBrightness(outputs[OUTPUT_1+i].value, APP->engine->getSampleTime());
 				} else if (gateMode) {
 					outputs[OUTPUT_1+i].value = on ? 10 : 0;
-					lights[LED_1+i].setSmoothBrightness(outputs[OUTPUT_1+i].value, APP->engine->getSampleTime());
+					lights[LED_1+i].setBrightness(outputs[OUTPUT_1+i].value);
 					int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
 					f = f+1;
 				} else {
@@ -131,7 +131,7 @@ struct HolonicSystemsGapsModule : Module {
 					f = f+1;
 				} else {
 					outputs[OUTPUT_1+i].value = outputs[OUTPUT_1+i].value = outputs[OUTPUT_1+i].value>0 && clockIsHigh ? 10 : 0;
-					lights[LED_1+i].setSmoothBrightness(outputs[OUTPUT_1+i].value, APP->engine->getSampleTime());
+					lights[LED_1+i].setBrightness(outputs[OUTPUT_1+i].value);
 					int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
 					f = f+1;
 				}
@@ -205,6 +205,7 @@ struct HolonicGapsTrigGateLabel : Widget {
 			nvgText(args.vg, box.pos.x, box.pos.y, "trig", NULL);
 		}
 	}
+	
 };
 
 
@@ -222,7 +223,7 @@ struct HolonicSystemsGapsWidget : ModuleWidget {
 		addInput(createInput<PJ301MPort>(Vec(5, 57), module, HolonicSystemsGapsModule::INPUT_CLOCK));
 		addInput(createInput<PJ301MPort>(Vec(30, 57), module, HolonicSystemsGapsModule::INPUT_RESET));
 		
-		addParam(createParam<CKSS>(Vec(43, 355), module, HolonicSystemsGapsModule::TRIG_MODE_PARAM));
+		addParam(createParam<CKSSThree>(Vec(43, 350), module, HolonicSystemsGapsModule::TRIG_MODE_PARAM));
 		HolonicGapsTrigGateLabel* const trigGateLabel = new HolonicGapsTrigGateLabel(10, module);
 		trigGateLabel->box.pos = Vec(10, 355/2+5);
 		addChild(trigGateLabel);
