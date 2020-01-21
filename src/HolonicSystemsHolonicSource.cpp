@@ -91,7 +91,7 @@ struct HolonicSystemsHolonicSourceModule : Module {
 		for(int i=0l;i<8;i++){
 			configParam(PARAM_ATT_1+i,0.f, 1.f, 1.f, "Attenuator");
 			configParam(PARAM_ALPHA_1+i, 1.0f, 0.0f, 0.8f, "LPF");
-			configParam(PARAM_S_H_1+1, 1.0f, 0.0f, 0.0f, "S/H");
+			configParam(PARAM_S_H_1+i, 1.0f, 0.0f, 0.0f, "S/H");
 		}
 		configParam(PARAM_BUS, 0.f, 7.f, 0.f, "Bus");
 		configParam(PARAM_ONE_TEN_VOLT_OSC_1, 0.0f, 1.0f, 1.0f, "One or Ten");
