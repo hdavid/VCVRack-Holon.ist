@@ -55,10 +55,10 @@ struct HolonicSystemsLabel : Widget {
 		fontSize = _fontSize;
 		box.size.y = BND_WIDGET_HEIGHT;
 	}
-	void draw(NVGcontext *vg) override {
-		nvgFillColor(vg, nvgRGB(0, 0, 0));
-		nvgFontSize(vg, fontSize);
-		nvgText(vg, box.pos.x, box.pos.y, text.c_str(), NULL);
+	void draw(const DrawArgs &args) override {
+		nvgFillColor(args.vg, nvgRGB(0, 0, 0));
+		nvgFontSize(args.vg, fontSize);
+		nvgText(args.vg, box.pos.x, box.pos.y, text.c_str(), NULL);
 	}
 };
 
@@ -75,8 +75,14 @@ struct HolonicSystemsKnob : RoundSmallBlackKnob {
 		}
 	}
 
-	void onChange(EventChange &e) override {
-		RoundSmallBlackKnob::onChange(e);
+	void onDragMove(const rack::event::DragMove &e) override {
+		RoundSmallBlackKnob::onDragMove(e);
+		if (linkedLabel) {
+			linkedLabel->text = formatCurrentValue();
+		}
+	}
+	void onDragEnd(const rack::event::DragEnd &e) override {
+		RoundSmallBlackKnob::onDragEnd(e);
 		if (linkedLabel) {
 			linkedLabel->text = formatCurrentValue();
 		}
@@ -88,7 +94,7 @@ struct HolonicSystemsKnob : RoundSmallBlackKnob {
 	}
 	
 	std::string formatCurrentValue() {
-		int index = int(value);
+		int index = int(paramQuantity->getValue());
 		int size =  (int)names.size();
 		if (size>0 && index < size && index >= 0) {
 			return names[index];
@@ -98,14 +104,14 @@ struct HolonicSystemsKnob : RoundSmallBlackKnob {
 	}
 };
 
-extern Plugin *plugin;
+extern Plugin *pluginInstance;
 
-extern Model *modelHolonicSystemsHolonicSource;
-extern Model *modelHolonicSystemsSwissCheeseKnife;
-extern Model *modelHolonicSystemsGaps;
-extern Model *modelHolonicSystemsPantry;
-extern Model *modelHolonicSystemsJunctions;
-extern Model *modelHolonicSystemsDumbwaiter;
-extern Model *modelHolonicSystemsLazySusan;
+extern Model *modelHolonicSource;
+extern Model *modelSwissCheeseKnife;
+extern Model *modelGaps;
+extern Model *modelPantry;
+extern Model *modelJunctions;
+extern Model *modelDumbwaiter;
+extern Model *modelLazySusan;
 
 

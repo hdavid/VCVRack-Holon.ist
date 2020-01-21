@@ -53,21 +53,40 @@ struct HolonicSystemsPantryModule : Module {
 		NUM_LIGHTS
 	};	
 	
+	
 	LooseSchmittTrigger clockTrigger;
 	LooseSchmittTrigger resetTrigger;
-	
-	
+
 	long counters[2] = {0,0};
 	int recordingSteps[2] = {-1,-1};
+
 	LooseSchmittTrigger recordTrigger[2];
 	LooseSchmittTrigger overdubTrigger[2];
 	LooseSchmittTrigger clearTrigger[2];
+
 	std::vector<float> cvs[2] = {std::vector<float>(64),std::vector<float>(64)};
 	std::vector<float> gates[2]= {std::vector<float>(64),std::vector<float>(64)};
-	
-	HolonicSystemsPantryModule();
-	~HolonicSystemsPantryModule();
-	
+
+
+	HolonicSystemsPantryModule() {
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+		configParam(PARAM_RECORD_1,0.f, 1.f, 0.f, "Record 1");
+		configParam(PARAM_OVERDUB_1,0.f, 1.f, 0.0f, "Overdub 1");
+		configParam(PARAM_CLEAR_1,0.f, 1.f, 0.0f, "Clear 1");
+		configParam(PARAM_LENGTH_1,0.f, 31.f, 16.f, "Lenth 1");
+		configParam(PARAM_SHIFT_1,0.f, 31.f, 0.f, "Shift 1");
+		configParam(PARAM_RECORD_2,0.f, 1.f, 0.f, "Record 2");
+		configParam(PARAM_OVERDUB_2,0.f, 1.f, 0.0f, "Overdub 2");
+		configParam(PARAM_CLEAR_2,0.f, 1.f, 0.0f, "Clear 2");
+		configParam(PARAM_LENGTH_2,0.f, 31.f, 16.f, "Lenth 2");
+		configParam(PARAM_SHIFT_2,0.f, 31.f, 0.f, "Shift 2");
+		onReset();
+	}
+
+
+	~HolonicSystemsPantryModule() {
+	}
+
 	void onReset() override {
 		for (int i=0; i<2; i++) {
 			counters[i] = 0;
@@ -77,112 +96,100 @@ struct HolonicSystemsPantryModule : Module {
 			}
 		}
 	}
+
+
+	void process(const ProcessArgs &args) override {
 	
-	void step() override;
-	
-  
-	
-	
+		bool clock = clockTrigger.process(inputs[INPUT_CLOCK].value);
+		bool reset = resetTrigger.process(inputs[INPUT_RESET].value);
+		
+		for (int i = 0; i<2;i++){
+			
+			//triggers must process at each step
+			bool rec = recordTrigger[i].process(inputs[INPUT_RECORD_1+i].value) || params[PARAM_RECORD_1+i].value>0;
+			bool x = overdubTrigger[i].process(inputs[INPUT_OVERDUB_1+i].value);
+			x = x && rec;//silence warning
+			bool overdub =  overdubTrigger[i].isHigh() || params[PARAM_OVERDUB_1+i].value>0;
+			bool clear = clearTrigger[i].process(inputs[INPUT_CLEAR_1+i].value) || params[PARAM_CLEAR_1+i].value>0;
+			
+			//clear at any time, not on clock
+			if (clear){
+				for (int step=0; step<32; step++){
+					cvs[i][step] = 0.0f;
+					gates[i][step] = 0.0f;
+				}
+			}
+			
+			if (reset){
+				counters[i] = 0;
+			}
+			
+			//recording
+			bool recording = overdub;
+			if (recordingSteps[i]==-1 && rec) {
+				//trigger new full length recording only if not already recording
+				recordingSteps[i]=0;
+				recording = true;
+			}
+			
+			if (clock) {
+				
+				int length = clamp( ((int)inputs[INPUT_LENGTH_1+i].value) + ((int)params[PARAM_LENGTH_1+i].value), 1.0, 32.0);
+				int shift = ((int)inputs[INPUT_SHIFT_1+i].value) + ((int)params[PARAM_SHIFT_1+i].value);
+				
+				//warp count
+				counters[i] = (counters[i]) % length;
+				int step = (counters[i]+shift) % 32;//TODO: wrap within loop or within all 32 steps ?
+				
+				//recording
+				if (recordingSteps[i]!= -1){
+					recordingSteps[i]++;
+					if (recordingSteps[i]<=length){
+						recording = true;
+					} else {
+						//recording ended
+						recordingSteps[i] = -1;
+					}
+				}
+				
+				lights[LIGHT_RECORDING_1+i].setBrightness(recording?10:0);
+				
+				//recording
+				if (recording){
+					cvs[i][step]=inputs[INPUT_CV_1+i].value;
+					gates[i][step]=inputs[INPUT_GATE_1+i].value;
+				}
+				
+				//output
+				outputs[OUTPUT_CV_1+i].value = cvs[i][step];
+				outputs[OUTPUT_GATE_1+i].value = gates[i][step];
+				
+				//step
+				counters[i]++;
+			}
+		}
+	}
 	 
 };
 
 
-HolonicSystemsPantryModule::HolonicSystemsPantryModule() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
-	onReset();
-}
 
-
-HolonicSystemsPantryModule::~HolonicSystemsPantryModule() {
-}
-
-
-void HolonicSystemsPantryModule::step() {
-	
-	bool clock = clockTrigger.process(inputs[INPUT_CLOCK].value);
-	bool reset = resetTrigger.process(inputs[INPUT_RESET].value);
-	
-	for (int i = 0; i<2;i++){
-		
-		//triggers must process at each step
-		bool rec = recordTrigger[i].process(inputs[INPUT_RECORD_1+i].value) || params[PARAM_RECORD_1+i].value>0;
-		bool x = overdubTrigger[i].process(inputs[INPUT_OVERDUB_1+i].value);
-		x = x && rec;//silence warning
-		bool overdub =  overdubTrigger[i].isHigh() || params[PARAM_OVERDUB_1+i].value>0;
-		bool clear = clearTrigger[i].process(inputs[INPUT_CLEAR_1+i].value) || params[PARAM_CLEAR_1+i].value>0;
-		
-		//clear at any time, not on clock
-		if (clear){
-			for (int step=0; step<32; step++){
-				cvs[i][step] = 0.0f;
-				gates[i][step] = 0.0f;
-			}
-		}
-		
-		if (reset){
-			counters[i] = 0;
-		}
-		
-		//recording
-		bool recording = overdub;
-		if (recordingSteps[i]==-1 && rec) {
-			//trigger new full length recording only if not already recording
-			recordingSteps[i]=0;
-			recording = true;
-		}
-		
-		if (clock) {
-			
-			int length = clamp( ((int)inputs[INPUT_LENGTH_1+i].value) + ((int)params[PARAM_LENGTH_1+i].value), 1.0, 32.0);
-			int shift = ((int)inputs[INPUT_SHIFT_1+i].value) + ((int)params[PARAM_SHIFT_1+i].value);
-			
-			//warp count
-			counters[i] = (counters[i]) % length;
-			int step = (counters[i]+shift) % 32;//TODO: wrap within loop or within all 32 steps ?
-			
-			//recording
-			if (recordingSteps[i]!= -1){
-				recordingSteps[i]++;
-				if (recordingSteps[i]<=length){
-					recording = true;
-				} else {
-					//recording ended
-					recordingSteps[i] = -1;
-				}
-			}
-			
-			lights[LIGHT_RECORDING_1+i].setBrightness(recording?10:0);
-			
-			//recording
-			if (recording){
-				cvs[i][step]=inputs[INPUT_CV_1+i].value;
-				gates[i][step]=inputs[INPUT_GATE_1+i].value;
-			}
-			
-			//output
-			outputs[OUTPUT_CV_1+i].value = cvs[i][step];
-			outputs[OUTPUT_GATE_1+i].value = gates[i][step];
-			
-			//step
-			counters[i]++;
-		}
-	}
-}
 
 
 struct HolonicSystemsPantryWidget : ModuleWidget {
-
-	HolonicSystemsPantryWidget(HolonicSystemsPantryModule *module) : ModuleWidget(module) {
-		setPanel(SVG::load(assetPlugin(plugin, "res/HolonicSystems-Pantry.svg")));
+	HolonicSystemsPantryWidget(HolonicSystemsPantryModule *module) {
+		setModule(module);
+		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/HolonicSystems-Pantry.svg")));
 		
 		//screws
-		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
+		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
  
 		//IN
-		addInput(Port::create<PJ301MPort>(Vec(10, 20), Port::INPUT, module, HolonicSystemsPantryModule::INPUT_CLOCK));
-		addInput(Port::create<PJ301MPort>(Vec(90, 20), Port::INPUT, module, HolonicSystemsPantryModule::INPUT_RESET));
+		addInput(createInput<PJ301MPort>(Vec(10, 20), module, HolonicSystemsPantryModule::INPUT_CLOCK));
+		addInput(createInput<PJ301MPort>(Vec(90, 20), module, HolonicSystemsPantryModule::INPUT_RESET));
 		
 		for (int i=0;i<2;i++){
 			
@@ -190,32 +197,29 @@ struct HolonicSystemsPantryWidget : ModuleWidget {
 			int vSpace=38;
 			int base=65;
 		
-			addParam(ParamWidget::create<TL1105>(Vec(10+vSpace*0+5, base+0 + i*rowHeight), module, HolonicSystemsPantryModule::PARAM_RECORD_1+i, 0, 1, 0));
-			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*0, base+20 + i*rowHeight), Port::INPUT, module, HolonicSystemsPantryModule::INPUT_RECORD_1+i));
+			addParam(createParam<TL1105>(Vec(10+vSpace*0+5, base+0 + i*rowHeight), module, HolonicSystemsPantryModule::PARAM_RECORD_1+i));
+			addInput(createInput<PJ301MPort>(Vec(10+vSpace*0, base+20 + i*rowHeight), module, HolonicSystemsPantryModule::INPUT_RECORD_1+i));
 			
-			addParam(ParamWidget::create<TL1105>(Vec(10+vSpace*1+5, base+0 + i*rowHeight), module, HolonicSystemsPantryModule::PARAM_OVERDUB_1+i, 0, 1, 0));
-			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*1, base+20 + i*rowHeight), Port::INPUT, module, HolonicSystemsPantryModule::INPUT_OVERDUB_1+i));
+			addParam(createParam<TL1105>(Vec(10+vSpace*1+5, base+0 + i*rowHeight), module, HolonicSystemsPantryModule::PARAM_OVERDUB_1+i));
+			addInput(createInput<PJ301MPort>(Vec(10+vSpace*1, base+20 + i*rowHeight), module, HolonicSystemsPantryModule::INPUT_OVERDUB_1+i));
 			
-			addParam(ParamWidget::create<TL1105>(Vec(10+vSpace*2+5, base+0 + i*rowHeight), module, HolonicSystemsPantryModule::PARAM_CLEAR_1+i, 0, 1, 0));
-			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*2, base+20 + i*rowHeight), Port::INPUT, module, HolonicSystemsPantryModule::INPUT_CLEAR_1+i));
+			addParam(createParam<TL1105>(Vec(10+vSpace*2+5, base+0 + i*rowHeight), module, HolonicSystemsPantryModule::PARAM_CLEAR_1+i));
+			addInput(createInput<PJ301MPort>(Vec(10+vSpace*2, base+20 + i*rowHeight), module, HolonicSystemsPantryModule::INPUT_CLEAR_1+i));
 			
 			base += 50;
 			
 			//channel
-			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*0, base + i*rowHeight), Port::INPUT, module, HolonicSystemsPantryModule::INPUT_CV_1+i));
-			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*0, base+30 + i*rowHeight), Port::INPUT, module, HolonicSystemsPantryModule::INPUT_GATE_1+i));
+			addInput(createInput<PJ301MPort>(Vec(10+vSpace*0, base + i*rowHeight), module, HolonicSystemsPantryModule::INPUT_CV_1+i));
+			addInput(createInput<PJ301MPort>(Vec(10+vSpace*0, base+30 + i*rowHeight), module, HolonicSystemsPantryModule::INPUT_GATE_1+i));
 			
-			addOutput(Port::create<PJ301MPort>(Vec(10+vSpace*2, base + i*rowHeight), Port::OUTPUT, module, HolonicSystemsPantryModule::OUTPUT_CV_1+i));
-			addOutput(Port::create<PJ301MPort>(Vec(10+vSpace*2, base+30 + i*rowHeight), Port::OUTPUT, module, HolonicSystemsPantryModule::OUTPUT_GATE_1+i));
+			addOutput(createOutput<PJ301MPort>(Vec(10+vSpace*2, base + i*rowHeight), module, HolonicSystemsPantryModule::OUTPUT_CV_1+i));
+			addOutput(createOutput<PJ301MPort>(Vec(10+vSpace*2, base+30 + i*rowHeight), module, HolonicSystemsPantryModule::OUTPUT_GATE_1+i));
 			
-			addChild(ModuleLightWidget::create<LargeLight<RedLight>>(	Vec(10+vSpace*1+5, base+20 + i*rowHeight), module, HolonicSystemsPantryModule::LIGHT_RECORDING_1+i));
+			addChild(createLight<LargeLight<RedLight>>(	Vec(10+vSpace*1+5, base+20 + i*rowHeight), module, HolonicSystemsPantryModule::LIGHT_RECORDING_1+i));
 			
 			base += 60;
 			
-			//rack::RoundSmallBlackKnob* length = ParamWidget::create<RoundSmallBlackKnob>(Vec(10+vSpace*0-5, base + i*rowHeight), module, HolonicSystemsPantryModule::PARAM_LENGTH_1+i, 1, 32, 16);
-			//length->snap=true;
-			//addParam(length);
-			HolonicSystemsKnob * lengthKnob = dynamic_cast<HolonicSystemsKnob*>(ParamWidget::create<HolonicSystemsKnob>(Vec(10+vSpace*0-5, base + i*rowHeight), module, HolonicSystemsPantryModule::PARAM_LENGTH_1+i, 1, 31, 16));
+			HolonicSystemsKnob * lengthKnob = dynamic_cast<HolonicSystemsKnob*>(createParam<HolonicSystemsKnob>(Vec(10+vSpace*0-5, base + i*rowHeight), module, HolonicSystemsPantryModule::PARAM_LENGTH_1+i));
 			HolonicSystemsLabel* const lengthLabel = new HolonicSystemsLabel;
 			lengthLabel->box.pos = Vec((10+vSpace*0-5)/2, (base + i*rowHeight)/2+18);
 			lengthKnob->names.push_back(std::string("length 0"));//this is needed, values start at 1...
@@ -257,14 +261,11 @@ struct HolonicSystemsPantryWidget : ModuleWidget {
 			addChild(lengthLabel);
 			addParam(lengthKnob);
 			
-			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*0+23, base + i*rowHeight), Port::INPUT, module, HolonicSystemsPantryModule::INPUT_LENGTH_1+i));
+			addInput(createInput<PJ301MPort>(Vec(10+vSpace*0+23, base + i*rowHeight), module, HolonicSystemsPantryModule::INPUT_LENGTH_1+i));
 			
-			addInput(Port::create<PJ301MPort>(Vec(10+vSpace*2-23, base + i*rowHeight), Port::INPUT, module, HolonicSystemsPantryModule::INPUT_SHIFT_1+i));		
-			//rack::RoundSmallBlackKnob* shift = ParamWidget::create<RoundSmallBlackKnob>(Vec(10+vSpace*2+5, base + i*rowHeight), module, HolonicSystemsPantryModule::PARAM_SHIFT_1+i, 0, 31, 0);
-			//shift->snap=true;
-			//addParam(shift);
+			addInput(createInput<PJ301MPort>(Vec(10+vSpace*2-23, base + i*rowHeight), module, HolonicSystemsPantryModule::INPUT_SHIFT_1+i));		
 			
-			HolonicSystemsKnob * shiftKnob = dynamic_cast<HolonicSystemsKnob*>(ParamWidget::create<HolonicSystemsKnob>(Vec(10+vSpace*2+5, base + i*rowHeight), module, HolonicSystemsPantryModule::PARAM_SHIFT_1+i, 0.0, 31, 0));
+			HolonicSystemsKnob * shiftKnob = dynamic_cast<HolonicSystemsKnob*>(createParam<HolonicSystemsKnob>(Vec(10+vSpace*2+5, base + i*rowHeight), module, HolonicSystemsPantryModule::PARAM_SHIFT_1+i));
 			HolonicSystemsLabel* const shiftLabel = new HolonicSystemsLabel;
 			shiftLabel->box.pos = Vec((10+vSpace*2+5)/2-10, (base + i*rowHeight)/2+18);
 			shiftKnob->names.push_back(std::string("shift 0"));
@@ -312,11 +313,4 @@ struct HolonicSystemsPantryWidget : ModuleWidget {
 };
 
 
-Model *modelHolonicSystemsPantry = 
-	Model::create<HolonicSystemsPantryModule, HolonicSystemsPantryWidget>(
-		"Holonic Systems",
-	 	"HolonicSystems-Pantry", 
-		"Pantry",
-		SEQUENCER_TAG,
-		RECORDING_TAG
-);
+Model *modelPantry = createModel<HolonicSystemsPantryModule, HolonicSystemsPantryWidget>("HolonicSystems-Pantry");
