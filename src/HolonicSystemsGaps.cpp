@@ -47,7 +47,9 @@ struct HolonicSystemsGapsModule : Module {
 	LooseSchmittTrigger resetTrigger;
 	
 	 int counter = 0;
-	 std::vector<float> track;  
+	 
+	 bool ready = false;
+	 
 	 dsp::PulseGenerator pulses[8];
 	 int divisions[7][8] = {
 		{2,3,4,5, 6,7,8,9}, // int
@@ -88,59 +90,68 @@ struct HolonicSystemsGapsModule : Module {
 		
 		if (reset) {
 			this->counter = 0;
+			this->ready = false;
+			printf("reset");
 		}
-		
-		for (int i=0;i<8;i++){
-			bool on = false;
-			if (clock) {
-				if ((int)params[MODE_PARAM].value <= 4){
-					if (trigMode){
-						on =  0 == counter % divisions[(int)params[MODE_PARAM].value][i];
-					} else {
-						on =  divisions[(int)params[MODE_PARAM].value][i]/2 <= counter % divisions[(int)params[MODE_PARAM].value][i];		
-					}
-				} else if ((int)params[MODE_PARAM].value == 5){
-					on =  /*(0 == counter % 2) &&*/ (rand() < RAND_MAX / divisions[(int)params[MODE_PARAM].value][i]);
-				} else if ((int)params[MODE_PARAM].value == 6){
-					on = (0 == (counter + 8 - i) % 8);
-				}
-				if (trigMode){
-					if(on){
-						pulses[i].trigger(1e-3);
-					}
-					outputs[OUTPUT_1+i].value = pulses[i].process(deltaTime) ? 10.0 : 0.0;
-					lights[LED_1+i].setSmoothBrightness(outputs[OUTPUT_1+i].value, APP->engine->getSampleTime());
-				} else if (gateMode) {
-					outputs[OUTPUT_1+i].value = on ? 10 : 0;
-					lights[LED_1+i].setBrightness(outputs[OUTPUT_1+i].value);
-					int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
-					f = f+1;
-				} else {
-					outputs[OUTPUT_1+i].value = outputs[OUTPUT_1+i].value = on && clockIsHigh ? 10 : 0;
-					lights[LED_1+i].setBrightness(outputs[OUTPUT_1+i].value);
-					int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
-					f = f+1;
-				}
-				
+		if (clock) {
+			if (this->ready){
+				this->counter++;
 			} else {
-				if (trigMode) {
-					outputs[OUTPUT_1+i].value = pulses[i].process(deltaTime) ? 10.0 : 0.0;
-					lights[LED_1+i].setSmoothBrightness(outputs[OUTPUT_1+i].value, APP->engine->getSampleTime());
-				} else if (gateMode){
-					int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
-					f = f+1;
+				this->ready = true;
+			}
+			printf("clock");
+		}
+	
+		if (this->ready) { //handle initial non set state.
+			for (int i=0; i<8; i++) {
+				bool on = false;
+				if (clock) {
+					if ((int)params[MODE_PARAM].value <= 4) {
+						//if (trigMode){
+						on =  divisions[(int)params[MODE_PARAM].value][i] - 1 == counter % divisions[(int)params[MODE_PARAM].value][i];
+							//} else {
+							//on =  divisions[(int)params[MODE_PARAM].value][i]/2 <= counter % divisions[(int)params[MODE_PARAM].value][i];		
+							//}
+					} else if ((int)params[MODE_PARAM].value == 5) {
+						on =  /*(0 == counter % 2) &&*/ (rand() < RAND_MAX / divisions[(int)params[MODE_PARAM].value][i]);
+					} else if ((int)params[MODE_PARAM].value == 6) {
+						on = (0 == (counter + 8 - i) % 8);
+					}
+					if (trigMode){
+						if (on) {
+							pulses[i].trigger(1e-3);
+						}
+						outputs[OUTPUT_1+i].value = pulses[i].process(deltaTime) ? 10.0 : 0.0;
+						lights[LED_1+i].setSmoothBrightness(outputs[OUTPUT_1+i].value, APP->engine->getSampleTime());
+					} else if (gateMode) {
+						outputs[OUTPUT_1+i].value = on ? 10 : 0;
+						lights[LED_1+i].setBrightness(outputs[OUTPUT_1+i].value);
+						int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
+						f = f+1;
+					} else {
+						// "as is" mode
+						outputs[OUTPUT_1+i].value = outputs[OUTPUT_1+i].value = on && clockIsHigh ? 10 : 0;
+						lights[LED_1+i].setBrightness(outputs[OUTPUT_1+i].value);
+						int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
+						f = f+1;
+					}
+				
 				} else {
-					outputs[OUTPUT_1+i].value = outputs[OUTPUT_1+i].value = outputs[OUTPUT_1+i].value>0 && clockIsHigh ? 10 : 0;
-					lights[LED_1+i].setBrightness(outputs[OUTPUT_1+i].value);
-					int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
-					f = f+1;
+					if (trigMode) {
+						outputs[OUTPUT_1+i].value = pulses[i].process(deltaTime) ? 10.0 : 0.0;
+						lights[LED_1+i].setSmoothBrightness(outputs[OUTPUT_1+i].value, APP->engine->getSampleTime());
+					} else if (gateMode){
+						int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
+						f = f+1;
+					} else {
+						// "as is" mode
+						outputs[OUTPUT_1+i].value = outputs[OUTPUT_1+i].value = outputs[OUTPUT_1+i].value>0 && clockIsHigh ? 10 : 0;
+						lights[LED_1+i].setBrightness(outputs[OUTPUT_1+i].value);
+						int f = pulses[i].process(deltaTime) ? 10.0 : 0.0;
+						f = f+1;
+					}
 				}
 			}
-			
-		}
-		
-		if (clock){
-			this->counter++;
 		}
 	}
 
