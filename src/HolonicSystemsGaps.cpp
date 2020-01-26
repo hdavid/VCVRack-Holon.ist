@@ -10,6 +10,7 @@ struct HolonicSystemsGapsModule : Module {
 		MODE_PARAM,
 		TRIG_MODE_PARAM,
 		MODE_BUTTON,
+		MATH_MODE_PARAM,
 		NUM_PARAMS
 	};
 
@@ -117,10 +118,20 @@ struct HolonicSystemsGapsModule : Module {
 				bool on = false;
 				if (clock) {
 					if ((int)params[MODE_PARAM].value <= 4) {
-						if (longGateMode) {
-							on =  divisions[(int)params[MODE_PARAM].value][i]/2 >= counter % divisions[(int)params[MODE_PARAM].value][i];
+						if (params[MATH_MODE_PARAM].value == 1) {
+							// musical mode
+							if (longGateMode) {
+								on = divisions[(int)params[MODE_PARAM].value][i]/2 > counter % divisions[(int)params[MODE_PARAM].value][i];
+							} else {
+								on = 0 == counter % divisions[(int)params[MODE_PARAM].value][i];
+							}
 						} else {
-							on =  0 == counter % divisions[(int)params[MODE_PARAM].value][i];
+							// math mode
+							if (longGateMode) {
+								on = divisions[(int)params[MODE_PARAM].value][i]/2 <= counter % divisions[(int)params[MODE_PARAM].value][i];
+							} else {
+								on = divisions[(int)params[MODE_PARAM].value][i] - 1 == counter % divisions[(int)params[MODE_PARAM].value][i];
+							}
 						}
 					} else if ((int)params[MODE_PARAM].value == 5) {
 						on =  /*(0 == counter % 2) &&*/ (rand() < RAND_MAX / divisions[(int)params[MODE_PARAM].value][i]);
@@ -231,6 +242,33 @@ struct HolonicGapsTrigGateLabel : Widget {
 	
 };
 
+struct HolonicGapsMathModeLabel : Widget {
+	int fontSize;
+	HolonicSystemsGapsModule *module = nullptr;
+
+	
+	HolonicGapsMathModeLabel(int _fontSize,HolonicSystemsGapsModule *_module) {
+		fontSize = _fontSize;
+		box.size.y = BND_WIDGET_HEIGHT;
+		module = _module;
+	}
+
+	void draw(const DrawArgs &args) override {
+		nvgFillColor(args.vg, nvgRGB(0, 0, 0));
+		nvgFontSize(args.vg, fontSize);
+		if (module) {
+			if (module->params[HolonicSystemsGapsModule::MATH_MODE_PARAM].value==0) {
+				nvgText(args.vg, box.pos.x, box.pos.y, "mus.", NULL);
+			}else{
+				nvgText(args.vg, box.pos.x, box.pos.y, "math", NULL);
+			}
+		} else {
+			nvgText(args.vg, box.pos.x, box.pos.y, "mus.", NULL);
+		}
+	}
+	
+};
+
 
 
 struct HolonicSystemsGapsWidget : ModuleWidget {
@@ -246,13 +284,17 @@ struct HolonicSystemsGapsWidget : ModuleWidget {
 		addInput(createInput<PJ301MPort>(Vec(5, 57), module, HolonicSystemsGapsModule::INPUT_CLOCK));
 		addInput(createInput<PJ301MPort>(Vec(30, 57), module, HolonicSystemsGapsModule::INPUT_RESET));
 		
-		addParam(createParam<LEDButton>(Vec(40, 354), module, HolonicSystemsGapsModule::MODE_BUTTON));
-		addChild(createLight<MediumLight<GreenLight>>(Vec(40 + 4.4f, 354 + 4.4f), module, HolonicSystemsGapsModule::MODE_BUTTON_LIGHT));
-		
-		//addParam(createParam<CKSSThree>(Vec(43, 350), module, HolonicSystemsGapsModule::TRIG_MODE_PARAM));
+		addParam(createParam<LEDButton>(Vec(40, 350), module, HolonicSystemsGapsModule::MODE_BUTTON));
+		addChild(createLight<MediumLight<GreenLight>>(Vec(40 + 4.4f, 350 + 4.4f), module, HolonicSystemsGapsModule::MODE_BUTTON_LIGHT));
 		HolonicGapsTrigGateLabel* const trigGateLabel = new HolonicGapsTrigGateLabel(10, module);
-		trigGateLabel->box.pos = Vec(7, 355/2+5);
+		trigGateLabel->box.pos = Vec(17, 367/2+5);
 		addChild(trigGateLabel);
+		
+		addParam(createParam<CKSS>(Vec(2, 356), module, HolonicSystemsGapsModule::MATH_MODE_PARAM));
+		HolonicGapsMathModeLabel* const mathModeLabel = new HolonicGapsMathModeLabel(10, module);
+		mathModeLabel->box.pos = Vec(9, 364/2);
+		addChild(mathModeLabel);
+	
 		
 		HolonicSystemsKnob *modeKnob = dynamic_cast<HolonicSystemsKnob*>(createParam<HolonicSystemsKnob>(Vec(10, 90), module, HolonicSystemsGapsModule::MODE_PARAM));
 		HolonicSystemsLabel* const modeLabel = new HolonicSystemsLabel;
