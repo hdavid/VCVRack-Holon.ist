@@ -118,7 +118,7 @@ struct HolonicSystemsGapsModule : Module {
 				bool on = false;
 				if (clock) {
 					if ((int)params[MODE_PARAM].value <= 4) {
-						if (params[MATH_MODE_PARAM].value == 1) {
+						if (params[MATH_MODE_PARAM].value == 0) {
 							// musical mode
 							if (longGateMode) {
 								on = divisions[(int)params[MODE_PARAM].value][i]/2 > counter % divisions[(int)params[MODE_PARAM].value][i];
