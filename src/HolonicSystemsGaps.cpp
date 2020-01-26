@@ -91,27 +91,21 @@ struct HolonicSystemsGapsModule : Module {
 		if (reset) {
 			this->counter = 0;
 			this->ready = false;
-			printf("reset");
 		}
 		if (clock) {
-			if (this->ready){
+			if (this->ready) {
 				this->counter++;
 			} else {
 				this->ready = true;
 			}
-			printf("clock");
 		}
 	
-		if (this->ready) { //handle initial non set state.
+		if (this->ready) { //handle initial non set state, when no clock has arrived yet.
 			for (int i=0; i<8; i++) {
 				bool on = false;
 				if (clock) {
 					if ((int)params[MODE_PARAM].value <= 4) {
-						//if (trigMode){
 						on =  divisions[(int)params[MODE_PARAM].value][i] - 1 == counter % divisions[(int)params[MODE_PARAM].value][i];
-							//} else {
-							//on =  divisions[(int)params[MODE_PARAM].value][i]/2 <= counter % divisions[(int)params[MODE_PARAM].value][i];		
-							//}
 					} else if ((int)params[MODE_PARAM].value == 5) {
 						on =  /*(0 == counter % 2) &&*/ (rand() < RAND_MAX / divisions[(int)params[MODE_PARAM].value][i]);
 					} else if ((int)params[MODE_PARAM].value == 6) {
