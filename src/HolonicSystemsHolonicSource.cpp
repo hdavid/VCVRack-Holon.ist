@@ -89,9 +89,9 @@ struct HolonicSystemsHolonicSourceModule : Module {
 	HolonicSystemsHolonicSourceModule() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		for(int i=0l;i<8;i++){
-			configParam(PARAM_ATT_1+i,0.f, 1.f, 1.f, "Attenuator");
-			configParam(PARAM_ALPHA_1+i, 1.0f, 0.0f, 0.8f, "LPF");
-			configParam(PARAM_S_H_1+i, 1.0f, 0.0f, 0.0f, "S/H");
+			configParam(PARAM_ATT_1 + i,0.f, 1.f, 1.f, "Attenuator");
+			configParam(PARAM_ALPHA_1 + i, 1.0f, 0.0f, 0.8f, "LPF");
+			configParam(PARAM_S_H_1 + i, 0.0f, 1.0f, 0.0f, "S/H");
 		}
 		configParam(PARAM_BUS, 0.f, 7.f, 0.f, "Bus");
 		configParam(PARAM_ONE_TEN_VOLT_OSC_1, 0.0f, 1.0f, 1.0f, "One or Ten");
@@ -148,7 +148,8 @@ struct HolonicSystemsHolonicSourceModule : Module {
 			outputValues[i] = out;
 			
 			
-			if (params[PARAM_S_H_1+i].value == 0 || (clock && params[PARAM_S_H_1+i].value > 0) ) {
+			if (params[PARAM_S_H_1+i].value == 0 || ((clock && params[PARAM_S_H_1+i].value > 0) || !inputs[INPUT_CLOCK].active) ) {
+				//check on INPUT_CLOCK if there is a jack in there...
 				//publish output if on clock or no s_h
 				outputs[i].value = outputValues[i];
 			}
@@ -247,7 +248,7 @@ struct HolonicSystemsHolonicSourceWidget : ModuleWidget {
 			addChild(createLight<MediumLight<RedLight>>(	Vec(10+4		, start + i * 36 + 8), module, HolonicSystemsHolonicSourceModule::LIGHT_ACTIVITY_1 + i));
 			addParam(createParam<RoundSmallBlackKnob>(			Vec(10+30*0.5	, start + i * 36), module, HolonicSystemsHolonicSourceModule::PARAM_ATT_1 + i));
 			addParam(createParam<RoundSmallBlackKnob>(			Vec(10+30*1.5	, start + i * 36), module, HolonicSystemsHolonicSourceModule::PARAM_ALPHA_1 + i));
-			addParam(createParam<CKSS>(Vec(10+30*2.5	, start + i * 36 +3), module, HolonicSystemsHolonicSourceModule::PARAM_S_H_1+i));
+			addParam(createParam<CKSS>(Vec(10+30*2.5	, start + i * 36 +3), module, HolonicSystemsHolonicSourceModule::PARAM_S_H_1 + i));
 			addOutput(createOutput<PJ301MPort>(							Vec(10+30*3-3 + 10	, start + i * 36), module, HolonicSystemsHolonicSourceModule::OUTPUT_1 + i));
 			addChild(createLight<MediumLight<GreenRedLight>>(Vec(10+30*3+23 + 10, start+ i * 36 + 8), module, HolonicSystemsHolonicSourceModule::LIGHT_OUTPUT_POS_1+i*2));
 			
