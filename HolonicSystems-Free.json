@@ -1,5 +1,5 @@
 {
-  "name": "Holonic Systems - Free",
+  "name": "Holonic Systems",
   "author": "Holonic Systems",
   "license": "CC0 1.0",
   "pluginUrl": "http://holon.ist/vcv/",
@@ -7,6 +7,6 @@
   "authorEmail": "henri@holonic.systems",
   "manualUrl": "http://holon.ist/vcv/",
   "sourceUrl": "https://github.com/hdavid/VCVRack-Holon.ist.git",
-  "latestVersion": "1.0.4",
+  "latestVersion": "1.0.5",
   "status": "available"
 }
