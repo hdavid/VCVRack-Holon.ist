@@ -20,6 +20,7 @@ struct HolonicSystemsLazySusanModule : Module {
 		PARAM_SCALE_10,
 		PARAM_SCALE_11,
 		PARAM_SCALE_12,
+		PARAM_TRANSPOSE_BEFORE_AFTER,
 		NUM_PARAMS
 	};
 
@@ -95,6 +96,7 @@ struct HolonicSystemsLazySusanModule : Module {
 		configParam(PARAM_SCALE,0.f, 6.f, 0.f, "scale");	
 		configParam(PARAM_SCALE_CV_ATT,0.f, 1.f, 1.f, "scale cv att");		
 		configParam(PARAM_ATT,0.f, 1.f, 1.f, "common att");
+		configParam(PARAM_TRANSPOSE_BEFORE_AFTER, 0.f, 1.f, 0.f, "transpose cv before/after quantiser");
 
 		onReset();
 	}
@@ -145,14 +147,15 @@ struct HolonicSystemsLazySusanModule : Module {
 
 
 		float att = params[PARAM_ATT].value;
+		bool transpose_before = (0==params[PARAM_TRANSPOSE_BEFORE_AFTER].value);
+		
 
-
-	for(int i=0;i<12;i++){
-		bool buttonStatus 	= scaleButtons[i].process(params[PARAM_SCALE_1+i].value);
-		if (buttonStatus){
-			scales[offset+i] = !scales[offset+i];
+		for(int i=0;i<12;i++){
+			bool buttonStatus 	= scaleButtons[i].process(params[PARAM_SCALE_1+i].value);
+			if (buttonStatus){
+				scales[offset+i] = !scales[offset+i];
+			}
 		}
-	}
 		
 		//scale display
 		for(int i=0;i<12;i++){
@@ -168,12 +171,12 @@ struct HolonicSystemsLazySusanModule : Module {
 					float inputCV = att * inputs[INPUT_CV_1+i].value;
 
 					// transpose
-					if (inputs[INPUT_TRANSPOSE_CV].active){
+					if (transpose_before && inputs[INPUT_TRANSPOSE_CV].active){
 						inputCV += inputs[INPUT_TRANSPOSE_CV].value;
 					}
 
 					//offset so that negative voltage are handled just the same.
-					inputCV += 100; 
+					inputCV += 200; 
 
 					//quantising
 					int octave = (int)inputCV;
@@ -212,8 +215,15 @@ struct HolonicSystemsLazySusanModule : Module {
 						semitones=below;
 					}
 				
-					float newValue = octave + semitones / 12 - 100;
-
+					float newValue = octave + semitones / 12 - 200;
+					
+					//transpose after quantiser
+					if (!transpose_before && inputs[INPUT_TRANSPOSE_CV].active){
+						//quantise transpose to semitones
+						int transposeSemitones = inputs[INPUT_TRANSPOSE_CV].value*12 + 100 * 12;
+						newValue += transposeSemitones/12.0 - 100;
+					}
+					
 					if (!inputs[INPUT_TRIGGER_1+1].active || triggerIn) {
 						if (newValue != currentCVs[i]) {
 							currentCVs[i] = newValue;
@@ -252,14 +262,17 @@ struct HolonicSystemsLazySusanWidget : ModuleWidget {
 		rack::RoundSmallBlackKnob* scale = createParam<RoundSmallBlackKnob>(Vec(10,40), module, HolonicSystemsLazySusanModule::PARAM_SCALE);
 		scale->snap = true;
 		addParam(scale);
-		addInput(createInput<PJ301MPort>(Vec(60, 40), module, HolonicSystemsLazySusanModule::INPUT_SCALE_CV));
-		addParam(createParam<Trimpot>(Vec(90,40+5), module, HolonicSystemsLazySusanModule::PARAM_SCALE_CV_ATT));
+		addInput(createInput<PJ301MPort>(Vec(64, 40), module, HolonicSystemsLazySusanModule::INPUT_SCALE_CV));
+		addParam(createParam<Trimpot>(Vec(90,40+4), module, HolonicSystemsLazySusanModule::PARAM_SCALE_CV_ATT));
 		
 		//transpose CV
 		addInput(createInput<PJ301MPort>(Vec(10, 70), module, HolonicSystemsLazySusanModule::INPUT_TRANSPOSE_CV));
 
 		//common ATT
 		addParam(createParam<Trimpot>(Vec(90, 105), module, HolonicSystemsLazySusanModule::PARAM_ATT));
+		
+		//before/after quantiser transpose
+		addParam(createParam<CKSS>(Vec(87, 70), module, HolonicSystemsLazySusanModule::PARAM_TRANSPOSE_BEFORE_AFTER));
 		
 
 		int rowHeight = 65;

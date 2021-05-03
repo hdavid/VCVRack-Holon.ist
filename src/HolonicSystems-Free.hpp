@@ -71,24 +71,17 @@ struct HolonicSystemsKnob : RoundSmallBlackKnob {
 	void connectLabel(HolonicSystemsLabel* label) {
 		linkedLabel = label;
 		if (linkedLabel) {
-			linkedLabel->text = formatCurrentValue();
+				linkedLabel->text = formatCurrentValue();
 		}
 	}
 
-	void onDragMove(const rack::event::DragMove &e) override {
-		RoundSmallBlackKnob::onDragMove(e);
-		if (linkedLabel) {
-			linkedLabel->text = formatCurrentValue();
-		}
-	}
-	void onDragEnd(const rack::event::DragEnd &e) override {
-		RoundSmallBlackKnob::onDragEnd(e);
+	void onChange(const rack::event::Change &e) override {
+		RoundSmallBlackKnob::onChange(e);
 		if (linkedLabel) {
 			linkedLabel->text = formatCurrentValue();
 		}
 	}
 
-	
 	HolonicSystemsKnob(){
 		snap = true;
 	}
