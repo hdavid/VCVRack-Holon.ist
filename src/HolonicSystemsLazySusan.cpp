@@ -66,8 +66,8 @@ struct HolonicSystemsLazySusanModule : Module {
 		NUM_LIGHTS
 	};	
 	
-	dsp::PulseGenerator outputTriggers[4];
-	LooseSchmittTrigger inputTriggers[4];
+	dsp::PulseGenerator outputTriggers[4*16];
+	LooseSchmittTrigger inputTriggers[4*16];
 	LooseSchmittTrigger scaleButtons[12];
 	
 	bool scales[7 * 12] = {
@@ -86,7 +86,7 @@ struct HolonicSystemsLazySusanModule : Module {
 		
 	};
 
-	float currentCVs[4] = {0.0f,0.0f,0.0f,0.0f};
+	float currentCVs[4*16] = {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
 	
 
 	HolonicSystemsLazySusanModule() {
@@ -163,16 +163,18 @@ struct HolonicSystemsLazySusanModule : Module {
 		}
 
 		for (int i = 0; i<4; i++) {
-			if (inputs[INPUT_CV_1+i].active){
+			//if (inputs[INPUT_CV_1+i].active){
+			int channels = fmax(inputs[INPUT_CV_1+i].getChannels(),inputs[INPUT_TRIGGER_1+i].getChannels());
+			for(int channel=0;channel<channels;channel++) {
 			
-				bool triggerIn = inputTriggers[i].process(inputs[INPUT_TRIGGER_1+i].value);
+				bool triggerIn = inputTriggers[i+channel*4].process(inputs[INPUT_TRIGGER_1+i].getVoltage(inputs[INPUT_TRIGGER_1+i].getChannels()>channel?channel:0));
 				if (!inputs[INPUT_TRIGGER_1+i].active || triggerIn) {
 
-					float inputCV = att * inputs[INPUT_CV_1+i].value;
+					float inputCV = att * inputs[INPUT_CV_1+i].getVoltage(inputs[INPUT_CV_1+i].getChannels()>channel?channel:0);
 
 					// transpose
 					if (transpose_before && inputs[INPUT_TRANSPOSE_CV].active){
-						inputCV += inputs[INPUT_TRANSPOSE_CV].value;
+						inputCV += inputs[INPUT_TRANSPOSE_CV].getVoltage();
 					}
 
 					//offset so that negative voltage are handled just the same.
@@ -224,19 +226,21 @@ struct HolonicSystemsLazySusanModule : Module {
 						newValue += transposeSemitones/12.0 - 100;
 					}
 					
-					if (!inputs[INPUT_TRIGGER_1+1].active || triggerIn) {
-						if (newValue != currentCVs[i]) {
-							currentCVs[i] = newValue;
-							outputs[OUTPUT_CV_1+i].value = currentCVs[i];
+					if (!inputs[INPUT_TRIGGER_1+i].active || triggerIn) {
+						if (newValue != currentCVs[i+channel*4]) {
+							currentCVs[i+channel*4] = newValue;
+							outputs[OUTPUT_CV_1+i].setVoltage(currentCVs[i+channel*4],channel);
 							//trigger
-							outputTriggers[i].trigger(1e-3);
+							outputTriggers[i+channel*4].trigger(1e-3);
 						}
 					}
+					outputs[OUTPUT_CV_1+i].setChannels(channels);
 				}
 
 				// Process Triggers
 				float deltaTime = APP->engine->getSampleTime();
-				outputs[OUTPUT_TRIGGER_1+i].value = outputTriggers[i].process(deltaTime) ? 10.0 : 0.0;
+				outputs[OUTPUT_TRIGGER_1+i].setChannels(channels);
+				outputs[OUTPUT_TRIGGER_1+i].setVoltage(outputTriggers[i+channel*4].process(deltaTime) ? 10.0 : 0.0, channel);
 
 			}
 		

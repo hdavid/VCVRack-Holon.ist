@@ -64,8 +64,8 @@ struct HolonicSystemsPantryModule : Module {
 	LooseSchmittTrigger overdubTrigger[2];
 	LooseSchmittTrigger clearTrigger[2];
 
-	std::vector<float> cvs[2] = {std::vector<float>(64),std::vector<float>(64)};
-	std::vector<float> gates[2]= {std::vector<float>(64),std::vector<float>(64)};
+	std::vector<float> cvs[2*16] = {std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64)};
+	std::vector<float> gates[2*16]= {std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64),std::vector<float>(64)};
 
 
 	HolonicSystemsPantryModule() {
@@ -90,9 +90,11 @@ struct HolonicSystemsPantryModule : Module {
 	void onReset() override {
 		for (int i=0; i<2; i++) {
 			counters[i] = 0;
-			for (int j=0;j<64;j++){
-				cvs[i][j] = 0;
-				gates[i][j]= 0;
+			for (int channel=0; channel<16; channel++){
+				for (int j=0;j<64;j++){
+					cvs[i+channel*2][j] = 0;
+					gates[i+channel*2][j]= 0;
+				}
 			}
 		}
 	}
@@ -105,6 +107,8 @@ struct HolonicSystemsPantryModule : Module {
 		
 		for (int i = 0; i<2;i++){
 			
+			int channels = fmax(inputs[INPUT_CV_1+i].getChannels(), inputs[INPUT_GATE_1+i].getChannels());
+			
 			//triggers must process at each step
 			bool rec = recordTrigger[i].process(inputs[INPUT_RECORD_1+i].value) || params[PARAM_RECORD_1+i].value>0;
 			bool x = overdubTrigger[i].process(inputs[INPUT_OVERDUB_1+i].value);
@@ -114,9 +118,11 @@ struct HolonicSystemsPantryModule : Module {
 			
 			//clear at any time, not on clock
 			if (clear){
-				for (int step=0; step<32; step++){
-					cvs[i][step] = 0.0f;
-					gates[i][step] = 0.0f;
+				for (int channel=0; channel<16; channel++){
+					for (int step=0; step<32; step++){
+						cvs[i+channel*2][step] = 0.0f;
+						gates[i+channel*2][step] = 0.0f;
+					}
 				}
 			}
 			
@@ -156,13 +162,19 @@ struct HolonicSystemsPantryModule : Module {
 				
 				//recording
 				if (recording){
-					cvs[i][step]=inputs[INPUT_CV_1+i].value;
-					gates[i][step]=inputs[INPUT_GATE_1+i].value;
+					for (int channel=0; channel<channels; channel++){
+						cvs[i+channel*2][step]=inputs[INPUT_CV_1+i].getVoltage(inputs[INPUT_CV_1+i].getChannels()>channel?channel:0);
+						gates[i+channel*2][step]=inputs[INPUT_GATE_1+i].getVoltage(inputs[INPUT_GATE_1+i].getChannels()>channel?channel:0);
+					}
 				}
 				
 				//output
-				outputs[OUTPUT_CV_1+i].value = cvs[i][step];
-				outputs[OUTPUT_GATE_1+i].value = gates[i][step];
+				outputs[OUTPUT_CV_1+i].setChannels(channels);
+				outputs[OUTPUT_GATE_1+i].setChannels(channels);
+				for (int channel=0; channel<channels; channel++){
+					outputs[OUTPUT_CV_1+i].setVoltage(cvs[i+channel*2][step], channel);
+					outputs[OUTPUT_GATE_1+i].setVoltage(gates[i+channel*2][step], channel);
+				}
 				
 				//step
 				counters[i]++;
