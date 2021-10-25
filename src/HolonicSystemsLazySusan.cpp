@@ -93,11 +93,41 @@ struct HolonicSystemsLazySusanModule : Module {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		
 		//IN
-		configParam(PARAM_SCALE,0.f, 6.f, 0.f, "scale");	
-		configParam(PARAM_SCALE_CV_ATT,0.f, 1.f, 1.f, "scale cv att");		
-		configParam(PARAM_ATT,0.f, 1.f, 1.f, "common att");
-		configParam(PARAM_TRANSPOSE_BEFORE_AFTER, 0.f, 1.f, 0.f, "transpose cv before/after quantiser");
-
+		configButton(PARAM_SCALE_1, "C");
+		configButton(PARAM_SCALE_2, "C#");
+		configButton(PARAM_SCALE_3, "D");
+		configButton(PARAM_SCALE_4, "D#");
+		configButton(PARAM_SCALE_5, "E");
+		configButton(PARAM_SCALE_6, "F");
+		configButton(PARAM_SCALE_7, "F#");
+		configButton(PARAM_SCALE_8, "G");
+		configButton(PARAM_SCALE_9, "G#");
+		configButton(PARAM_SCALE_10, "A");
+		configButton(PARAM_SCALE_11, "A#");
+		configButton(PARAM_SCALE_12, "B");
+		
+		configSwitch(PARAM_SCALE,0.f, 6.f, 0.f, "Scale" , {"1","2","3","4","5","6","7"});	
+		configParam(PARAM_SCALE_CV_ATT,0.f, 1.f, 1.f, "Scale CV Attenuator");		
+		configParam(PARAM_ATT,0.f, 1.f, 1.f, "Common Attenuator");
+		configSwitch(PARAM_TRANSPOSE_BEFORE_AFTER, 0.f, 1.f, 0.f, "Transpose CV", {"before quantizer","after quantizer"});
+		configInput(INPUT_CV_1, "CV 1");
+		configInput(INPUT_CV_2, "CV 2");
+		configInput(INPUT_CV_3, "CV 3");
+		configInput(INPUT_CV_4, "CV 4");
+		configInput(INPUT_TRIGGER_1, "Trig 1");
+		configInput(INPUT_TRIGGER_2, "Trig 2");
+		configInput(INPUT_TRIGGER_3, "Trig 3");
+		configInput(INPUT_TRIGGER_4, "Trig 4");
+		configInput(INPUT_TRANSPOSE_CV, "Transpose");
+		configInput(INPUT_SCALE_CV, "Scale");
+		configOutput(OUTPUT_CV_1, "CV 1");
+		configOutput(OUTPUT_CV_2, "CV 2");
+		configOutput(OUTPUT_CV_3, "CV 3");
+		configOutput(OUTPUT_CV_4, "CV 4");
+		configOutput(OUTPUT_TRIGGER_1, "Trig 1");
+		configOutput(OUTPUT_TRIGGER_2, "Trig 2");
+		configOutput(OUTPUT_TRIGGER_3, "Trig 3");
+		configOutput(OUTPUT_TRIGGER_4, "Trig 4");
 		onReset();
 	}
 

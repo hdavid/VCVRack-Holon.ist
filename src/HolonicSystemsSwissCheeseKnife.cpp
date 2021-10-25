@@ -85,15 +85,23 @@ struct HolonicSystemsSwissCheeseKnifeModule : Module {
 	HolonicSystemsSwissCheeseKnifeModule() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		for(int i=0;i<4;i++){
+			configInput(INPUT_1+i, "Input");
+			configInput(INPUT_VCA_1+i, "VCA");
+			configInput(INPUT_SH_1+i, "S/H");
+			configOutput(OUTPUT_1+i, "Output");
 			configParam(PARAM_ATT_1+i,0.f, 1.f, 1.f, "Attenuator");
-			configParam(PARAM_INV_1+i,0.f, 1.f, 1.f, "Invert");
+			configSwitch(PARAM_INV_1+i,0.f, 1.f, 1.f, "Invert", {"Inverted", "Normal"});
 			configParam(PARAM_LPF_1+i,1.f, 0.f, 1.f, "LPF");
 			configParam(PARAM_SLEW_UP_1+i,0.f, 1.f, 0.f, "Slew Up");
 			configParam(PARAM_SLEW_DOWN_1+i,0.f, 1.f, 0.f, "Slew Down");
 			configParam(PARAM_SLEW_SHAPE_1+i,0.f, 1.f, 0.5f, "Slew Response");
 			configParam(PARAM_VCA_RESPONSE_1+i,0.f, 1.f, 0.5f, "VCA Response");
 			configParam(PARAM_OFFSET_1+i,-5.0f, 5.0f, 0.0f, "Offset");
-			configParam(PARAM_AC_DC_1+i,0.0f, 1.0f, 1.0f, "AC/DC");
+			configSwitch(PARAM_AC_DC_1+i,0.0f, 1.0f, 1.0f, "AC/DC" , {"AC Coupled", "DC Coupled"});
+			configInput(INPUT_1+i,"CV");
+			configInput(INPUT_VCA_1+i,"VCA");
+			configInput(INPUT_SH_1+i,"S/H");
+			configOutput(OUTPUT_1+i,"CV");
 		}
 		onReset();
 	}

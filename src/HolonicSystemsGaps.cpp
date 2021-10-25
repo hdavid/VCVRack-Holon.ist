@@ -69,9 +69,20 @@ struct HolonicSystemsGapsModule : Module {
 
 	HolonicSystemsGapsModule() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-		configParam(MODE_PARAM, 0.f, 6.f, 0.f, "Division Mode");
+		configSwitch(MATH_MODE_PARAM,0.f, 1.f, 0.f, "Fire Mode", {"Musical: outputs fire on first clock","Math: outputs fire on next clock"});
+		configSwitch(MODE_PARAM, 0.f, 6.f, 0.f, "Division Mode", {"Integers", "Even Numbers", "Odd Numbers", "Prime Numbers", "Binary", "Random", "Sequential"});
 		configParam(TRIG_MODE_PARAM, 0.f, 2.f, 0.f, "Trigger/Gate Mode");
-		configParam(MODE_BUTTON, 0.f, 4.f, 0.f, "Mode Button");
+		configButton(MODE_BUTTON, "Trigger/Gate Mode");
+		configInput(INPUT_CLOCK, "Clock");
+		configInput(INPUT_RESET, "Reset");
+		configOutput(OUTPUT_1, "1");
+		configOutput(OUTPUT_2, "2");
+		configOutput(OUTPUT_3, "3");
+		configOutput(OUTPUT_4, "4");
+		configOutput(OUTPUT_5, "5");
+		configOutput(OUTPUT_6, "6");
+		configOutput(OUTPUT_7, "7");
+		configOutput(OUTPUT_8, "8");
 		onReset();
 	}
 

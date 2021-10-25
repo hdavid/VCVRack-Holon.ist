@@ -38,6 +38,16 @@ struct HolonicSystemsJunctionsModule : Module {
 
 	HolonicSystemsJunctionsModule() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+		configInput(INPUT_1_A, "1 A");
+		configInput(INPUT_1_B, "1 B");
+		configInput(INPUT_2_A, "2 A");
+		configInput(INPUT_2_B, "2 B");
+		configInput(INPUT_1_CV, "CV 1");
+		configInput(INPUT_2_CV, "CV 2");
+		configOutput(OUTPUT_1, "1");
+		configOutput(OUTPUT_2, "2");
+		configSwitch(TRIG_MODE_PARAM, 0.f, 1.f, 0.f,"Mode",{"Gate", "Trigger / Flip-Flop"});
+
 	}
 
 	~HolonicSystemsJunctionsModule() {

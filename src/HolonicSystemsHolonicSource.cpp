@@ -88,13 +88,25 @@ struct HolonicSystemsHolonicSourceModule : Module {
 	
 	HolonicSystemsHolonicSourceModule() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-		for(int i=0l;i<8;i++){
-			configParam(PARAM_ATT_1 + i,0.f, 1.f, 1.f, "Attenuator");
-			configParam(PARAM_ALPHA_1 + i, 1.0f, 0.0f, 0.8f, "LPF");
-			configParam(PARAM_S_H_1 + i, 0.0f, 1.0f, 0.0f, "S/H");
+		for(int i=0l; i<8; i++){
+			configParam(PARAM_ATT_1 + i, 0.f, 1.f, 1.f, "Attenuator");
+			configParam(PARAM_ALPHA_1 + i, 1.0f, 0.0f, 0.8f, "Low Pass Filter");
+			configSwitch(PARAM_S_H_1 + i, 0, 1, 0, "S/H", {"Off", "On"});
+			
+			configLight(LIGHT_ACTIVITY_1 + i , "OSC Activity");
 		}
-		configParam(PARAM_BUS, 0.f, 7.f, 0.f, "Bus");
-		configParam(PARAM_ONE_TEN_VOLT_OSC_1, 0.0f, 1.0f, 1.0f, "One or Ten");
+		configSwitch(PARAM_BUS, 0.f, 7.f, 0.f, "Bus", {"Bus A","Bus B","Bus C","Bus D", "Bus E","Bus F","Bus G","Bus H"});
+		configSwitch(PARAM_ONE_TEN_VOLT_OSC_1, 0.0f, 1.0f, 1.0f, "OSC Input Range", {"[-10,+10]","[-1,+1]"});
+		configInput(INPUT_CLOCK, "S/H Clock");
+		configOutput(OUTPUT_1,"1");
+		configOutput(OUTPUT_2,"2");
+		configOutput(OUTPUT_3,"3");
+		configOutput(OUTPUT_4,"4");
+		configOutput(OUTPUT_5,"5");
+		configOutput(OUTPUT_6,"6");
+		configOutput(OUTPUT_7,"7");
+		configOutput(OUTPUT_8,"8");
+		
 		onReset();
 		ports.start();
 	}
