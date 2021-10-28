@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stddef.h>
 #include <errno.h>
+#include <cstdio>
 #ifdef ARCH_WIN
 #include <winsock2.h>
 #else // Linux / MacOS
