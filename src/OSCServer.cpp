@@ -1,5 +1,6 @@
 #include "OSCServer.hpp"
 
+#include <cstdio>
 #include "tinyosc.h"
 #ifdef ARCH_WIN
 #include <winsock2.h>
