@@ -7,8 +7,8 @@
 #include <thread>
 #include <string>
 
-#include "OSCServer.hpp"
-#include "MdnsServer.hpp"
+class MdnsServer;
+class OSCServer;
 
 #define PORTS_NUM_CHANNELS 8
 #define PORTS_MAX_INSTANCE_COUNT 10
@@ -58,11 +58,13 @@ public:
 	void start();
 	void stop();
 	void computeChannel(int channel, float deltaTime);
+    void updateChannel(const int channel, const int mode, const float value);
 	void setBank(int bank);
 	void oscMessage(const char *path, const float value);
 	void oscMessage(const char *path, const char* value);
 	static void oscMessageCallback(const char *path, const float value);
 	static void oscMessageStringCallback(const char *path, const char* value);
+    static void holonistMessage(const int bus, const int channel, const int mode,const  int subMode, const float value);
 	double channelValues[PORTS_NUM_CHANNELS];
 	bool channelUpdated[PORTS_NUM_CHANNELS];
 	int channelModes[PORTS_NUM_CHANNELS];

@@ -4,10 +4,15 @@
 #include <string.h>
 #include <math.h>
 #include <unistd.h>
+#include "OSCServer.hpp"
+#include "MdnsServer.hpp"
+
 #ifdef ARCH_WIN
 //define usleep for windows
 #include <windows.h>
 #include <string>
+
+
 
 void usleep(int waitTime) {
     __int64 time1 = 0, time2 = 0, freq = 0;
@@ -211,54 +216,63 @@ void Ports::oscMessage(const char *path, const float v) {
 		int channel = parseInt(path, offset);
 		offset += channel < 10 ? 2 : channel < 100 ? 3 : 4;
 		channel -= 1;
-		if (channel >= 0 && channel <= PORTS_NUM_CHANNELS) {
-			// update channel last update;
-			channelUpdated[channel] = true;
-
-			int mode = parseOutputMode(path, offset);
-			bool force = false;
-			if (channelModes[channel] != mode) {
-				channelModes[channel] = mode;
-				force = true;
-			}
-			bool isBipolar = channelIsBipolar(channel);
-			if (channelIsLfo(channel)) {
-				// lfo frequency clipping
-				if (value < PORTS_LFO_FREQUENCY_MIN) {
-					value = PORTS_LFO_FREQUENCY_MIN;
-				}
-				if (value > PORTS_LFO_FREQUENCY_MAX) {
-					value = PORTS_LFO_FREQUENCY_MAX;
-				}
-				channelLFOFrequencies[channel] = value;
-				setChannelMode(channel, false, isBipolar, force);
-			} else {
-				// value scaling
-				if (value > PORTS_OUTPUT_LEVEL_MAX) {
-					value = PORTS_OUTPUT_LEVEL_MAX;
-				}
-				if (isBipolar) {
-					if (value <= PORTS_OUTPUT_LEVEL_MIN) {
-						value = PORTS_OUTPUT_LEVEL_MIN;
-					}
-				} else {
-					if (value < PORTS_OUTPUT_LEVEL_ZERO) {
-						value = PORTS_OUTPUT_LEVEL_ZERO;
-					}
-				}
-				setChannelMode(channel, false, isBipolar, force);
-				setChannelValue(channel, value);
-				if (PORTS_OUTPUT_MODE_TRIG == channelModes[channel]) {
-					channelTrigCycles[channel] = PORTS_TRIGGER_CYCLES;
-				} else if (PORTS_OUTPUT_MODE_SYNCTRIG == channelModes[channel]) {
-					channelSyncTriggerRequested[channel] = true;
-				}
-			}
-			//} else {
-			// std::cout << "invalid channel : " << path << "\n";
-		}
+        int mode = parseOutputMode(path, offset);
+		updateChannel(channel, mode, value);
 	}
 }
+
+void Ports::updateChannel(const int channel, const int mode, const float v) {
+    float value = v;
+    
+	if (channel >= 0 && channel <= PORTS_NUM_CHANNELS) {
+		// update channel last update;
+		channelUpdated[channel] = true;
+
+		
+		bool force = false;
+		if (channelModes[channel] != mode) {
+			channelModes[channel] = mode;
+			force = true;
+		}
+		bool isBipolar = channelIsBipolar(channel);
+		if (channelIsLfo(channel)) {
+			// lfo frequency clipping
+			if (value < PORTS_LFO_FREQUENCY_MIN) {
+				value = PORTS_LFO_FREQUENCY_MIN;
+			}
+			if (value > PORTS_LFO_FREQUENCY_MAX) {
+				value = PORTS_LFO_FREQUENCY_MAX;
+			}
+			channelLFOFrequencies[channel] = value;
+			setChannelMode(channel, false, isBipolar, force);
+		} else {
+			// value scaling
+			if (value > PORTS_OUTPUT_LEVEL_MAX) {
+				value = PORTS_OUTPUT_LEVEL_MAX;
+			}
+			if (isBipolar) {
+				if (value <= PORTS_OUTPUT_LEVEL_MIN) {
+					value = PORTS_OUTPUT_LEVEL_MIN;
+				}
+			} else {
+				if (value < PORTS_OUTPUT_LEVEL_ZERO) {
+					value = PORTS_OUTPUT_LEVEL_ZERO;
+				}
+			}
+			setChannelMode(channel, false, isBipolar, force);
+			setChannelValue(channel, value);
+			if (PORTS_OUTPUT_MODE_TRIG == channelModes[channel]) {
+				channelTrigCycles[channel] = PORTS_TRIGGER_CYCLES;
+			} else if (PORTS_OUTPUT_MODE_SYNCTRIG == channelModes[channel]) {
+				channelSyncTriggerRequested[channel] = true;
+			}
+		}
+		//} else {
+		// std::cout << "invalid channel : " << path << "\n";
+	}
+
+}
+
 
 void Ports::setBank(int bank) {
 	if (bank != currentBank){
@@ -335,6 +349,49 @@ int Ports::parseOutputMode(const char *str, int offset) {
 		return PORTS_OUTPUT_MODE_LFO_SINE;
 	}
 	return -1;
+}
+
+void Ports::holonistMessage(const int bus, const int channel, const int mode, const  int subMode, const float value){
+	//printf("holonistMessage\n");
+    mutex.lock();
+    //printf("holonistMessage mutex\n");
+	for (int i = 0; i < PORTS_MAX_INSTANCE_COUNT; i++) {        
+		if (i == bus) {
+           // printf("bus match");
+            if (instances[i] != NULL) {
+                //printf("instance not null\n");
+                int newMode=0;
+                if (mode==0){
+                    if (subMode==0){
+                        newMode=PORTS_OUTPUT_MODE_CVUNI;
+                    }else{
+                         newMode=PORTS_OUTPUT_MODE_CVBI;
+                    }
+                } else if (mode==1 ||mode==2) {
+                    if (subMode==0){
+                         newMode=PORTS_OUTPUT_MODE_LFO_SINE;
+                    } else if (subMode==0){
+                         newMode=PORTS_OUTPUT_MODE_LFO_SAW;
+                    } else if (subMode==1){
+                         newMode=PORTS_OUTPUT_MODE_LFO_SAW;
+                    } else if (subMode==2){
+                         newMode=PORTS_OUTPUT_MODE_LFO_RAMP;
+                    } else if (subMode==3){
+                         newMode=PORTS_OUTPUT_MODE_LFO_TRI;
+                    } else if (subMode==4){
+                         newMode=PORTS_OUTPUT_MODE_LFO_SQUARE;
+                    }
+                } else if (mode==3){
+                    newMode=PORTS_OUTPUT_MODE_TRIG;
+                } else if (mode == 4) {
+                   newMode=PORTS_OUTPUT_MODE_GATE;
+                }
+                //printf("bus:%d\tchannel:%d\tmode:%d\tvalue:%f\n",bus, channel, newMode, value);
+    			instances[i]->updateChannel(channel, newMode, value);
+            }
+		}
+	}
+	mutex.unlock();
 }
 
 
