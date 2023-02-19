@@ -87,10 +87,21 @@ struct HolonicSystemsDumbwaiterModule : Module {
 
 	HolonicSystemsDumbwaiterModule() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+#ifdef MIRACK
+		for(int i=0;i<8;i++){
+			configParam(PARAM_ATT_1 + i, 0.f, 1.0f, 1.0f, "Attenutor n");
+			configParam(PARAM_TRIG_1 + i,0.f, 2.f, (i%3==0)? 0.f : ((i%2==0)?1.f:2.f), "Trigger n");
+		}
+		configParam(PARAM_MODE,0.f, 3.f, 0.f, "Mode (fwd / bkwd / pendulum / rnd)");
+		configParam(PARAM_SW_OR_SEQ,0.f, 1.f, 0.f, "Sample Hold Sequencer mode / Continous Switch mode");
+#else		
 		for(int i=0;i<8;i++){
 			configParam(PARAM_ATT_1 + i, 0.f, 1.0f, 1.0f, "Attenuator");
 			configSwitch(PARAM_TRIG_1 + i,0.f, 2.f, (i%3==0)? 0.f : ((i%2==0)?1.f:2.f), "Trigger", {"Off","1","2"});
 		}
+		configSwitch(PARAM_MODE,0.f, 3.f, 0.f, "Mode",{"Forward","Backward", "Pendulum", "Random"});		
+		configSwitch(PARAM_SW_OR_SEQ, 0.f, 1.f, 0.f, "SEQ/SW Mode", {"Sample Hold Sequencer mode", "Continous Switch mode"});
+		
 		configInput(IN_1,"1");
 		configInput(IN_2,"2");
 		configInput(IN_3,"3");
@@ -110,8 +121,8 @@ struct HolonicSystemsDumbwaiterModule : Module {
 		configOutput(OUTPUT_CV,"CV");
 		configOutput(OUTPUT_TRIG_1,"Trigger 1");
 		configOutput(OUTPUT_TRIG_2,"Trigger 2");
-		configOutput(OUTPUT_CHANGE_TRIGGER,"Change Trigger");
-		
+		configOutput(OUTPUT_CHANGE_TRIGGER,"Change Trigger");		
+#endif
 		
 		configParam(PARAM_OUTPUT_ATT,0.f, 1.f, 1.f, "Output Att");
 		configParam(PARAM_START,0.f, 7.f, 0.f, "Start");
@@ -119,10 +130,7 @@ struct HolonicSystemsDumbwaiterModule : Module {
 		configParam(PARAM_LENGTH,0.f, 7.f, 7.f, "Length");
 		configParam(PARAM_LENGTH_ATT,0.f, 1.f, 1.f, "Length CV Att");
 		configParam(PARAM_SEQ_ATT,0.f, 1.f, 1.f, "Address CV Att");
-		configSwitch(PARAM_MODE,0.f, 3.f, 0.f, "Mode",{"Forward","Backward", "Pendulum", "Random"});
-		configParam(PARAM_MODE_ATT,0.f, 1.f, 1.f, "Mode CV Att");
-		configSwitch(PARAM_SW_OR_SEQ, 0.f, 1.f, 0.f, "SEQ/SW Mode", {"Sample Hold Sequencer mode", "Continous Switch mode"});
-
+		configParam(PARAM_MODE_ATT,0.f, 1.f, 1.f, "Mode CV Att");	
 
 		onReset();
 	}

@@ -61,9 +61,11 @@ struct HolonicSystemsLabel : Widget {
 		nvgText(args.vg, box.pos.x, box.pos.y, text.c_str(), NULL);
 	}
 };
-
+#ifdef MIRACK
+struct HolonicSystemsKnob : V1_COMPAT_W<RoundSmallBlackKnob> {
+#else
 struct HolonicSystemsKnob : RoundSmallBlackKnob {
-	
+#endif
  	std::vector<std::string> names; 
 	
 	HolonicSystemsLabel* linkedLabel = nullptr;
@@ -74,8 +76,11 @@ struct HolonicSystemsKnob : RoundSmallBlackKnob {
 				linkedLabel->text = formatCurrentValue();
 		}
 	}
-
+#ifdef MIRACK
+	void onChange(rack::event::Change &e) override {
+#else
 	void onChange(const rack::event::Change &e) override {
+#endif
 		RoundSmallBlackKnob::onChange(e);
 		if (linkedLabel) {
 			linkedLabel->text = formatCurrentValue();
@@ -87,7 +92,9 @@ struct HolonicSystemsKnob : RoundSmallBlackKnob {
 	}
 	
 	std::string formatCurrentValue() {
+#ifndef MIRACK
 		ParamQuantity* paramQuantity = getParamQuantity();
+#endif
 		int index = int(paramQuantity->getValue());
 		int size =  (int)names.size();
 		if (size>0 && index < size && index >= 0) {

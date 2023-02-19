@@ -29,6 +29,8 @@ std::mutex Ports::mutex;
 MdnsServer* Ports::mdnsServer = NULL;
 OSCServer* Ports::oscServer = NULL;
 Ports* Ports::instances[] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}; 
+long Ports::totalHolonistMessageCount = 0;
+
 
 Ports::Ports() {
 	for (int i = 0; i < PORTS_NUM_CHANNELS; i++) {
@@ -352,44 +354,44 @@ int Ports::parseOutputMode(const char *str, int offset) {
 }
 
 void Ports::holonistMessage(const int bus, const int channel, const int mode, const  int subMode, const float value){
-	//printf("holonistMessage\n");
-    mutex.lock();
-    //printf("holonistMessage mutex\n");
-	for (int i = 0; i < PORTS_MAX_INSTANCE_COUNT; i++) {        
-		if (i == bus) {
-           // printf("bus match");
-            if (instances[i] != NULL) {
-                //printf("instance not null\n");
-                int newMode=0;
-                if (mode==0){
-                    if (subMode==0){
-                        newMode=PORTS_OUTPUT_MODE_CVUNI;
-                    }else{
-                         newMode=PORTS_OUTPUT_MODE_CVBI;
-                    }
-                } else if (mode==1 ||mode==2) {
-                    if (subMode==0){
-                         newMode=PORTS_OUTPUT_MODE_LFO_SINE;
-                    } else if (subMode==0){
-                         newMode=PORTS_OUTPUT_MODE_LFO_SAW;
-                    } else if (subMode==1){
-                         newMode=PORTS_OUTPUT_MODE_LFO_SAW;
-                    } else if (subMode==2){
-                         newMode=PORTS_OUTPUT_MODE_LFO_RAMP;
-                    } else if (subMode==3){
-                         newMode=PORTS_OUTPUT_MODE_LFO_TRI;
-                    } else if (subMode==4){
-                         newMode=PORTS_OUTPUT_MODE_LFO_SQUARE;
-                    }
-                } else if (mode==3){
-                    newMode=PORTS_OUTPUT_MODE_TRIG;
-                } else if (mode == 4) {
-                   newMode=PORTS_OUTPUT_MODE_GATE;
-                }
-                //printf("bus:%d\tchannel:%d\tmode:%d\tvalue:%f\n",bus, channel, newMode, value);
-    			instances[i]->updateChannel(channel, newMode, value);
+	mutex.lock();
+    totalHolonistMessageCount++;
+    if (totalHolonistMessageCount%100==0){
+        //printf("totalHolonistMessageCount:%ld\n", totalHolonistMessageCount);
+    }
+    if (bus>=0 && bus<PORTS_MAX_INSTANCE_COUNT && instances[bus] != NULL) {
+        int newMode=0;
+        if (mode==0) {
+            if (subMode==0) {
+                newMode=PORTS_OUTPUT_MODE_CVUNI;
+            } else {
+                newMode=PORTS_OUTPUT_MODE_CVBI;
             }
-		}
+        } else if (mode==1 ||mode==2) {
+            if (subMode==0) {
+                 newMode=PORTS_OUTPUT_MODE_LFO_SINE;
+            } else if (subMode==0) {
+                 newMode=PORTS_OUTPUT_MODE_LFO_SAW;
+            } else if (subMode==1) {
+                 newMode=PORTS_OUTPUT_MODE_LFO_SAW;
+            } else if (subMode==2) {
+                 newMode=PORTS_OUTPUT_MODE_LFO_RAMP;
+            } else if (subMode==3) {
+                 newMode=PORTS_OUTPUT_MODE_LFO_TRI;
+            } else if (subMode==4) {
+                 newMode=PORTS_OUTPUT_MODE_LFO_SQUARE;
+            }
+        } else if (mode==3) {
+            newMode=PORTS_OUTPUT_MODE_TRIG;
+        } else if (mode == 4) {
+           newMode=PORTS_OUTPUT_MODE_GATE;
+        }
+        if (newMode==0){
+            printf("unknown mode: bus:%d\tchannel:%d\tmode:%d\tsubMode:%d\tnewMode:%d\tvalue:%f\n", bus, channel, mode, subMode, newMode, value);
+        }
+		instances[bus]->updateChannel(channel, newMode, value);
+	} else {
+	   printf("no instance: bus:%d\tchannel:%d\tmode:%d\tsubMode:%d\tvalue:%f\n", bus, channel, mode, subMode, value); 
 	}
 	mutex.unlock();
 }

@@ -64,7 +64,7 @@ public:
 	void oscMessage(const char *path, const char* value);
 	static void oscMessageCallback(const char *path, const float value);
 	static void oscMessageStringCallback(const char *path, const char* value);
-    static void holonistMessage(const int bus, const int channel, const int mode,const  int subMode, const float value);
+    static void holonistMessage(const int bus, const int channel, const int mode, const  int subMode, const float value);
 	double channelValues[PORTS_NUM_CHANNELS];
 	bool channelUpdated[PORTS_NUM_CHANNELS];
 	int channelModes[PORTS_NUM_CHANNELS];
@@ -73,7 +73,7 @@ public:
 private:
 	int currentBank = 0;
 	int numBanks = PORTS_NUM_CHANNELS / 8;
-	
+
 	int channelTrigCycles[PORTS_NUM_CHANNELS];
 	bool channelSyncTriggerRequested[PORTS_NUM_CHANNELS];
 	double channelLFOPhases[PORTS_NUM_CHANNELS];
@@ -87,7 +87,6 @@ private:
 	struct timeval elapsed;
 	struct timeval started;
 	volatile bool shouldRun = false;
-	
 	void setChannelMode(int channel, bool mode, bool bipolar, bool force);
 	void setChannelValue(int channel, float value);
 	int parseChannel(const char *path, int offset);
@@ -100,6 +99,7 @@ private:
 	static void addInstance(Ports* instance);
 	static void removeInstance(Ports* instance);
 	static int instanceCount();
+    static long totalHolonistMessageCount;
 	static Ports* instances[PORTS_MAX_INSTANCE_COUNT];
 	static std::mutex mutex;
 	static MdnsServer* mdnsServer;

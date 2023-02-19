@@ -69,6 +69,11 @@ struct HolonicSystemsGapsModule : Module {
 
 	HolonicSystemsGapsModule() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+#ifdef MIRACK
+		configParam(MODE_PARAM, 0.f, 6.f, 0.f, "Division Mode");
+		configParam(TRIG_MODE_PARAM, 0.f, 2.f, 0.f, "Trigger/Gate Mode");
+		configParam(MODE_BUTTON, 0.f, 4.f, 0.f, "Mode Button");
+#else
 		configSwitch(MATH_MODE_PARAM,0.f, 1.f, 0.f, "Fire Mode", {"Musical: outputs fire on first clock","Math: outputs fire on next clock"});
 		configSwitch(MODE_PARAM, 0.f, 6.f, 0.f, "Division Mode", {"Integers", "Even Numbers", "Odd Numbers", "Prime Numbers", "Binary", "Random", "Sequential"});
 		configParam(TRIG_MODE_PARAM, 0.f, 2.f, 0.f, "Trigger/Gate Mode");
@@ -83,6 +88,7 @@ struct HolonicSystemsGapsModule : Module {
 		configOutput(OUTPUT_6, "6");
 		configOutput(OUTPUT_7, "7");
 		configOutput(OUTPUT_8, "8");
+#endif
 		onReset();
 	}
 

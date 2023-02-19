@@ -1,8 +1,14 @@
 RACK_DIR ?= ../..
 
-FLAGS +=
+FLAGS += 
 CFLAGS += 
-CXXFLAGS +=
+
+ifeq ($(wildcard $(RACK_DIR)/include/rack.hpp),)
+CXXFLAGS += -DMIRACK
+else
+CXXFLAGS += 
+endif
+
 
 include $(RACK_DIR)/arch.mk
 ifdef ARCH_WIN
