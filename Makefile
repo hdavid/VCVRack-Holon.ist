@@ -5,8 +5,10 @@ CFLAGS +=
 
 ifeq ($(wildcard $(RACK_DIR)/include/rack.hpp),)
 CXXFLAGS += -DMIRACK
+DISTRIBUTABLES += res 
 else
 CXXFLAGS += 
+DISTRIBUTABLES += $(wildcard LICENSE*) $(wildcard *.sh) $(wildcard *.bat) res demos 
 endif
 
 
@@ -21,7 +23,7 @@ endif
 SOURCES += $(wildcard src/*.cpp)
 SOURCES += $(wildcard src/*.c)
 
-DISTRIBUTABLES += $(wildcard LICENSE*) $(wildcard *.sh) $(wildcard *.bat) res demos 
+
 
 # Include the VCV Rack plugin Makefile framework
 include $(RACK_DIR)/plugin.mk
