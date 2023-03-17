@@ -60,6 +60,7 @@ public:
 	void computeChannel(int channel, float deltaTime);
     void updateChannel(const int channel, const int mode, const float value);
 	void setBank(int bank);
+    int getBank();
 	void oscMessage(const char *path, const float value);
 	void oscMessage(const char *path, const char* value);
 	static void oscMessageCallback(const char *path, const float value);

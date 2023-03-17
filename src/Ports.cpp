@@ -286,6 +286,10 @@ void Ports::setBank(int bank) {
  	}
 }
 
+int Ports::getBank() {
+	return currentBank;
+}
+
 bool Ports::channelIsInput(int channel) { return channelModes[channel] >= 100; }
 
 bool Ports::channelIsLfo(int channel) {
@@ -359,7 +363,7 @@ void Ports::holonistMessage(const int bus, const int channel, const int mode, co
     if (totalHolonistMessageCount%100==0){
         //printf("totalHolonistMessageCount:%ld\n", totalHolonistMessageCount);
     }
-    if (bus>=0 && bus<PORTS_MAX_INSTANCE_COUNT && instances[bus] != NULL) {
+    if (bus>=0 && bus < 64) {
         int newMode=0;
         if (mode==0) {
             if (subMode==0) {
@@ -389,9 +393,11 @@ void Ports::holonistMessage(const int bus, const int channel, const int mode, co
         if (newMode==0){
             printf("unknown mode: bus:%d\tchannel:%d\tmode:%d\tsubMode:%d\tnewMode:%d\tvalue:%f\n", bus, channel, mode, subMode, newMode, value);
         }
-		instances[bus]->updateChannel(channel, newMode, value);
-	} else {
-	   printf("no instance: bus:%d\tchannel:%d\tmode:%d\tsubMode:%d\tvalue:%f\n", bus, channel, mode, subMode, value); 
+    	for (int i = 0; i < PORTS_MAX_INSTANCE_COUNT; i++) {
+    		if (instances[i] != NULL && instances[i]->getBank() == bus) {
+                instances[i]->updateChannel(channel, newMode, value);            
+    		}
+    	}
 	}
 	mutex.unlock();
 }
