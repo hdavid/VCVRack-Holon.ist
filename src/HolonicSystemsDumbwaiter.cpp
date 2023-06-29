@@ -260,9 +260,17 @@ struct HolonicSystemsDumbwaiterModule : Module {
 				//trigger
 				if ((inputs[IN_CLOCK].active && clock) || counter != oldCounter){
 					if (params[PARAM_TRIG_1+i].value == 1){
+#ifdef MIRACK
+						outputTrigger1.trigger();
+#else
 						outputTrigger1.trigger(1e-3);
+#endif
 					} else if (params[PARAM_TRIG_1+i].value == 2){
+#ifdef MIRACK
+						outputTrigger2.trigger();
+#else
 						outputTrigger2.trigger(1e-3);
+#endif
 					}
 				}
 			}

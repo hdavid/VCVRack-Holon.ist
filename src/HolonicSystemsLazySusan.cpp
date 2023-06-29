@@ -267,7 +267,11 @@ struct HolonicSystemsLazySusanModule : Module {
 							currentCVs[i+channel*4] = newValue;
 							outputs[OUTPUT_CV_1+i].setVoltage(currentCVs[i+channel*4],channel);
 							//trigger
+#ifdef MIRACK
+							outputTriggers[i+channel*4].trigger();
+#else
 							outputTriggers[i+channel*4].trigger(1e-3);
+#endif
 						}
 					}
 					outputs[OUTPUT_CV_1+i].setChannels(channels);

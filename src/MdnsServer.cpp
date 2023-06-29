@@ -231,9 +231,18 @@ void MdnsServer::run(int port) {
 	char* hostname;
 	hostname = getenv("COMPUTERNAME");
 	if (hostname != 0) {
+#ifdef MIRACK
+		sprintf(instanceName, "mirack-%s", hostname);
+#else
 		sprintf(instanceName, "vcvrack-%s", hostname);
+#endif
+		
 	} else {
-		sprintf(instanceName, "vcvrack-nohostname");	
+#ifdef MIRACK
+		sprintf(instanceName, "mirack-nohostname");
+#else
+		sprintf(instanceName, "vcvrack-nohostname");
+#endif
 	}
 #endif
 #ifdef ARCH_MAC
@@ -243,10 +252,18 @@ void MdnsServer::run(int port) {
 	if (gethostname(hostname, 512) == 0) { // success = 0, failure = -1
 		const char delimiters[] = ".";
 		char * running = strdup(hostname);
-		hostname = strsep(&running, delimiters); 
+		hostname = strsep(&running, delimiters);
+#ifdef MIRACK
+		sprintf(instanceName, "mirack-%s", hostname);
+#else
 		sprintf(instanceName, "vcvrack-%s", hostname);
+#endif
 	} else {
-		sprintf(instanceName, "vcvrack-nohostname");	
+#ifdef MIRACK
+		sprintf(instanceName, "mirack-nohostname");	
+#else
+		sprintf(instanceName, "vcvrack-nohostname");
+#endif
 	}
 	DNSServiceRef serviceRef;
 	DNSServiceErrorType error = DNSServiceRegister(
