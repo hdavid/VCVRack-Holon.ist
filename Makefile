@@ -3,13 +3,13 @@ RACK_DIR ?= ../..
 FLAGS += 
 CFLAGS += 
 
-#ifeq ($(wildcard $(RACK_DIR)/include/api0/app.hppf),)
-ifdef $(BUILDING_FOR_MIRACK)
+ifneq ($(wildcard $(RACK_DIR)/patch_v1_events.sh),)
+# mirack
 DISTRIBUTABLES += res 
 else
+# normal
 DISTRIBUTABLES += $(wildcard LICENSE*) $(wildcard *.sh) $(wildcard *.bat) res demos 
 endif
-
 
 include $(RACK_DIR)/arch.mk
 ifdef ARCH_WIN
