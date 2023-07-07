@@ -91,17 +91,11 @@ struct HolonicSystemsHolonicSourceModule : Module {
 		for(int i=0l;i<8;i++){
 			configParam(PARAM_ATT_1 + i,0.f, 1.f, 1.f, "Attenuator");
 			configParam(PARAM_ALPHA_1 + i, 1.0f, 0.0f, 0.8f, "Low Pass Filter");
-#ifdef MIRACK
-			configParam(PARAM_S_H_1 + i, 0.0f, 1.0f, 0.0f, "S/H");
-#else
 			configSwitch(PARAM_S_H_1 + i, 0, 1, 0, "S/H", {"Off", "On"});
-			configLight(LIGHT_ACTIVITY_1 + i , "OSC Activity");
-#endif		
+#ifndef BUILDING_FOR_MIRACK
+			configLight(LIGHT_ACTIVITY_1 + i , "OSC Activity");		
+#endif
 		}
-#ifdef MIRACK
-		configParam(PARAM_BUS, 0.f, 7.f, 0.f, "Bus");
-		configParam(PARAM_ONE_TEN_VOLT_OSC_1, 0.0f, 1.0f, 1.0f, "One or Ten");
-#else
 		configSwitch(PARAM_BUS, 0.f, 7.f, 0.f, "Bus", {"Bus A","Bus B","Bus C","Bus D", "Bus E","Bus F","Bus G","Bus H"});
 		configSwitch(PARAM_ONE_TEN_VOLT_OSC_1, 0.0f, 1.0f, 1.0f, "OSC Input Range", {"[-10,+10]","[-1,+1]"});
 		configInput(INPUT_CLOCK, "S/H Clock");
@@ -113,7 +107,6 @@ struct HolonicSystemsHolonicSourceModule : Module {
 		configOutput(OUTPUT_6,"6");
 		configOutput(OUTPUT_7,"7");
 		configOutput(OUTPUT_8,"8");
-#endif
 		onReset();
 		ports.start();
 	}

@@ -85,10 +85,6 @@ struct HolonicSystemsSwissCheeseKnifeModule : Module {
 	HolonicSystemsSwissCheeseKnifeModule() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		for(int i=0;i<4;i++){
-#ifdef MIRACK
-			configParam(PARAM_INV_1+i,0.f, 1.f, 1.f, "Invert");
-			configParam(PARAM_AC_DC_1+i,0.0f, 1.0f, 1.0f, "AC/DC");
-#else
 			configInput(INPUT_1+i, "Input");
 			configInput(INPUT_VCA_1+i, "VCA");
 			configInput(INPUT_SH_1+i, "S/H");
@@ -99,7 +95,6 @@ struct HolonicSystemsSwissCheeseKnifeModule : Module {
 			configInput(INPUT_VCA_1+i,"VCA");
 			configInput(INPUT_SH_1+i,"S/H");
 			configOutput(OUTPUT_1+i,"CV");
-#endif
 			configParam(PARAM_ATT_1+i,0.f, 1.f, 1.f, "Attenuator");	
 			configParam(PARAM_LPF_1+i,1.f, 0.f, 1.f, "LPF");
 			configParam(PARAM_SLEW_UP_1+i,0.f, 1.f, 0.f, "Slew Up");

@@ -74,14 +74,7 @@ struct HolonicSystemsPantryModule : Module {
 		configParam(PARAM_SHIFT_1,0.f, 31.f, 0.f, "Shift 1");
 		configParam(PARAM_LENGTH_2,0.f, 31.f, 16.f, "Lenth 2");
 		configParam(PARAM_SHIFT_2,0.f, 31.f, 0.f, "Shift 2");
-#ifdef MIRACK
-		configParam(PARAM_RECORD_1,0.f, 1.f, 0.f, "Record 1");
-		configParam(PARAM_OVERDUB_1,0.f, 1.f, 0.0f, "Overdub 1");
-		configParam(PARAM_CLEAR_1,0.f, 1.f, 0.0f, "Clear 1");
-		configParam(PARAM_RECORD_2,0.f, 1.f, 0.f, "Record 2");
-		configParam(PARAM_OVERDUB_2,0.f, 1.f, 0.0f, "Overdub 2");
-		configParam(PARAM_CLEAR_2,0.f, 1.f, 0.0f, "Clear 2");
-#else
+
 		configButton(PARAM_RECORD_1, "Record 1");
 		configButton(PARAM_OVERDUB_1, "Overdub 1");
 		configButton(PARAM_CLEAR_1, "Clear 1");
@@ -109,7 +102,6 @@ struct HolonicSystemsPantryModule : Module {
 		configOutput(OUTPUT_CV_2, "CV 2");
 		configOutput(OUTPUT_GATE_1, "Gate 1");
 		configOutput(OUTPUT_GATE_2, "Gate 2");
-#endif
 		onReset();
 	}
 

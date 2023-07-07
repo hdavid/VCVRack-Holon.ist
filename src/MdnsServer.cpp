@@ -231,14 +231,14 @@ void MdnsServer::run(int port) {
 	char* hostname;
 	hostname = getenv("COMPUTERNAME");
 	if (hostname != 0) {
-#ifdef MIRACK
+#ifdef BUILDING_FOR_MIRACK
 		sprintf(instanceName, "mirack-%s", hostname);
 #else
 		sprintf(instanceName, "vcvrack-%s", hostname);
 #endif
 		
 	} else {
-#ifdef MIRACK
+#ifdef BUILDING_FOR_MIRACK
 		sprintf(instanceName, "mirack-nohostname");
 #else
 		sprintf(instanceName, "vcvrack-nohostname");
@@ -253,13 +253,13 @@ void MdnsServer::run(int port) {
 		const char delimiters[] = ".";
 		char * running = strdup(hostname);
 		hostname = strsep(&running, delimiters);
-#ifdef MIRACK
+#ifdef BUILDING_FOR_MIRACK
 		sprintf(instanceName, "mirack-%s", hostname);
 #else
 		sprintf(instanceName, "vcvrack-%s", hostname);
 #endif
 	} else {
-#ifdef MIRACK
+#ifdef BUILDING_FOR_MIRACK
 		sprintf(instanceName, "mirack-nohostname");	
 #else
 		sprintf(instanceName, "vcvrack-nohostname");

@@ -3,11 +3,10 @@ RACK_DIR ?= ../..
 FLAGS += 
 CFLAGS += 
 
-ifeq ($(wildcard $(RACK_DIR)/include/rack.hpp),)
-CXXFLAGS += -DMIRACK
+#ifeq ($(wildcard $(RACK_DIR)/include/api0/app.hppf),)
+ifdef $(BUILDING_FOR_MIRACK)
 DISTRIBUTABLES += res 
 else
-CXXFLAGS += 
 DISTRIBUTABLES += $(wildcard LICENSE*) $(wildcard *.sh) $(wildcard *.bat) res demos 
 endif
 

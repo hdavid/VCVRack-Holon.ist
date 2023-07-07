@@ -95,11 +95,6 @@ struct HolonicSystemsLazySusanModule : Module {
 		//IN
 		configParam(PARAM_SCALE_CV_ATT,0.f, 1.f, 1.f, "Scale CV Attenuator");		
 		configParam(PARAM_ATT,0.f, 1.f, 1.f, "Common Attenuator");
-#ifdef MIRACK
-		configParam(PARAM_SCALE,0.f, 6.f, 0.f, "scale");	
-		configParam(PARAM_TRANSPOSE_BEFORE_AFTER, 0.f, 1.f, 0.f, "transpose cv before/after quantiser");
-
-#else
 		configButton(PARAM_SCALE_1, "C");
 		configButton(PARAM_SCALE_2, "C#");
 		configButton(PARAM_SCALE_3, "D");
@@ -133,7 +128,6 @@ struct HolonicSystemsLazySusanModule : Module {
 		configOutput(OUTPUT_TRIGGER_2, "Trig 2");
 		configOutput(OUTPUT_TRIGGER_3, "Trig 3");
 		configOutput(OUTPUT_TRIGGER_4, "Trig 4");
-#endif
 		onReset();
 	}
 
@@ -267,11 +261,7 @@ struct HolonicSystemsLazySusanModule : Module {
 							currentCVs[i+channel*4] = newValue;
 							outputs[OUTPUT_CV_1+i].setVoltage(currentCVs[i+channel*4],channel);
 							//trigger
-#ifdef MIRACK
-							outputTriggers[i+channel*4].trigger();
-#else
 							outputTriggers[i+channel*4].trigger(1e-3);
-#endif
 						}
 					}
 					outputs[OUTPUT_CV_1+i].setChannels(channels);
