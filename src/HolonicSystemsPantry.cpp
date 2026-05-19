@@ -70,9 +70,9 @@ struct HolonicSystemsPantryModule : Module {
 
 	HolonicSystemsPantryModule() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-		configParam(PARAM_LENGTH_1,0.f, 31.f, 16.f, "Lenth 1");
+		configParam(PARAM_LENGTH_1,1.f, 32.f, 16.f, "Length 1");
 		configParam(PARAM_SHIFT_1,0.f, 31.f, 0.f, "Shift 1");
-		configParam(PARAM_LENGTH_2,0.f, 31.f, 16.f, "Lenth 2");
+		configParam(PARAM_LENGTH_2,1.f, 32.f, 16.f, "Length 2");
 		configParam(PARAM_SHIFT_2,0.f, 31.f, 0.f, "Shift 2");
 
 		configButton(PARAM_RECORD_1, "Record 1");
@@ -90,7 +90,7 @@ struct HolonicSystemsPantryModule : Module {
 		configInput(INPUT_OVERDUB_2, "Overdub 2");
 		configInput(INPUT_SHIFT_1, "Shift 1");
 		configInput(INPUT_SHIFT_2, "Shift 2");
-		configInput(INPUT_LENGTH_1, "Lengh 1");
+		configInput(INPUT_LENGTH_1, "Length 1");
 		configInput(INPUT_LENGTH_2, "Length 2");
 		configInput(INPUT_CLEAR_1, "Clear 1");
 		configInput(INPUT_CLEAR_2, "Clear 2");
