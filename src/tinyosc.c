@@ -39,9 +39,10 @@
 // http://opensoundcontrol.org/spec-1_0
 int tosc_parseMessage(tosc_message *o, char *buffer, const int len) {
   // NOTE(mhroth): if there's a comma in the address, that's weird
+  // every scan is bounded by len: the buffer comes straight from the network
   int i = 0;
-  while (buffer[i] != '\0') ++i; // find the null-terimated address
-  while (buffer[i] != ',') ++i; // find the comma which starts the format string
+  while (i < len && buffer[i] != '\0') ++i; // find the null-terimated address
+  while (i < len && buffer[i] != ',') ++i; // find the comma which starts the format string
   if (i >= len) return -1; // error while looking for format string
   // format string is null terminated
   o->format = buffer + i + 1; // format starts after comma
@@ -79,9 +80,12 @@ uint32_t tosc_getBundleLength(tosc_bundle *b) {
 }
 
 bool tosc_getNextMessage(tosc_bundle *b, tosc_message *o) {
-  if ((b->marker - b->buffer) >= b->bundleLen) return false;
+  const int remaining = (int) b->bundleLen - (int) (b->marker - b->buffer);
+  if (remaining < 4) return false;
   uint32_t len = (uint32_t) ntohl(*((int32_t *) b->marker));
-  tosc_parseMessage(o, b->marker+4, len);
+  // the element size comes from the packet: it must fit in what is left
+  if (len == 0 || len > (uint32_t) (remaining - 4)) return false;
+  if (tosc_parseMessage(o, b->marker+4, (int) len) != 0) return false;
   b->marker += (4 + len); // move marker to next bundle element
   return true;
 }
@@ -98,7 +102,16 @@ uint32_t tosc_getLength(tosc_message *o) {
   return o->len;
 }
 
+// true if n more bytes can be read at the marker; otherwise moves the marker
+// to the end so that every later read of this message fails too
+static bool tosc_hasBytes(tosc_message *o, int n) {
+  if (o->marker + n <= o->buffer + o->len) return true;
+  o->marker = o->buffer + o->len;
+  return false;
+}
+
 int32_t tosc_getNextInt32(tosc_message *o) {
+  if (!tosc_hasBytes(o, 4)) return 0;
   // convert from big-endian (network btye order)
   const int32_t i = (int32_t) ntohl(*((uint32_t *) o->marker));
   o->marker += 4;
@@ -106,6 +119,7 @@ int32_t tosc_getNextInt32(tosc_message *o) {
 }
 
 int64_t tosc_getNextInt64(tosc_message *o) {
+  if (!tosc_hasBytes(o, 8)) return 0;
   const int64_t i = (int64_t) ntohll(*((uint64_t *) o->marker));
   o->marker += 8;
   return i;
@@ -116,6 +130,7 @@ uint64_t tosc_getNextTimetag(tosc_message *o) {
 }
 
 float tosc_getNextFloat(tosc_message *o) {
+  if (!tosc_hasBytes(o, 4)) return 0.0f;
   // convert from big-endian (network btye order)
   const uint32_t i = ntohl(*((uint32_t *) o->marker));
   o->marker += 4;
@@ -123,14 +138,21 @@ float tosc_getNextFloat(tosc_message *o) {
 }
 
 double tosc_getNextDouble(tosc_message *o) {
+  if (!tosc_hasBytes(o, 8)) return 0.0;
   const uint64_t i = ntohll(*((uint64_t *) o->marker));
   o->marker += 8;
   return *((double *) (&i));
 }
 
 const char *tosc_getNextString(tosc_message *o) {
-  int i = (int) strlen(o->marker);
-  if (o->marker + i >= o->buffer + o->len) return NULL;
+  // the string and its '\0' must lie inside the message: never strlen past it
+  if (!tosc_hasBytes(o, 1)) return NULL;
+  const char *end = (const char *) memchr(o->marker, '\0', o->buffer + o->len - o->marker);
+  if (end == NULL) {
+    o->marker = o->buffer + o->len;
+    return NULL;
+  }
+  int i = (int) (end - o->marker);
   const char *s = o->marker;
   i = (i + 4) & ~0x3; // advance to next multiple of 4 after trailing '\0'
   o->marker += i;

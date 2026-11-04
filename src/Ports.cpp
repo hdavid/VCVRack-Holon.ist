@@ -165,7 +165,7 @@ void Ports::oscMessage(const char *path, const char* v) {
 		offset += channel < 10 ? 2 : channel < 100 ? 3 : 4;
 		channel -= 1;
 		
-		if (channel >= 0 && channel <= PORTS_NUM_CHANNELS) {
+		if (channel >= 0 && channel < PORTS_NUM_CHANNELS) {
 			if (strncmp(path+offset, "input", 4) == 0) {
 				//printf("%s :  %s\n", path, v);
 				inputs[channel] = std::string(v);
@@ -226,7 +226,7 @@ void Ports::oscMessage(const char *path, const float v) {
 void Ports::updateChannel(const int channel, const int mode, const float v) {
     float value = v;
     
-	if (channel >= 0 && channel <= PORTS_NUM_CHANNELS) {
+	if (channel >= 0 && channel < PORTS_NUM_CHANNELS) {
 		// update channel last update;
 		channelUpdated[channel] = true;
 

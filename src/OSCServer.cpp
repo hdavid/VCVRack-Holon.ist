@@ -33,13 +33,15 @@ void OSCServer::stop() {
 
 
 void OSCServer::handleOSCBuffer(char *buffer, int len) {
+	if (len < 8) {
+		return; // too short to be an OSC message
+	}
 	if (tosc_isBundle(buffer)) {
 		tosc_bundle bundle;
 		tosc_parseBundle(&bundle, buffer, len);
 		// const uint64_t timetag = tosc_getTimetag(&bundle);
 		tosc_message osc;
 		while (tosc_getNextMessage(&bundle, &osc)) {
-			tosc_printMessage(&osc);
 			char *path = tosc_getAddress(&osc);
 			float value = 0;
 			for (int i = 0; osc.format[i] != '\0'; i++) {
@@ -61,7 +63,10 @@ void OSCServer::handleOSCBuffer(char *buffer, int len) {
 					break;
 				case 's':
 					if (stringCallback!=NULL && shouldRun) {
-						stringCallback(path, tosc_getNextString(&osc));
+						const char *str = tosc_getNextString(&osc);
+						if (str != NULL) {
+							stringCallback(path, str);
+						}
 					}
 					break;
 				default:
@@ -75,7 +80,9 @@ void OSCServer::handleOSCBuffer(char *buffer, int len) {
 		}
 	} else {
 		tosc_message osc;
-		tosc_parseMessage(&osc, buffer, len);
+		if (tosc_parseMessage(&osc, buffer, len) != 0) {
+			return; // malformed packet
+		}
 		char *path = tosc_getAddress(&osc); 
 		for (int i = 0; osc.format[i] != '\0'; i++) {
 			switch (osc.format[i]) {
@@ -96,7 +103,10 @@ void OSCServer::handleOSCBuffer(char *buffer, int len) {
 				break;
 			case 's':
 				if (stringCallback!=NULL && shouldRun) {
-					stringCallback(path, tosc_getNextString(&osc));
+					const char *str = tosc_getNextString(&osc);
+					if (str != NULL) {
+						stringCallback(path, str);
+					}
 				}
 				break;
 			default:
