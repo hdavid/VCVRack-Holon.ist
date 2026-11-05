@@ -13,6 +13,8 @@ endif
 
 include $(RACK_DIR)/arch.mk
 ifdef ARCH_WIN
+# Rack 2 defines ARCH_WIN in arch.hpp only; the OSC/mDNS sources need it as a flag
+FLAGS += -DARCH_WIN
 LDFLAGS += -lwsock32
 else
 LDFLAGS +=
